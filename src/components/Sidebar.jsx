@@ -3,11 +3,7 @@ import { LayoutDashboard, Cpu, BarChart3, Calendar, DollarSign, ArrowLeftRight, 
 const Sidebar = () => {
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', active: true },
-    { icon: Cpu, label: 'Dispositivos', active: false },
-    { icon: BarChart3, label: 'Estatísticas', active: false },
-    { icon: Calendar, label: 'Calendário', active: false },
-    { icon: DollarSign, label: 'Finanças', active: false },
-    { icon: ArrowLeftRight, label: 'Transferências', active: false },
+    { icon: BarChart3, label: 'Consumo', active: false },
     { icon: FileText, label: 'Relatórios', active: false }
   ];
 
