@@ -5,8 +5,8 @@ const Header = () => {
     <div className="bg-white border-b border-gray-200 px-8 py-5 sticky top-0 z-10 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-500">Bem-vindo de volta, <span className="text-teal-600 font-semibold">Andres 👋</span></p>
-          <h1 className="text-2xl font-bold text-gray-900 mt-1">Dashboard</h1>
+          <p className="text-sm text-gray-500">Sistema de Gestão de Energia</p>
+          <h1 className="text-2xl font-bold text-gray-900 mt-1">Ecoar Energy</h1>
         </div>
 
         <div className="flex items-center gap-3">
