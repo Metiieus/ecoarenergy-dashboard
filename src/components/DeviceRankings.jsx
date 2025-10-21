@@ -3,65 +3,65 @@ import { deviceRankings } from '../data/mockData';
 
 const DeviceRankings = () => {
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-800">Ranking de Dispositivos</h2>
-        <button className="text-teal-600 hover:text-teal-700 text-sm font-medium flex items-center gap-1">
-          View all
+        <h2 className="text-lg font-bold text-gray-900">Ranking de Dispositivos</h2>
+        <button className="text-teal-600 hover:text-teal-700 text-xs font-semibold flex items-center gap-1 transition-colors">
+          Ver todos
           <ExternalLink className="w-4 h-4" />
         </button>
       </div>
-      
+
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-200">
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase pb-3 pr-4">#</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase pb-3 pr-4">DISPOSITIVO</th>
-              <th className="text-center text-xs font-semibold text-gray-500 uppercase pb-3 px-2">MP</th>
-              <th className="text-center text-xs font-semibold text-gray-500 uppercase pb-3 px-2">W</th>
-              <th className="text-center text-xs font-semibold text-gray-500 uppercase pb-3 px-2">D</th>
-              <th className="text-center text-xs font-semibold text-gray-500 uppercase pb-3 px-2">L</th>
-              <th className="text-center text-xs font-semibold text-gray-500 uppercase pb-3 px-2">G</th>
-              <th className="text-center text-xs font-semibold text-gray-500 uppercase pb-3 pl-2">PTS</th>
+            <tr className="border-b border-gray-200 bg-gray-50">
+              <th className="text-left text-xs font-bold text-gray-700 uppercase pb-4 pr-4 tracking-wider">#</th>
+              <th className="text-left text-xs font-bold text-gray-700 uppercase pb-4 pr-4 tracking-wider">DISPOSITIVO</th>
+              <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider">MP</th>
+              <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider">W</th>
+              <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider">D</th>
+              <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider">L</th>
+              <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider">G</th>
+              <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 pl-2 tracking-wider">PTS</th>
             </tr>
           </thead>
           <tbody>
             {deviceRankings.map((device, index) => (
-              <tr 
-                key={device.id} 
-                className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
-                  index === 0 ? 'bg-teal-50/50' : ''
+              <tr
+                key={device.id}
+                className={`border-b border-gray-100 transition-colors ${
+                  index === 0 ? 'bg-teal-50/60' : 'hover:bg-gray-50'
                 }`}
               >
                 <td className="py-4 pr-4">
-                  <span className="text-sm font-medium text-gray-700">{device.position}</span>
+                  <span className="text-sm font-bold text-gray-700">{device.position}</span>
                 </td>
                 <td className="py-4 pr-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-lg">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-lg flex-shrink-0">
                       {device.icon}
                     </div>
                     <span className="font-semibold text-gray-800 text-sm">{device.name}</span>
                   </div>
                 </td>
                 <td className="text-center py-4 px-2">
-                  <span className="text-sm text-gray-700">{Math.round(device.avgPower / 1000)}</span>
+                  <span className="text-sm font-medium text-gray-700">{Math.round(device.avgPower / 1000)}</span>
                 </td>
                 <td className="text-center py-4 px-2">
-                  <span className="text-sm text-gray-700">{Math.round(device.consumption / 10000)}</span>
+                  <span className="text-sm font-medium text-gray-700">{Math.round(device.consumption / 10000)}</span>
                 </td>
                 <td className="text-center py-4 px-2">
-                  <span className="text-sm text-gray-700">{Math.round(device.efficiency / 10)}</span>
+                  <span className="text-sm font-medium text-gray-700">{Math.round(device.efficiency / 10)}</span>
                 </td>
                 <td className="text-center py-4 px-2">
-                  <span className="text-sm text-gray-700">{Math.round(device.savings)}</span>
+                  <span className="text-sm font-medium text-gray-700">{Math.round(device.savings)}</span>
                 </td>
                 <td className="text-center py-4 px-2">
-                  <span className="text-sm text-gray-700">{Math.round(device.activeTime * 0.4)}</span>
+                  <span className="text-sm font-medium text-gray-700">{Math.round(device.activeTime * 0.4)}</span>
                 </td>
                 <td className="text-center py-4 pl-2">
-                  <span className="text-sm font-bold text-gray-800">{device.score}</span>
+                  <span className="text-sm font-bold text-teal-700">{device.score}</span>
                 </td>
               </tr>
             ))}
@@ -73,4 +73,3 @@ const DeviceRankings = () => {
 };
 
 export default DeviceRankings;
-
