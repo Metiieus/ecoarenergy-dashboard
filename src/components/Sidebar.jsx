@@ -15,7 +15,10 @@ const Sidebar = () => {
           <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
             <span className="text-lg font-bold">E</span>
           </div>
-          <h1 className="text-xl font-bold tracking-tight">EcoarPro</h1>
+          <div>
+            <h1 className="text-lg font-bold tracking-tight">Ecoar</h1>
+            <p className="text-xs text-teal-100">Energy</p>
+          </div>
         </div>
       </div>
 
