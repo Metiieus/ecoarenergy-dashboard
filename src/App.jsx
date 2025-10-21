@@ -48,11 +48,11 @@ function App() {
             />
           </div>
 
+          {/* Device List from API - Main Content */}
+          <DeviceList />
+
           {/* Energy Statistics */}
           <EnergyStatistics />
-
-          {/* Device List from API */}
-          <DeviceList />
 
           {/* Action Banner */}
           <ActionBanner />
