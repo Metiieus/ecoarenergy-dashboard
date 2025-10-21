@@ -1,21 +1,25 @@
-import { LayoutDashboard, Cpu, BarChart3, Calendar, DollarSign, ArrowLeftRight, FileText } from 'lucide-react';
+import { LayoutDashboard, BarChart3, FileText } from 'lucide-react';
 
 const Sidebar = () => {
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', active: true },
-    { icon: Cpu, label: 'Dispositivos', active: false },
-    { icon: BarChart3, label: 'Estatísticas', active: false },
-    { icon: Calendar, label: 'Calendário', active: false },
-    { icon: DollarSign, label: 'Finanças', active: false },
-    { icon: ArrowLeftRight, label: 'Transferências', active: false },
+    { icon: BarChart3, label: 'Consumo', active: false },
     { icon: FileText, label: 'Relatórios', active: false }
   ];
 
   return (
-    <div className="w-64 h-screen bg-gradient-to-b from-teal-500 to-teal-600 text-white flex flex-col fixed left-0 top-0 shadow-2xl">
+    <div className="w-64 h-screen bg-gradient-to-b from-teal-500 to-teal-600 text-white flex flex-col fixed left-0 top-0 shadow-lg">
       {/* Logo */}
-      <div className="p-6 border-b border-teal-400/30">
-        <h1 className="text-2xl font-bold tracking-tight">EcoarPro</h1>
+      <div className="p-6 border-b border-teal-400/40">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+            <span className="text-lg font-bold">E</span>
+          </div>
+          <div>
+            <h1 className="text-lg font-bold tracking-tight">Ecoar</h1>
+            <p className="text-xs text-teal-100">Energy</p>
+          </div>
+        </div>
       </div>
 
       {/* Menu Items */}
@@ -25,24 +29,24 @@ const Sidebar = () => {
             key={index}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
               item.active
-                ? 'bg-white/20 shadow-lg backdrop-blur-sm'
-                : 'hover:bg-white/10'
+                ? 'bg-white/25 shadow-lg backdrop-blur-sm'
+                : 'text-teal-100 hover:bg-white/15'
             }`}
           >
-            <item.icon className="w-5 h-5" />
-            <span className="font-medium">{item.label}</span>
+            <item.icon className="w-5 h-5 flex-shrink-0" />
+            <span className="font-medium text-sm">{item.label}</span>
           </button>
         ))}
       </nav>
 
       {/* Footer */}
-      <div className="p-6 border-t border-teal-400/30">
+      <div className="p-6 border-t border-teal-400/40">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-white/25 flex items-center justify-center flex-shrink-0">
             <span className="text-sm font-bold">EA</span>
           </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium">EcoarEnergy</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold truncate">Ecoar Energy</p>
             <p className="text-xs text-teal-100">Sistema v2.0</p>
           </div>
         </div>
@@ -52,4 +56,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-

@@ -115,8 +115,16 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-gradient-to-br from-gray-50 via-blue-50/30 to-teal-50/40 text-foreground min-h-screen;
+    @apply bg-gray-50 text-foreground min-h-screen;
   }
+  html {
+    scrollbar-gutter: stable;
+  }
+}
+
+/* Professional Dashboard Styles */
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* Custom scrollbar */
@@ -138,4 +146,3 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #38B2AC;
 }
-
