@@ -46,8 +46,8 @@ const Sidebar = () => {
             <span className="text-sm font-bold">EA</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold truncate">EcoarEnergy</p>
-            <p className="text-xs text-teal-100">v2.0</p>
+            <p className="text-sm font-semibold truncate">Ecoar Energy</p>
+            <p className="text-xs text-teal-100">Sistema v2.0</p>
           </div>
         </div>
       </div>
