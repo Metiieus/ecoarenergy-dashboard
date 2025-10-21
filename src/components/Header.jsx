@@ -23,12 +23,8 @@ const Header = () => {
 
           {/* User Profile */}
           <div className="flex items-center gap-3 ml-4 pl-4 border-l border-gray-200">
-            <div className="text-right">
-              <p className="text-sm font-semibold text-gray-800">Andres Pinto</p>
-              <p className="text-xs text-gray-500">Admin Store</p>
-            </div>
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-sm">AP</span>
+              <span className="text-white font-bold text-sm">EA</span>
             </div>
           </div>
         </div>
