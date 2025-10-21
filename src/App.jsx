@@ -48,14 +48,11 @@ function App() {
             />
           </div>
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-2 gap-6">
-            <NextMonitoring />
-            <EnergyStatistics />
-          </div>
+          {/* Energy Statistics */}
+          <EnergyStatistics />
 
-          {/* Device Rankings - Full Width */}
-          <DeviceRankings />
+          {/* Device List from API */}
+          <DeviceList />
 
           {/* Action Banner */}
           <ActionBanner />
