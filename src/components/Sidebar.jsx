@@ -1,4 +1,4 @@
-import { LayoutDashboard, Cpu, BarChart3, Calendar, DollarSign, ArrowLeftRight, FileText } from 'lucide-react';
+import { LayoutDashboard, BarChart3, FileText } from 'lucide-react';
 
 const Sidebar = () => {
   const menuItems = [
