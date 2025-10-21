@@ -1,9 +1,8 @@
 import './App.css';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import NextMonitoring from './components/NextMonitoring';
 import EnergyStatistics from './components/EnergyStatistics';
-import DeviceRankings from './components/DeviceRankings';
+import DeviceList from './components/DeviceList';
 import MetricCard from './components/MetricCard';
 import ActionBanner from './components/ActionBanner';
 import { Activity, DollarSign, TrendingUp, Star } from 'lucide-react';
