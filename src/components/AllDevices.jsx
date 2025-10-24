@@ -32,7 +32,8 @@ const AllDevices = () => {
             })
             .then(data => ({
               deviceId,
-              data: data.dados && Array.isArray(data.dados) ? data.dados : []
+              data: data.dados && Array.isArray(data.dados) ? data.dados : [],
+              error: null
             }))
             .catch(err => ({
               deviceId,
@@ -43,19 +44,22 @@ const AllDevices = () => {
 
         const results = await Promise.all(promises);
         const dataMap = {};
-        let hasError = false;
+        const errorMessages = [];
 
         results.forEach(result => {
           dataMap[result.deviceId] = result.data;
-          if (result.error) hasError = true;
+          if (result.error) {
+            errorMessages.push(`Dispositivo ${result.deviceId}: ${result.error}`);
+          }
         });
 
         setDevicesData(dataMap);
-        if (hasError) {
-          setError('Alguns dispositivos falharam ao carregar');
+        if (errorMessages.length > 0) {
+          setError(errorMessages.join('. '));
         }
       } catch (err) {
-        setError(err.message);
+        setError(`Erro ao carregar dispositivos: ${err.message}`);
+        setDevicesData({});
       } finally {
         setLoading(false);
       }
