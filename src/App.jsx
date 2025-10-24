@@ -1,14 +1,20 @@
 import './App.css';
+import { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import EnergyStatistics from './components/EnergyStatistics';
 import DeviceList from './components/DeviceList';
 import MetricCard from './components/MetricCard';
 import ActionBanner from './components/ActionBanner';
+import DashboardCharts from './components/DashboardCharts';
+import AllDevices from './components/AllDevices';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs';
 import { Activity, DollarSign, TrendingUp, Star } from 'lucide-react';
 import { metrics } from './data/mockData';
 
 function App() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
@@ -19,43 +25,66 @@ function App() {
         <Header />
 
         {/* Dashboard Content */}
-        <div className="p-8 space-y-8">
-          {/* Top Metrics Row */}
-          <div className="grid grid-cols-4 gap-6">
-            <MetricCard
-              icon={DollarSign}
-              title="Custo Total"
-              value={`R$${metrics.totalCost}k`}
-              color="pink"
-            />
-            <MetricCard
-              icon={Activity}
-              title="Eficiência"
-              value={`${metrics.efficiency}%`}
-              color="teal"
-            />
-            <MetricCard
-              icon={TrendingUp}
-              title="Orçamento Mensal"
-              value={`R$${metrics.monthlyBudget}k`}
-              color="yellow"
-            />
-            <MetricCard
-              icon={Star}
-              title="Score Médio"
-              value={metrics.averageScore}
-              color="blue"
-            />
-          </div>
+        <div className="p-8">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+            {/* Top Metrics Row */}
+            <div className="grid grid-cols-4 gap-6">
+              <MetricCard
+                icon={DollarSign}
+                title="Custo Total"
+                value={`R$${metrics.totalCost}k`}
+                color="pink"
+              />
+              <MetricCard
+                icon={Activity}
+                title="Eficiência"
+                value={`${metrics.efficiency}%`}
+                color="teal"
+              />
+              <MetricCard
+                icon={TrendingUp}
+                title="Orçamento Mensal"
+                value={`R$${metrics.monthlyBudget}k`}
+                color="yellow"
+              />
+              <MetricCard
+                icon={Star}
+                title="Score Médio"
+                value={metrics.averageScore}
+                color="blue"
+              />
+            </div>
 
-          {/* Device List from API - Main Content */}
-          <DeviceList />
+            {/* Tabs Navigation */}
+            <TabsList className="bg-white border border-gray-200 rounded-lg p-1 w-fit">
+              <TabsTrigger value="dashboard" className="px-4 py-2">
+                Dashboard
+              </TabsTrigger>
+              <TabsTrigger value="all-devices" className="px-4 py-2">
+                Todos os Dispositivos
+              </TabsTrigger>
+            </TabsList>
 
-          {/* Energy Statistics */}
-          <EnergyStatistics />
+            {/* Dashboard Tab */}
+            <TabsContent value="dashboard" className="space-y-8">
+              {/* Charts Section */}
+              <DashboardCharts />
 
-          {/* Action Banner */}
-          <ActionBanner />
+              {/* Device List from API - Main Content */}
+              <DeviceList />
+
+              {/* Energy Statistics */}
+              <EnergyStatistics />
+
+              {/* Action Banner */}
+              <ActionBanner />
+            </TabsContent>
+
+            {/* All Devices Tab */}
+            <TabsContent value="all-devices" className="space-y-8">
+              <AllDevices />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>
