@@ -17,6 +17,24 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedDeviceId, setSelectedDeviceId] = useState(null);
 
+  // If a device is selected, show the detail view
+  if (selectedDeviceId !== null) {
+    return (
+      <div className="flex min-h-screen bg-gray-50">
+        <Sidebar />
+        <div className="flex-1 ml-64">
+          <Header />
+          <div className="p-8">
+            <DeviceDetailView
+              deviceId={selectedDeviceId}
+              onBack={() => setSelectedDeviceId(null)}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
@@ -73,7 +91,7 @@ function App() {
               <DashboardCharts />
 
               {/* Device List from API - Main Content */}
-              <DeviceList />
+              <DeviceList onSelectDevice={setSelectedDeviceId} />
 
               {/* Energy Statistics */}
               <EnergyStatistics />
@@ -84,7 +102,7 @@ function App() {
 
             {/* All Devices Tab */}
             <TabsContent value="all-devices" className="space-y-8">
-              <AllDevices />
+              <AllDevices onSelectDevice={setSelectedDeviceId} />
             </TabsContent>
           </Tabs>
         </div>
