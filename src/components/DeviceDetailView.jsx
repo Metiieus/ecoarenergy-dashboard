@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AlertCircle, Loader2, ChevronLeft, Edit2, Check, X } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { deviceDetailMockData } from '../data/mockData';
 
 const DeviceDetailView = ({ deviceId, onBack }) => {
   const [devices, setDevices] = useState([]);
