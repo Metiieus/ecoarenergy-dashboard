@@ -1,41 +1,19 @@
 import { useEffect, useState } from 'react';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { deviceDetailMockData } from '../data/mockData';
 
-const DeviceList = () => {
+const DeviceList = ({ onSelectDevice }) => {
   const [devices, setDevices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDevice, setSelectedDevice] = useState(33);
 
   useEffect(() => {
-    const fetchDeviceData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `https://tb8calt97j.execute-api.sa-east-1.amazonaws.com/dev/dados?device_id=${selectedDevice}&historico=true`
-        );
-        
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.dados && Array.isArray(data.dados)) {
-          setDevices(data.dados);
-          setError(null);
-        } else {
-          setDevices([]);
-        }
-      } catch (err) {
-        setError(err.message);
-        setDevices([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDeviceData();
+    setLoading(true);
+    const mockData = deviceDetailMockData[selectedDevice] || deviceDetailMockData[33];
+    setDevices(mockData);
+    setError(null);
+    setLoading(false);
   }, [selectedDevice]);
 
   const equipmentIcons = {
@@ -102,9 +80,10 @@ const DeviceList = () => {
             const umidade = parseFloat(device.umidade) || 0;
 
             return (
-              <div 
+              <div
                 key={device.id || index}
-                className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300"
+                onClick={() => onSelectDevice && onSelectDevice(selectedDevice)}
+                className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300 cursor-pointer"
               >
                 <div className="flex items-start justify-between mb-6">
                   <div>
