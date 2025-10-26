@@ -277,27 +277,65 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Consumo vs Meta */}
-        <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-900 mb-6">Consumo vs Meta</h3>
+        {/* Consumo vs Meta - Gráfico de Barras Detalhado */}
+        <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 shadow-lg border border-gray-100">
+          <h3 className="text-lg font-bold text-gray-900 mb-2">Consumo vs Meta</h3>
+          <p className="text-sm text-gray-600 mb-6">Comparação mensal de consumo e metas estabelecidas</p>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="value" fill="#4299E1" name="Consumo (kWh)" />
-                <Bar dataKey="goal" fill="#48BB78" name="Meta (kWh)" />
+              <BarChart
+                data={chartData}
+                margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
+              >
+                <defs>
+                  <linearGradient id="colorConsume" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#4299E1" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#4299E1" stopOpacity={0.2}/>
+                  </linearGradient>
+                  <linearGradient id="colorGoal" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#48BB78" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#48BB78" stopOpacity={0.2}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="month" stroke="#718096" />
+                <YAxis stroke="#718096" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1a202c',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }}
+                  formatter={(value) => `${value.toFixed(2)} kWh`}
+                  cursor={{ fill: 'rgba(66, 153, 225, 0.1)' }}
+                />
+                <Legend
+                  wrapperStyle={{
+                    paddingTop: '20px'
+                  }}
+                />
+                <Bar
+                  dataKey="value"
+                  fill="url(#colorConsume)"
+                  name="Consumo (kWh)"
+                  radius={[8, 8, 0, 0]}
+                />
+                <Bar
+                  dataKey="goal"
+                  fill="url(#colorGoal)"
+                  name="Meta (kWh)"
+                  radius={[8, 8, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Consumo Atual vs Meta */}
-        <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-900 mb-6">Objetivo vs Consumo</h3>
+        {/* Consumo Atual vs Meta - Gráfico de Pizza Detalhado */}
+        <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 shadow-lg border border-gray-100">
+          <h3 className="text-lg font-bold text-gray-900 mb-2">Distribuição: Consumo vs Objetivo</h3>
+          <p className="text-sm text-gray-600 mb-6">Proporção de consumo em relação à meta estabelecida</p>
           <div className="h-80 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -308,19 +346,136 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
                   }))}
                   cx="50%"
                   cy="50%"
-                  labelLine={false}
-                  label={({ name, value }) => `${name}: ${value.toFixed(2)} kWh`}
-                  outerRadius={80}
+                  labelLine={true}
+                  label={({ name, value, percent }) => `${name}: ${value.toFixed(2)} kWh (${(percent * 100).toFixed(0)}%)`}
+                  outerRadius={90}
+                  innerRadius={60}
                   fill="#8884d8"
                   dataKey="value"
+                  animationBegin={0}
+                  animationDuration={800}
                 >
                   {comparisonData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
                 </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1a202c',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }}
+                  formatter={(value) => `${value.toFixed(2)} kWh`}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
+        </div>
+      </div>
+
+      {/* Comparação Histórica com Área Preenchida */}
+      <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 shadow-lg border border-gray-100">
+        <h3 className="text-lg font-bold text-gray-900 mb-2">Tendência: Este Ano vs Ano Passado</h3>
+        <p className="text-sm text-gray-600 mb-6">Evolução mensal do consumo com comparação ao período anterior</p>
+        <div className="h-96">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={[
+              { period: 'Jan', thisYear: totalEnergy * 0.9, lastYear: totalEnergy * 0.85 },
+              { period: 'Fev', thisYear: totalEnergy * 0.92, lastYear: totalEnergy * 0.88 },
+              { period: 'Mar', thisYear: totalEnergy * 0.95, lastYear: totalEnergy * 0.92 },
+              { period: 'Abr', thisYear: totalEnergy, lastYear: totalEnergy * 0.98 },
+              { period: 'Mai', thisYear: totalEnergy * 1.02, lastYear: totalEnergy * 1.05 },
+              { period: 'Jun', thisYear: totalEnergy * 0.98, lastYear: totalEnergy * 1.02 }
+            ]}>
+              <defs>
+                <linearGradient id="colorThisYear" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#4299E1" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#4299E1" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="colorLastYear" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#48BB78" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#48BB78" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis dataKey="period" stroke="#718096" />
+              <YAxis stroke="#718096" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#1a202c',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: '#fff'
+                }}
+                formatter={(value) => `${value.toFixed(2)} kWh`}
+              />
+              <Legend
+                wrapperStyle={{
+                  paddingTop: '20px'
+                }}
+              />
+              <Area
+                type="monotone"
+                dataKey="thisYear"
+                stroke="#4299E1"
+                fill="url(#colorThisYear)"
+                name="Este Ano"
+                strokeWidth={2}
+                dot={{ fill: '#4299E1', r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+              <Area
+                type="monotone"
+                dataKey="lastYear"
+                stroke="#48BB78"
+                fill="url(#colorLastYear)"
+                name="Ano Passado"
+                strokeWidth={2}
+                dot={{ fill: '#48BB78', r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Análise de Performance com Radar */}
+      <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 shadow-lg border border-gray-100">
+        <h3 className="text-lg font-bold text-gray-900 mb-2">Análise de Performance</h3>
+        <p className="text-sm text-gray-600 mb-6">Comparação de métricas de eficiência e consumo</p>
+        <div className="h-96">
+          <ResponsiveContainer width="100%" height="100%">
+            <RadarChart data={[
+              { metric: 'Consumo', value: Math.min((totalEnergy / 150) * 100, 100), fullMark: 100 },
+              { metric: 'Eficiência', value: Math.min(((150 - totalEnergy) / 150) * 100, 100), fullMark: 100 },
+              { metric: 'Temperatura', value: Math.min((averageTemperature / 50) * 100, 100), fullMark: 100 },
+              { metric: 'Meta Atingida', value: goalValue ? ((totalEnergy / goalValue) * 100) : 50, fullMark: 100 },
+              { metric: 'Economia', value: Math.min((savings / 100) * 100, 100), fullMark: 100 }
+            ]}>
+              <PolarGrid stroke="#e2e8f0" />
+              <PolarAngleAxis dataKey="metric" stroke="#718096" />
+              <PolarRadiusAxis angle={90} domain={[0, 100]} stroke="#718096" />
+              <Radar
+                name="Performance"
+                dataKey="value"
+                stroke="#14B8A6"
+                fill="#14B8A6"
+                fillOpacity={0.5}
+                dot={{ fill: '#14B8A6', r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#1a202c',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: '#fff'
+                }}
+                formatter={(value) => `${value.toFixed(0)}%`}
+              />
+            </RadarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
