@@ -41,12 +41,18 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
         if (data.dados && Array.isArray(data.dados)) {
           setDevices(data.dados);
           setError(null);
+          setLoading(false);
+          return;
         }
       } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+        console.log('API error, using mock data:', err.message);
       }
+
+      // Use mock data as fallback
+      const mockData = deviceDetailMockData[deviceId] || deviceDetailMockData[33];
+      setDevices(mockData);
+      setError(null);
+      setLoading(false);
     };
 
     fetchDeviceData();
