@@ -78,20 +78,6 @@ const AllDevices = ({ onSelectDevice }) => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="bg-white rounded-xl p-8 shadow-md border border-gray-100">
-        <div className="flex items-start gap-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <AlertCircle className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-yellow-900 font-semibold">Aviso ao carregar dispositivos</p>
-            <p className="text-yellow-800 text-sm mt-1">{error}</p>
-            <p className="text-yellow-700 text-xs mt-2">A API externa pode estar temporariamente indisponível. Tente recarregar a página.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
