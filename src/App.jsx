@@ -8,12 +8,14 @@ import MetricCard from './components/MetricCard';
 import ActionBanner from './components/ActionBanner';
 import DashboardCharts from './components/DashboardCharts';
 import AllDevices from './components/AllDevices';
+import DeviceDetailView from './components/DeviceDetailView';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs';
 import { Activity, DollarSign, TrendingUp, Star } from 'lucide-react';
 import { metrics } from './data/mockData';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [selectedDeviceId, setSelectedDeviceId] = useState(null);
 
   return (
     <div className="flex min-h-screen bg-gray-50">
