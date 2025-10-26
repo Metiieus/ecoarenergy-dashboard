@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AlertCircle, Loader2 } from 'lucide-react';
 
-const AllDevices = () => {
+const AllDevices = ({ onSelectDevice }) => {
   const [devicesData, setDevicesData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
