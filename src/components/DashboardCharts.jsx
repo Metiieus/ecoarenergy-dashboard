@@ -1,4 +1,4 @@
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { chartData } from '../data/mockData';
 
 const COLORS = ['#14B8A6', '#4299E1', '#FC8181', '#F6E05E'];
