@@ -38,29 +38,27 @@ const AllDevices = ({ onSelectDevice }) => {
             }))
             .catch(err => ({
               deviceId,
-              data: [],
-              error: err.message
+              data: deviceDetailMockData[deviceId] || [],
+              error: null
             }))
         );
 
         const results = await Promise.all(promises);
         const dataMap = {};
-        const errorMessages = [];
 
         results.forEach(result => {
           dataMap[result.deviceId] = result.data;
-          if (result.error) {
-            errorMessages.push(`Dispositivo ${result.deviceId}: ${result.error}`);
-          }
         });
 
         setDevicesData(dataMap);
-        if (errorMessages.length > 0) {
-          setError(errorMessages.join('. '));
-        }
+        setError(null);
       } catch (err) {
-        setError(`Erro ao carregar dispositivos: ${err.message}`);
-        setDevicesData({});
+        const mockMap = {};
+        deviceIds.forEach(id => {
+          mockMap[id] = deviceDetailMockData[id] || [];
+        });
+        setDevicesData(mockMap);
+        setError(null);
       } finally {
         setLoading(false);
       }
