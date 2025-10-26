@@ -479,30 +479,6 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
         </div>
       </div>
 
-      {/* Comparação Histórica */}
-      <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
-        <h3 className="text-lg font-bold text-gray-900 mb-6">Comparação: Este Ano vs Ano Passado</h3>
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={[
-              { period: 'Jan', thisYear: totalEnergy * 0.9, lastYear: totalEnergy * 0.85 },
-              { period: 'Fev', thisYear: totalEnergy * 0.92, lastYear: totalEnergy * 0.88 },
-              { period: 'Mar', thisYear: totalEnergy * 0.95, lastYear: totalEnergy * 0.92 },
-              { period: 'Abr', thisYear: totalEnergy, lastYear: totalEnergy * 0.98 },
-              { period: 'Mai', thisYear: totalEnergy * 1.02, lastYear: totalEnergy * 1.05 },
-              { period: 'Jun', thisYear: totalEnergy * 0.98, lastYear: totalEnergy * 1.02 }
-            ]}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="period" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="thisYear" stroke="#4299E1" name="Este Ano" />
-              <Line type="monotone" dataKey="lastYear" stroke="#48BB78" name="Ano Passado" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
 
       {/* Detalhes dos Equipamentos */}
       <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
