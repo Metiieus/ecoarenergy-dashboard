@@ -28,33 +28,12 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
                       'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
   useEffect(() => {
-    const fetchDeviceData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `https://tb8calt97j.execute-api.sa-east-1.amazonaws.com/dev/dados?device_id=${deviceId}&historico=true`
-        );
-
-        if (!response.ok) throw new Error(`API error: ${response.status}`);
-
-        const data = await response.json();
-        if (data.dados && Array.isArray(data.dados)) {
-          setDevices(data.dados);
-          setError(null);
-          setLoading(false);
-          return;
-        }
-      } catch (err) {
-        console.log('API error, using mock data:', err.message);
-      }
-
-      // Use mock data as fallback
-      const mockData = deviceDetailMockData[deviceId] || deviceDetailMockData[33];
-      setDevices(mockData);
-      setLoading(false);
-    };
-
-    fetchDeviceData();
+    setLoading(true);
+    // Use mock data directly
+    const mockData = deviceDetailMockData[deviceId] || deviceDetailMockData[33];
+    setDevices(mockData);
+    setError(null);
+    setLoading(false);
     loadGoalFromStorage();
   }, [deviceId]);
 
