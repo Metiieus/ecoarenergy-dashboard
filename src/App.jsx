@@ -15,7 +15,10 @@ import { metrics } from './data/mockData';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [selectedDeviceId, setSelectedDeviceId] = useState(null);
+  const [selectedDeviceId, setSelectedDeviceId] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('device') ? parseInt(params.get('device')) : null;
+  });
 
   // If a device is selected, show the detail view
   if (selectedDeviceId !== null) {
