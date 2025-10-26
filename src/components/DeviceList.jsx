@@ -102,9 +102,10 @@ const DeviceList = ({ onSelectDevice }) => {
             const umidade = parseFloat(device.umidade) || 0;
 
             return (
-              <div 
+              <div
                 key={device.id || index}
-                className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300"
+                onClick={() => onSelectDevice && onSelectDevice(selectedDevice)}
+                className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300 cursor-pointer"
               >
                 <div className="flex items-start justify-between mb-6">
                   <div>
