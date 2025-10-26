@@ -9,35 +9,11 @@ const DeviceList = ({ onSelectDevice }) => {
   const [selectedDevice, setSelectedDevice] = useState(33);
 
   useEffect(() => {
-    const fetchDeviceData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `https://tb8calt97j.execute-api.sa-east-1.amazonaws.com/dev/dados?device_id=${selectedDevice}&historico=true`
-        );
-
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (data.dados && Array.isArray(data.dados)) {
-          setDevices(data.dados);
-          setError(null);
-        } else {
-          setDevices([]);
-        }
-      } catch (err) {
-        const mockData = deviceDetailMockData[selectedDevice] || deviceDetailMockData[33];
-        setDevices(mockData);
-        setError(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDeviceData();
+    setLoading(true);
+    const mockData = deviceDetailMockData[selectedDevice] || deviceDetailMockData[33];
+    setDevices(mockData);
+    setError(null);
+    setLoading(false);
   }, [selectedDevice]);
 
   const equipmentIcons = {
@@ -47,7 +23,7 @@ const DeviceList = ({ onSelectDevice }) => {
     'Bomba de Esgoto': '🚰',
     'Aquecimento de Água': '🔥',
     'Bomba de Gordura': '💨',
-    'Bomba de Águas Pluviais': '��️',
+    'Bomba de Águas Pluviais': '🌧️',
   };
 
   if (loading) {
