@@ -51,7 +51,6 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
       // Use mock data as fallback
       const mockData = deviceDetailMockData[deviceId] || deviceDetailMockData[33];
       setDevices(mockData);
-      setError(null);
       setLoading(false);
     };
 
