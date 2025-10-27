@@ -1,8 +1,8 @@
 import * as React from "react"
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  MoreHorizontalIcon,
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
