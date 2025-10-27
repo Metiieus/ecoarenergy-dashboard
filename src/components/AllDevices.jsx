@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { deviceDetailMockData } from '../data/mockData';
 

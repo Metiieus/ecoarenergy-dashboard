@@ -1,3 +1,4 @@
+import React from 'react';
 import { LayoutDashboard, BarChart3, FileText } from 'lucide-react';
 
 const Sidebar = () => {

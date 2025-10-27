@@ -1,3 +1,5 @@
+import React from 'react';
+
 const MetricCard = ({ icon: Icon, title, value, suffix, color = 'teal' }) => {
   const colorClasses = {
     teal: 'from-teal-400 to-teal-600 text-teal-600',
