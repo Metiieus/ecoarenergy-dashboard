@@ -1,10 +1,10 @@
-import { LayoutDashboard, BarChart3, FileText } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Settings } from 'lucide-react';
 
-const Sidebar = () => {
+const Sidebar = ({ activeTab = 'dashboard', setActiveTab }) => {
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', active: true },
-    { icon: BarChart3, label: 'Consumo', active: false },
-    { icon: FileText, label: 'Relatórios', active: false }
+    { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { id: 'consumption', icon: BarChart3, label: 'Consumo' },
+    { id: 'control', icon: Settings, label: 'Central de Controle' }
   ];
 
   return (
@@ -24,11 +24,12 @@ const Sidebar = () => {
 
       {/* Menu Items */}
       <nav className="flex-1 p-4 space-y-2">
-        {menuItems.map((item, index) => (
+        {menuItems.map((item) => (
           <button
-            key={index}
+            key={item.id}
+            onClick={() => setActiveTab(item.id)}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-              item.active
+              activeTab === item.id
                 ? 'bg-white/25 shadow-lg backdrop-blur-sm'
                 : 'text-teal-100 hover:bg-white/15'
             }`}
