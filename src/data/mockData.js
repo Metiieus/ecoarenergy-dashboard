@@ -105,3 +105,20 @@ export const chartData = [
   { name: 'Perdas', value: 1, color: '#F6E05E' }
 ];
 
+export const deviceDetailMockData = {
+  33: [
+    { id: 1, nome: 'Bomba CAG', potencia: 8500, energia: 125.50, temperatura: 35.2, umidade: 65 },
+    { id: 2, nome: 'Chiller', potencia: 7200, energia: 95.30, temperatura: 22.1, umidade: 45 },
+    { id: 3, nome: 'Fancoil Auditório', potencia: 5000, energia: 68.75, temperatura: 24.5, umidade: 50 }
+  ],
+  34: [
+    { id: 4, nome: 'Aquecimento de Água', potencia: 6500, energia: 89.25, temperatura: 55.0, umidade: 30 },
+    { id: 5, nome: 'Bomba de Recalque', potencia: 7800, energia: 102.40, temperatura: 28.3, umidade: 55 },
+    { id: 6, nome: 'Bomba de Esgoto', potencia: 5500, energia: 71.60, temperatura: 26.8, umidade: 60 }
+  ],
+  35: [
+    { id: 7, nome: 'Bomba de Gordura', potencia: 4200, energia: 52.15, temperatura: 32.5, umidade: 70 },
+    { id: 8, nome: 'Bomba de Águas Pluviais', potencia: 6800, energia: 98.80, temperatura: 20.0, umidade: 40 },
+    { id: 9, nome: 'Sistema de Ventilação', potencia: 3500, energia: 45.20, temperatura: 23.0, umidade: 48 }
+  ]
+};
