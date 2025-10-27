@@ -1,3 +1,4 @@
+import React from 'react';
 import { ExternalLink } from 'lucide-react';
 import { BarChart, Bar, XAxis, ResponsiveContainer } from 'recharts';
 import { chartData } from '../data/mockData';

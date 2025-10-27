@@ -1,3 +1,4 @@
+import React from 'react';
 import { Calendar, ExternalLink } from 'lucide-react';
 import { nextMonitoring } from '../data/mockData';
 
