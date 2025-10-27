@@ -15,103 +15,113 @@ import { metrics } from './data/mockData';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [selectedDeviceId, setSelectedDeviceId] = useState(() => {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('device') ? parseInt(params.get('device')) : null;
-  });
+  const [selectedDeviceId, setSelectedDeviceId] = useState(null);
 
-  // If a device is selected, show the detail view
-  if (selectedDeviceId !== null) {
+  try {
+    // If a device is selected, show the detail view
+    if (selectedDeviceId !== null) {
+      return (
+        <div className="flex min-h-screen bg-gray-50">
+          <Sidebar />
+          <div className="flex-1 ml-64">
+            <Header />
+            <div className="p-8">
+              <DeviceDetailView
+                deviceId={selectedDeviceId}
+                onBack={() => setSelectedDeviceId(null)}
+              />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex min-h-screen bg-gray-50">
+        {/* Sidebar */}
         <Sidebar />
+
+        {/* Main Content */}
         <div className="flex-1 ml-64">
           <Header />
+
+          {/* Dashboard Content */}
           <div className="p-8">
-            <DeviceDetailView
-              deviceId={selectedDeviceId}
-              onBack={() => setSelectedDeviceId(null)}
-            />
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+              {/* Top Metrics Row */}
+              <div className="grid grid-cols-4 gap-6">
+                <MetricCard
+                  icon={DollarSign}
+                  title="Custo Total"
+                  value={`R$${metrics.totalCost}k`}
+                  color="pink"
+                />
+                <MetricCard
+                  icon={Activity}
+                  title="Eficiência"
+                  value={`${metrics.efficiency}%`}
+                  color="teal"
+                />
+                <MetricCard
+                  icon={TrendingUp}
+                  title="Orçamento Mensal"
+                  value={`R$${metrics.monthlyBudget}k`}
+                  color="yellow"
+                />
+                <MetricCard
+                  icon={Star}
+                  title="Score Médio"
+                  value={metrics.averageScore}
+                  color="blue"
+                />
+              </div>
+
+              {/* Tabs Navigation */}
+              <TabsList className="bg-white border border-gray-200 rounded-lg p-1 w-fit">
+                <TabsTrigger value="dashboard" className="px-4 py-2">
+                  Dashboard
+                </TabsTrigger>
+                <TabsTrigger value="all-devices" className="px-4 py-2">
+                  Todos os Dispositivos
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Dashboard Tab */}
+              <TabsContent value="dashboard" className="space-y-8">
+                {/* Charts Section */}
+                <DashboardCharts />
+
+                {/* Device List from API - Main Content */}
+                <DeviceList onSelectDevice={setSelectedDeviceId} />
+
+                {/* Energy Statistics */}
+                <EnergyStatistics />
+
+                {/* Action Banner */}
+                <ActionBanner />
+              </TabsContent>
+
+              {/* All Devices Tab */}
+              <TabsContent value="all-devices" className="space-y-8">
+                <AllDevices onSelectDevice={setSelectedDeviceId} />
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>
     );
-  }
-
-  return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 ml-64">
-        <Header />
-
-        {/* Dashboard Content */}
-        <div className="p-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-            {/* Top Metrics Row */}
-            <div className="grid grid-cols-4 gap-6">
-              <MetricCard
-                icon={DollarSign}
-                title="Custo Total"
-                value={`R$${metrics.totalCost}k`}
-                color="pink"
-              />
-              <MetricCard
-                icon={Activity}
-                title="Eficiência"
-                value={`${metrics.efficiency}%`}
-                color="teal"
-              />
-              <MetricCard
-                icon={TrendingUp}
-                title="Orçamento Mensal"
-                value={`R$${metrics.monthlyBudget}k`}
-                color="yellow"
-              />
-              <MetricCard
-                icon={Star}
-                title="Score Médio"
-                value={metrics.averageScore}
-                color="blue"
-              />
-            </div>
-
-            {/* Tabs Navigation */}
-            <TabsList className="bg-white border border-gray-200 rounded-lg p-1 w-fit">
-              <TabsTrigger value="dashboard" className="px-4 py-2">
-                Dashboard
-              </TabsTrigger>
-              <TabsTrigger value="all-devices" className="px-4 py-2">
-                Todos os Dispositivos
-              </TabsTrigger>
-            </TabsList>
-
-            {/* Dashboard Tab */}
-            <TabsContent value="dashboard" className="space-y-8">
-              {/* Charts Section */}
-              <DashboardCharts />
-
-              {/* Device List from API - Main Content */}
-              <DeviceList onSelectDevice={setSelectedDeviceId} />
-
-              {/* Energy Statistics */}
-              <EnergyStatistics />
-
-              {/* Action Banner */}
-              <ActionBanner />
-            </TabsContent>
-
-            {/* All Devices Tab */}
-            <TabsContent value="all-devices" className="space-y-8">
-              <AllDevices onSelectDevice={setSelectedDeviceId} />
-            </TabsContent>
-          </Tabs>
+  } catch (error) {
+    console.error('Render error:', error);
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-red-50">
+        <div className="p-8 bg-white rounded-lg shadow-lg max-w-md">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Erro na Renderização</h1>
+          <p className="text-gray-700 mb-4">{error?.message}</p>
+          <pre className="bg-gray-100 p-4 rounded text-sm overflow-auto">{error?.stack}</pre>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 export default App;
