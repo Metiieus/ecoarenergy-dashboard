@@ -9,12 +9,15 @@ import ActionBanner from './components/ActionBanner';
 import DashboardCharts from './components/DashboardCharts';
 import AllDevices from './components/AllDevices';
 import DeviceDetailView from './components/DeviceDetailView';
+import ControlCenter from './components/ControlCenter';
+import ConsumptionTab from './components/ConsumptionTab';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs';
 import { Activity, DollarSign, TrendingUp, Star } from 'lucide-react';
 import { metrics } from './data/mockData';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeSidebarTab, setActiveSidebarTab] = useState('dashboard');
   const [selectedDeviceId, setSelectedDeviceId] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('device') ? parseInt(params.get('device')) : null;
