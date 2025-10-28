@@ -24,13 +24,20 @@ const Header = ({ selectedEstablishment, onEstablishmentChange }) => {
         <div className="flex items-center gap-3">
           {/* Establishment Dropdown */}
           <div className="relative">
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
-            >
-              <span className="text-sm font-medium text-gray-700">{currentEstablishment.name}</span>
-              <ChevronDown className="w-4 h-4 text-gray-600" />
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                  <span className="text-sm font-medium text-gray-700">{currentEstablishment.name}</span>
+                  <ChevronDown className="w-4 h-4 text-gray-600" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Selecione uma unidade para visualizar dados
+              </TooltipContent>
+            </Tooltip>
 
             {isDropdownOpen && (
               <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
