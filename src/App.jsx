@@ -68,24 +68,28 @@ function App() {
                   title="Custo Total"
                   value={`R$${metrics.totalCost}k`}
                   color="pink"
+                  tooltip="Custo total de energia gasto em kilo reais (R$ mil)"
                 />
                 <MetricCard
                   icon={Activity}
                   title="Eficiência"
                   value={`${metrics.efficiency}%`}
                   color="teal"
+                  tooltip="Percentual de eficiência energética em relação à meta"
                 />
                 <MetricCard
                   icon={TrendingUp}
                   title="Orçamento Mensal"
                   value={`R$${metrics.monthlyBudget}k`}
                   color="yellow"
+                  tooltip="Orçamento alocado para o consumo de energia do mês"
                 />
                 <MetricCard
                   icon={Star}
                   title="Score Médio"
                   value={metrics.averageScore}
                   color="blue"
+                  tooltip="Pontuação média de desempenho de todos os dispositivos (0-20)"
                 />
               </div>
 
