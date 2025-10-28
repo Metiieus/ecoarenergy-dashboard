@@ -289,11 +289,28 @@ const DashboardCharts = ({ selectedEstablishment }) => {
         {/* Consumption Chart */}
         <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Consumo {periodFilter === 'monthly' ? 'Mensal' : 'Semanal'} vs Meta
-            </h3>
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">Meta (kWh):</label>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Consumo {periodFilter === 'monthly' ? 'Mensal' : 'Semanal'} vs Meta
+              </h3>
+              <UITooltip>
+                <TooltipTrigger asChild>
+                  <Info className="w-4 h-4 text-gray-400 cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  Comparação entre o consumo real e a meta definida em kWh
+                </TooltipContent>
+              </UITooltip>
+            </div>
+            <div className="flex items-center gap-2">
+              <UITooltip>
+                <TooltipTrigger asChild>
+                  <label className="text-sm font-medium text-gray-700 cursor-help">Meta (kWh):</label>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Defina o valor máximo de energia esperada a consumir
+                </TooltipContent>
+              </UITooltip>
               <input
                 type="number"
                 value={kwhInputValue}
@@ -302,12 +319,19 @@ const DashboardCharts = ({ selectedEstablishment }) => {
                 className="w-24 px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                 placeholder="4200"
               />
-              <button
-                onClick={handleSaveKwhMeta}
-                className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg transition-colors"
-              >
-                Salvar
-              </button>
+              <UITooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={handleSaveKwhMeta}
+                    className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg transition-colors"
+                  >
+                    Salvar
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Salvar a nova meta de consumo
+                </TooltipContent>
+              </UITooltip>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={300}>
