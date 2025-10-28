@@ -1,4 +1,6 @@
-const MetricCard = ({ icon: Icon, title, value, suffix, color = 'teal' }) => {
+import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
+
+const MetricCard = ({ icon: Icon, title, value, suffix, color = 'teal', tooltip }) => {
   const colorClasses = {
     teal: 'from-teal-400 to-teal-600 text-teal-600',
     pink: 'from-pink-400 to-pink-600 text-pink-600',
