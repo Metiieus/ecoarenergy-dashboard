@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const DashboardCharts = () => {
-  const [targetValue, setTargetValue] = useState(4200);
-  const [inputValue, setInputValue] = useState('4200');
+  const pricePerKwh = 0.80;
+  const [targetValue, setTargetValue] = useState(3000);
+  const [inputValue, setInputValue] = useState('3000');
 
   const baseMonthlyData = [
     { month: 'Jan', consumption: 4000 },
@@ -21,7 +22,8 @@ const DashboardCharts = () => {
   ];
 
   const monthlyConsumptionData = baseMonthlyData.map(item => ({
-    ...item,
+    month: item.month,
+    cost: Math.round(item.consumption * pricePerKwh * 100) / 100,
     target: targetValue
   }));
 
