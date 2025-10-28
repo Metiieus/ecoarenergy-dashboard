@@ -26,18 +26,24 @@ const Sidebar = ({ activeTab = 'dashboard', setActiveTab }) => {
       {/* Menu Items */}
       <nav className="flex-1 p-4 space-y-2">
         {menuItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setActiveTab(item.id)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-              activeTab === item.id
-                ? 'bg-white/25 shadow-lg backdrop-blur-sm'
-                : 'text-teal-100 hover:bg-white/15'
-            }`}
-          >
-            <item.icon className="w-5 h-5 flex-shrink-0" />
-            <span className="font-medium text-sm">{item.label}</span>
-          </button>
+          <Tooltip key={item.id}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => setActiveTab(item.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                  activeTab === item.id
+                    ? 'bg-white/25 shadow-lg backdrop-blur-sm'
+                    : 'text-teal-100 hover:bg-white/15'
+                }`}
+              >
+                <item.icon className="w-5 h-5 flex-shrink-0" />
+                <span className="font-medium text-sm">{item.label}</span>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              {item.tooltip}
+            </TooltipContent>
+          </Tooltip>
         ))}
       </nav>
 
