@@ -102,7 +102,7 @@ function App() {
               {/* Dashboard Tab */}
               <TabsContent value="dashboard" className="space-y-8">
                 {/* Charts Section */}
-                <DashboardCharts />
+                <DashboardCharts selectedEstablishment={selectedEstablishment} />
 
                 {/* Device List from API - Main Content */}
                 <DeviceList onSelectDevice={setSelectedDeviceId} />
