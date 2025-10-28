@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Calendar } from 'lucide-react';
+import { Calendar, Info } from 'lucide-react';
+import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 
 const DashboardCharts = ({ selectedEstablishment }) => {
   const [periodFilter, setPeriodFilter] = useState('monthly');
