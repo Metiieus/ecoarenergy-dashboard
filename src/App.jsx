@@ -52,7 +52,10 @@ function App() {
 
       {/* Main Content */}
       <div className="flex-1 ml-64">
-        <Header />
+        <Header
+          selectedEstablishment={selectedEstablishment}
+          onEstablishmentChange={setSelectedEstablishment}
+        />
 
         {/* Dashboard Content */}
         <div className="p-8">
