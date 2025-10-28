@@ -65,10 +65,17 @@ const Header = ({ selectedEstablishment, onEstablishmentChange }) => {
           </div>
 
           {/* Notification Bell */}
-          <button className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors relative">
-            <Bell className="w-5 h-5 text-gray-600" />
-            <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors relative">
+                <Bell className="w-5 h-5 text-gray-600" />
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Você tem 1 notificação pendente
+            </TooltipContent>
+          </Tooltip>
 
           {/* User Profile */}
           <div className="flex items-center gap-3 ml-4 pl-4 border-l border-gray-200">
