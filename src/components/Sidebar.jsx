@@ -3,9 +3,9 @@ import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 
 const Sidebar = ({ activeTab = 'dashboard', setActiveTab }) => {
   const menuItems = [
-    { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { id: 'consumption', icon: BarChart3, label: 'Consumo' },
-    { id: 'control', icon: Settings, label: 'Central de Controle' }
+    { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', tooltip: 'Visualize métricas e gráficos de energia' },
+    { id: 'consumption', icon: BarChart3, label: 'Consumo', tooltip: 'Analise o consumo detalhado dos dispositivos' },
+    { id: 'control', icon: Settings, label: 'Central de Controle', tooltip: 'Controle os dispositivos em tempo real' }
   ];
 
   return (
