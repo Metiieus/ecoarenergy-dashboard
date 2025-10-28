@@ -1,6 +1,17 @@
-import { Bell, Search } from 'lucide-react';
+import { useState } from 'react';
+import { Bell, ChevronDown } from 'lucide-react';
+import { establishments } from '../data/establishments';
 
-const Header = () => {
+const Header = ({ selectedEstablishment, onEstablishmentChange }) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const currentEstablishment = establishments.find(est => est.id === selectedEstablishment) || establishments[0];
+
+  const handleSelectEstablishment = (establishmentId) => {
+    onEstablishmentChange(establishmentId);
+    setIsDropdownOpen(false);
+  };
+
   return (
     <div className="bg-white border-b border-gray-200 px-8 py-5 sticky top-0 z-10 shadow-sm">
       <div className="flex items-center justify-between">
@@ -10,10 +21,40 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Search Icon */}
-          <button className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
-            <Search className="w-5 h-5 text-gray-600" />
-          </button>
+          {/* Establishment Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+            >
+              <span className="text-sm font-medium text-gray-700">{currentEstablishment.name}</span>
+              <ChevronDown className="w-4 h-4 text-gray-600" />
+            </button>
+
+            {isDropdownOpen && (
+              <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                {establishments.map((est) => (
+                  <button
+                    key={est.id}
+                    onClick={() => handleSelectEstablishment(est.id)}
+                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 ${
+                      selectedEstablishment === est.id ? 'bg-teal-50' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{est.name}</p>
+                        <p className="text-xs text-gray-500">{est.abbreviation}</p>
+                      </div>
+                      {selectedEstablishment === est.id && (
+                        <div className="w-2 h-2 rounded-full bg-teal-600"></div>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Notification Bell */}
           <button className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors relative">
