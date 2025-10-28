@@ -16,7 +16,7 @@ import { Activity, DollarSign, TrendingUp, Star } from 'lucide-react';
 import { metrics } from './data/mockData';
 import { ApiDataProvider } from './context/ApiDataContext';
 
-function App() {
+function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSidebarTab, setActiveSidebarTab] = useState('dashboard');
   const [selectedEstablishment, setSelectedEstablishment] = useState(1);
