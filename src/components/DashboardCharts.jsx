@@ -46,11 +46,49 @@ const DashboardCharts = () => {
 
   const COLORS = ['#06b6d4', '#06d6a0', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
+  const handleSaveMeta = () => {
+    const newValue = parseFloat(inputValue);
+    if (!isNaN(newValue) && newValue > 0) {
+      setTargetValue(newValue);
+    } else {
+      setInputValue(targetValue.toString());
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSaveMeta();
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Monthly Consumption vs Target */}
       <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Consumo Mensal vs Meta</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Consumo Mensal vs Meta</h3>
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">Meta (kWh):</label>
+            <input
+              type="number"
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyPress={handleKeyPress}
+              className="w-24 px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              placeholder="4200"
+            />
+            <button
+              onClick={handleSaveMeta}
+              className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              Salvar
+            </button>
+          </div>
+        </div>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={monthlyConsumptionData}>
             <CartesianGrid strokeDasharray="3 3" />
