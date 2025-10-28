@@ -6,7 +6,17 @@ const DeviceRankings = () => {
   return (
     <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-bold text-gray-900">Ranking de Dispositivos</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-lg font-bold text-gray-900">Ranking de Dispositivos</h2>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="w-4 h-4 text-gray-400 cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              Ranking de dispositivos baseado em pontuação de desempenho (0-20 pontos)
+            </TooltipContent>
+          </Tooltip>
+        </div>
         <button className="text-teal-600 hover:text-teal-700 text-xs font-semibold flex items-center gap-1 transition-colors">
           Ver todos
           <ExternalLink className="w-4 h-4" />
