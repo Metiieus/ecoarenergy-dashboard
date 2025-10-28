@@ -385,7 +385,17 @@ const DashboardCharts = ({ selectedEstablishment }) => {
 
         {/* Peak Hours Analysis */}
         <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Potência por Hora</h3>
+          <div className="flex items-center gap-2 mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Potência por Hora</h3>
+            <UITooltip>
+              <TooltipTrigger asChild>
+                <Info className="w-4 h-4 text-gray-400 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent>
+                Potência consumida em cada hora do dia
+              </TooltipContent>
+            </UITooltip>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={peakHoursData}>
               <CartesianGrid strokeDasharray="3 3" />
