@@ -30,7 +30,10 @@ function App() {
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar activeTab={activeSidebarTab} setActiveTab={setActiveSidebarTab} />
         <div className="flex-1 ml-64">
-          <Header />
+          <Header
+            selectedEstablishment={selectedEstablishment}
+            onEstablishmentChange={setSelectedEstablishment}
+          />
           <div className="p-8">
             <DeviceDetailView
               deviceId={selectedDeviceId}
