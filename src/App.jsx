@@ -18,6 +18,7 @@ import { metrics } from './data/mockData';
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSidebarTab, setActiveSidebarTab] = useState('dashboard');
+  const [selectedEstablishment, setSelectedEstablishment] = useState(1);
   const [selectedDeviceId, setSelectedDeviceId] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('device') ? parseInt(params.get('device')) : null;
