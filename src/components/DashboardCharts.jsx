@@ -3,8 +3,12 @@ import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Cart
 
 const DashboardCharts = () => {
   const pricePerKwh = 0.80;
-  const [targetValue, setTargetValue] = useState(3000);
-  const [inputValue, setInputValue] = useState('3000');
+
+  const [costTarget, setCostTarget] = useState(3000);
+  const [costInputValue, setCostInputValue] = useState('3000');
+
+  const [kwhTarget, setKwhTarget] = useState(4200);
+  const [kwhInputValue, setKwhInputValue] = useState('4200');
 
   const baseMonthlyData = [
     { month: 'Jan', consumption: 4000 },
@@ -21,10 +25,16 @@ const DashboardCharts = () => {
     { month: 'Dez', consumption: 4050 }
   ];
 
-  const monthlyConsumptionData = baseMonthlyData.map(item => ({
+  const monthlyCostData = baseMonthlyData.map(item => ({
     month: item.month,
     cost: Math.round(item.consumption * pricePerKwh * 100) / 100,
-    target: targetValue
+    target: costTarget
+  }));
+
+  const monthlyConsumptionData = baseMonthlyData.map(item => ({
+    month: item.month,
+    consumption: item.consumption,
+    target: kwhTarget
   }));
 
   const deviceConsumptionData = [
