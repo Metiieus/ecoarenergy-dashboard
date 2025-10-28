@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Bell, ChevronDown } from 'lucide-react';
+import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { establishments } from '../data/establishments';
 
 const Header = ({ selectedEstablishment, onEstablishmentChange }) => {
