@@ -69,19 +69,19 @@ const DashboardCharts = () => {
 
   return (
     <div className="space-y-6">
-      {/* Monthly Consumption vs Target */}
+      {/* Monthly Cost vs Target */}
       <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Consumo Mensal vs Meta</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Custo Mensal vs Meta</h3>
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">Meta (kWh):</label>
+            <label className="text-sm font-medium text-gray-700">Meta (R$):</label>
             <input
               type="number"
               value={inputValue}
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
               className="w-24 px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-              placeholder="4200"
+              placeholder="3000"
             />
             <button
               onClick={handleSaveMeta}
@@ -96,9 +96,9 @@ const DashboardCharts = () => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />
-            <Tooltip />
+            <Tooltip formatter={(value) => `R$ ${value.toFixed(2)}`} />
             <Legend />
-            <Line type="monotone" dataKey="consumption" stroke="#14b8a6" strokeWidth={2} name="Consumo Real" />
+            <Line type="monotone" dataKey="cost" stroke="#14b8a6" strokeWidth={2} name="Custo Real" />
             <Line type="monotone" dataKey="target" stroke="#f59e0b" strokeWidth={2} strokeDasharray="5 5" name="Meta" />
           </LineChart>
         </ResponsiveContainer>
