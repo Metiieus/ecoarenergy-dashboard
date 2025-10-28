@@ -58,22 +58,41 @@ const DashboardCharts = () => {
 
   const COLORS = ['#06b6d4', '#06d6a0', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
-  const handleSaveMeta = () => {
-    const newValue = parseFloat(inputValue);
+  const handleSaveCostMeta = () => {
+    const newValue = parseFloat(costInputValue);
     if (!isNaN(newValue) && newValue > 0) {
-      setTargetValue(newValue);
+      setCostTarget(newValue);
     } else {
-      setInputValue(targetValue.toString());
+      setCostInputValue(costTarget.toString());
     }
   };
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
+  const handleCostInputChange = (e) => {
+    setCostInputValue(e.target.value);
   };
 
-  const handleKeyPress = (e) => {
+  const handleCostKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleSaveMeta();
+      handleSaveCostMeta();
+    }
+  };
+
+  const handleSaveKwhMeta = () => {
+    const newValue = parseFloat(kwhInputValue);
+    if (!isNaN(newValue) && newValue > 0) {
+      setKwhTarget(newValue);
+    } else {
+      setKwhInputValue(kwhTarget.toString());
+    }
+  };
+
+  const handleKwhInputChange = (e) => {
+    setKwhInputValue(e.target.value);
+  };
+
+  const handleKwhKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSaveKwhMeta();
     }
   };
 
