@@ -23,18 +23,27 @@ const MetricCard = ({ icon: Icon, title, value, suffix, color = 'teal', tooltip 
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
-      <div className="flex items-start justify-between mb-6">
-        <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${colorBgClasses[color]} flex items-center justify-center flex-shrink-0`}>
-          <Icon className="w-6 h-6 text-white" />
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 cursor-help">
+          <div className="flex items-start justify-between mb-6">
+            <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${colorBgClasses[color]} flex items-center justify-center flex-shrink-0`}>
+              <Icon className="w-6 h-6 text-white" />
+            </div>
+          </div>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">{title}</p>
+          <div className="flex items-baseline gap-1">
+            <p className="text-3xl font-bold text-gray-900">{value}</p>
+            {suffix && <p className="text-sm text-gray-500">{suffix}</p>}
+          </div>
         </div>
-      </div>
-      <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">{title}</p>
-      <div className="flex items-baseline gap-1">
-        <p className="text-3xl font-bold text-gray-900">{value}</p>
-        {suffix && <p className="text-sm text-gray-500">{suffix}</p>}
-      </div>
-    </div>
+      </TooltipTrigger>
+      {tooltip && (
+        <TooltipContent>
+          {tooltip}
+        </TooltipContent>
+      )}
+    </Tooltip>
   );
 };
 
