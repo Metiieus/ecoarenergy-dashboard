@@ -1,20 +1,29 @@
+import { useState } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const DashboardCharts = () => {
-  const monthlyConsumptionData = [
-    { month: 'Jan', consumption: 4000, target: 4200 },
-    { month: 'Fev', consumption: 4200, target: 4200 },
-    { month: 'Mar', consumption: 3800, target: 4200 },
-    { month: 'Abr', consumption: 4500, target: 4200 },
-    { month: 'Mai', consumption: 4100, target: 4200 },
-    { month: 'Jun', consumption: 3900, target: 4200 },
-    { month: 'Jul', consumption: 4300, target: 4200 },
-    { month: 'Ago', consumption: 4400, target: 4200 },
-    { month: 'Set', consumption: 4000, target: 4200 },
-    { month: 'Out', consumption: 4100, target: 4200 },
-    { month: 'Nov', consumption: 3950, target: 4200 },
-    { month: 'Dez', consumption: 4050, target: 4200 }
+  const [targetValue, setTargetValue] = useState(4200);
+  const [inputValue, setInputValue] = useState('4200');
+
+  const baseMonthlyData = [
+    { month: 'Jan', consumption: 4000 },
+    { month: 'Fev', consumption: 4200 },
+    { month: 'Mar', consumption: 3800 },
+    { month: 'Abr', consumption: 4500 },
+    { month: 'Mai', consumption: 4100 },
+    { month: 'Jun', consumption: 3900 },
+    { month: 'Jul', consumption: 4300 },
+    { month: 'Ago', consumption: 4400 },
+    { month: 'Set', consumption: 4000 },
+    { month: 'Out', consumption: 4100 },
+    { month: 'Nov', consumption: 3950 },
+    { month: 'Dez', consumption: 4050 }
   ];
+
+  const monthlyConsumptionData = baseMonthlyData.map(item => ({
+    ...item,
+    target: targetValue
+  }));
 
   const deviceConsumptionData = [
     { name: 'Bomba CAG', value: 60000 },
