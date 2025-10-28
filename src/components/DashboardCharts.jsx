@@ -185,28 +185,42 @@ const DashboardCharts = ({ selectedEstablishment }) => {
     <div className="space-y-6">
       {/* Period Filter */}
       <div className="flex items-center gap-2 bg-white rounded-lg p-2 w-fit border border-gray-200">
-        <button
-          onClick={() => setPeriodFilter('monthly')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-            periodFilter === 'monthly'
-              ? 'bg-teal-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
-        >
-          <Calendar className="w-4 h-4" />
-          <span className="text-sm font-medium">Mensal</span>
-        </button>
-        <button
-          onClick={() => setPeriodFilter('daily')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-            periodFilter === 'daily'
-              ? 'bg-teal-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
-        >
-          <Calendar className="w-4 h-4" />
-          <span className="text-sm font-medium">Diário</span>
-        </button>
+        <UITooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={() => setPeriodFilter('monthly')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                periodFilter === 'monthly'
+                  ? 'bg-teal-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <Calendar className="w-4 h-4" />
+              <span className="text-sm font-medium">Mensal</span>
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Visualizar dados por mês
+          </TooltipContent>
+        </UITooltip>
+        <UITooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={() => setPeriodFilter('daily')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                periodFilter === 'daily'
+                  ? 'bg-teal-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <Calendar className="w-4 h-4" />
+              <span className="text-sm font-medium">Diário</span>
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Visualizar dados por dia
+          </TooltipContent>
+        </UITooltip>
       </div>
 
       {/* Monthly Charts */}
