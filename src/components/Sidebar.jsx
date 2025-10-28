@@ -1,4 +1,5 @@
 import { LayoutDashboard, BarChart3, Settings } from 'lucide-react';
+import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 
 const Sidebar = ({ activeTab = 'dashboard', setActiveTab }) => {
   const menuItems = [
