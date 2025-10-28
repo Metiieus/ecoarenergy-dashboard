@@ -14,6 +14,7 @@ import ConsumptionTab from './components/ConsumptionTab';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs';
 import { Activity, DollarSign, TrendingUp, Star } from 'lucide-react';
 import { metrics } from './data/mockData';
+import { ApiDataProvider } from './context/ApiDataContext';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
