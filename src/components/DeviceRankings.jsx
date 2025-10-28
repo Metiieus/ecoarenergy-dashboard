@@ -29,12 +29,54 @@ const DeviceRankings = () => {
             <tr className="border-b border-gray-200 bg-gray-50">
               <th className="text-left text-xs font-bold text-gray-700 uppercase pb-4 pr-4 tracking-wider">#</th>
               <th className="text-left text-xs font-bold text-gray-700 uppercase pb-4 pr-4 tracking-wider">DISPOSITIVO</th>
-              <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider">MP</th>
-              <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider">W</th>
-              <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider">D</th>
-              <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider">L</th>
-              <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider">G</th>
-              <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 pl-2 tracking-wider">PTS</th>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider cursor-help">MP</th>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Média de Potência em kW
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider cursor-help">W</th>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Consumo Total em dezena de kWh
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider cursor-help">D</th>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Eficiência em %
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider cursor-help">L</th>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Economia em R$ mil
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 px-2 tracking-wider cursor-help">G</th>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Tempo Ativo em horas
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <th className="text-center text-xs font-bold text-gray-700 uppercase pb-4 pl-2 tracking-wider cursor-help">PTS</th>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Pontuação Total (0-20)
+                </TooltipContent>
+              </Tooltip>
             </tr>
           </thead>
           <tbody>
