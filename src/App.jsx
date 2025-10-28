@@ -18,6 +18,7 @@ import { metrics } from './data/mockData';
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSidebarTab, setActiveSidebarTab] = useState('dashboard');
+  const [selectedEstablishment, setSelectedEstablishment] = useState(1);
   const [selectedDeviceId, setSelectedDeviceId] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('device') ? parseInt(params.get('device')) : null;
@@ -29,7 +30,10 @@ function App() {
       <div className="flex min-h-screen bg-gray-50">
         <Sidebar activeTab={activeSidebarTab} setActiveTab={setActiveSidebarTab} />
         <div className="flex-1 ml-64">
-          <Header />
+          <Header
+            selectedEstablishment={selectedEstablishment}
+            onEstablishmentChange={setSelectedEstablishment}
+          />
           <div className="p-8">
             <DeviceDetailView
               deviceId={selectedDeviceId}
@@ -48,7 +52,10 @@ function App() {
 
       {/* Main Content */}
       <div className="flex-1 ml-64">
-        <Header />
+        <Header
+          selectedEstablishment={selectedEstablishment}
+          onEstablishmentChange={setSelectedEstablishment}
+        />
 
         {/* Dashboard Content */}
         <div className="p-8">
@@ -95,7 +102,7 @@ function App() {
               {/* Dashboard Tab */}
               <TabsContent value="dashboard" className="space-y-8">
                 {/* Charts Section */}
-                <DashboardCharts />
+                <DashboardCharts selectedEstablishment={selectedEstablishment} />
 
                 {/* Device List from API - Main Content */}
                 <DeviceList onSelectDevice={setSelectedDeviceId} />
