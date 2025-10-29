@@ -205,7 +205,7 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
       {/* Main Content - Graph and Right Panel */}
       <div className="grid grid-cols-3 gap-3">
         {/* Large Graph Section */}
-        <div className="col-span-2 bg-white rounded-lg p-4 shadow-md border-4 border-yellow-400">
+        <div className="col-span-2 bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
           <h3 className="text-sm font-bold text-gray-900 mb-1">Gráfico Mensal</h3>
           <p className="text-xs text-gray-500 mb-3">Consumo para o Ano Atual</p>
 
