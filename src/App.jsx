@@ -56,38 +56,6 @@ function AppContent() {
         <div className="p-8">
           {activeSidebarTab === 'dashboard' && (
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-              {/* Top Metrics Row */}
-              <div className="grid grid-cols-4 gap-6">
-                <MetricCard
-                  icon={DollarSign}
-                  title="Custo Total"
-                  value={`R$${metrics.totalCost}k`}
-                  color="pink"
-                  tooltip="Custo total de energia gasto em kilo reais (R$ mil)"
-                />
-                <MetricCard
-                  icon={Activity}
-                  title="Eficiência"
-                  value={`${metrics.efficiency}%`}
-                  color="teal"
-                  tooltip="Percentual de eficiência energética em relação à meta"
-                />
-                <MetricCard
-                  icon={TrendingUp}
-                  title="Orçamento Mensal"
-                  value={`R$${metrics.monthlyBudget}k`}
-                  color="yellow"
-                  tooltip="Orçamento alocado para o consumo de energia do mês"
-                />
-                <MetricCard
-                  icon={Star}
-                  title="Score Médio"
-                  value={metrics.averageScore}
-                  color="blue"
-                  tooltip="Pontuação média de desempenho de todos os dispositivos (0-20)"
-                />
-              </div>
-
               {/* Tabs Navigation */}
               <TabsList className="bg-white border border-gray-200 rounded-lg p-1 w-fit">
                 <TabsTrigger value="dashboard" className="px-4 py-2">
@@ -100,17 +68,8 @@ function AppContent() {
 
               {/* Dashboard Tab */}
               <TabsContent value="dashboard" className="space-y-8">
-                {/* Charts Section */}
-                <DashboardCharts selectedEstablishment={selectedEstablishment} />
-
-                {/* Device List from API - Main Content */}
-                <DeviceList onSelectDevice={setSelectedDeviceId} />
-
-                {/* Energy Statistics */}
-                <EnergyStatistics />
-
-                {/* Action Banner */}
-                <ActionBanner onControlCenterClick={() => setActiveSidebarTab('control')} />
+                {/* Financial Dashboard */}
+                <FinancialDashboard selectedEstablishment={selectedEstablishment} />
               </TabsContent>
 
               {/* All Devices Tab */}
