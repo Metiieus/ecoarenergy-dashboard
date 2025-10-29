@@ -67,7 +67,7 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
       {/* Top Metrics Row - 4 Cards */}
       <div className="grid grid-cols-4 gap-3">
         {/* Meta Card */}
-        <div className="bg-white rounded-lg p-4 shadow-md border-4 border-yellow-400">
+        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Meta</p>
             <TrendingDown className="w-4 h-4 text-green-600" />
@@ -108,48 +108,46 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         </div>
 
         {/* Acumulado Card */}
-        <div className="bg-white rounded-lg p-4 shadow-md border-4 border-yellow-400">
+        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
           <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">Acumulado</p>
           <p className="text-2xl font-bold text-gray-900">R${currentMonthAccumulated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
         </div>
 
         {/* Economia Total do Ano */}
-        <div className="bg-white rounded-lg p-4 shadow-md border-4 border-yellow-400">
-          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">Economia Ano</p>
-          <div className="flex items-center gap-2">
-            <div className="w-20 h-20">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={economyPieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={32}
-                    outerRadius={44}
-                    dataKey="value"
-                    startAngle={90}
-                    endAngle={-270}
-                  >
-                    {economyPieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="text-sm">
-              <p className="font-bold text-gray-900 leading-tight">
-                R$ {(totalConsumptionYear / 1000).toFixed(1)}k
-              </p>
-              <p className="text-xs font-semibold text-green-600">Economia</p>
-            </div>
+        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow flex flex-col items-center justify-center">
+          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">Economia Ano</p>
+          <div className="w-24 h-24 mb-3">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={economyPieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={36}
+                  outerRadius={48}
+                  dataKey="value"
+                  startAngle={90}
+                  endAngle={-270}
+                >
+                  {economyPieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="text-center">
+            <p className="font-bold text-gray-900 text-sm leading-tight">
+              R$ {(totalConsumptionYear / 1000).toFixed(1)}k
+            </p>
+            <p className="text-xs font-semibold text-green-600">Economia</p>
           </div>
         </div>
 
         {/* % vs Ano Anterior */}
-        <div className="bg-blue-600 rounded-lg p-4 shadow-md border-4 border-yellow-400 text-white flex flex-col justify-center">
-          <p className="text-2xl font-bold mb-0.5">{yearOverYearGrowth}%</p>
-          <p className="text-xs font-semibold leading-tight">Relação Ano Passado</p>
+        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-5 shadow-md border border-teal-700/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow">
+          <p className="text-3xl font-bold mb-1 text-center">{yearOverYearGrowth}%</p>
+          <p className="text-xs font-semibold text-center leading-tight text-teal-50">Em Relação ao Ano Passado</p>
         </div>
       </div>
 
