@@ -19,6 +19,10 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
   const { data: apiData, loading, error } = useApiData(selectedEstablishment, true);
 
   useEffect(() => {
+    console.log('API Data:', apiData);
+    console.log('Loading:', loading);
+    console.log('Error:', error);
+
     if (apiData && apiData.consumo_mensal && apiData.consumo_mensal.length > 0) {
       const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
       const transformedData = apiData.consumo_mensal.map((consumoAcumulado, index) => {
@@ -27,7 +31,7 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         const consumoMensal = consumoAcumulado - consumoAnterior;
 
         // Eco Ar é 80% do consumo (simulação de otimização)
-        const consumoComEcoAr = consumoMensal * 0.8;
+        const consumoComEcoAir = consumoMensal * 0.8;
 
         // Previsto é 85% do consumo mensal (meta otimista)
         const consumoPrevisto = consumoMensal * 0.85;
@@ -35,12 +39,32 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         return {
           month: monthNames[index],
           consumed: Math.round(consumoMensal),
-          ecoAir: Math.round(consumoComEcoAr),
+          ecoAir: Math.round(consumoComEcoAir),
           previsto: Math.round(consumoPrevisto),
           consumoAcumulado: Math.round(consumoAcumulado)
         };
       });
+      console.log('Transformed data:', transformedData);
       setMonthlyCostData(transformedData);
+    } else if (!loading && !apiData?.consumo_mensal) {
+      // Se não houver dados e não estiver carregando, usa mock data
+      console.warn('Nenhum dado da API, usando dados fictícios');
+      const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const mockData = [
+        { month: 'Jan', consumed: 257, ecoAir: 206, previsto: 218, consumoAcumulado: 257 },
+        { month: 'Fev', consumed: 825, ecoAir: 660, previsto: 701, consumoAcumulado: 1082 },
+        { month: 'Mar', consumed: 1959, ecoAir: 1567, previsto: 1666, consumoAcumulado: 3041 },
+        { month: 'Abr', consumed: 3029, ecoAir: 2423, previsto: 2575, consumoAcumulado: 6070 },
+        { month: 'Mai', consumed: 2931, ecoAir: 2345, previsto: 2491, consumoAcumulado: 9001 },
+        { month: 'Jun', consumed: 1811, ecoAir: 1449, previsto: 1539, consumoAcumulado: 10812 },
+        { month: 'Jul', consumed: 1822, ecoAir: 1458, previsto: 1549, consumoAcumulado: 12634 },
+        { month: 'Ago', consumed: 1957, ecoAir: 1566, previsto: 1664, consumoAcumulado: 14591 },
+        { month: 'Set', consumed: 1397, ecoAir: 1118, previsto: 1188, consumoAcumulado: 15988 },
+        { month: 'Out', consumed: 2603, ecoAir: 2082, previsto: 2212, consumoAcumulado: 18591 },
+        { month: 'Nov', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591 },
+        { month: 'Dez', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591 }
+      ];
+      setMonthlyCostData(mockData);
     }
   }, [apiData, selectedEstablishment]);
 
