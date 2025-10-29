@@ -285,17 +285,38 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         {/* Right Panel */}
         <div className="space-y-3 flex flex-col">
           {/* Desvio Meta */}
-          <div className="bg-gradient-to-br from-green-50 to-white rounded-lg p-4 shadow-md border border-green-200 hover:shadow-lg transition-shadow">
+          <div className={`bg-gradient-to-br rounded-lg p-4 shadow-md border hover:shadow-lg transition-shadow ${
+            currentMonthAccumulated <= (currentMonthIndex + 1) * monthlyMeta
+              ? 'from-green-50 to-white border-green-200'
+              : 'from-red-50 to-white border-red-200'
+          }`}>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-gray-600 uppercase">Desvio Meta</p>
-              <TrendingUp className="w-4 h-4 text-green-600" />
+              {currentMonthAccumulated <= (currentMonthIndex + 1) * monthlyMeta ? (
+                <TrendingUp className="w-4 h-4 text-green-600" />
+              ) : (
+                <TrendingDown className="w-4 h-4 text-red-600" />
+              )}
             </div>
-            <p className="text-3xl font-bold text-green-600 mb-3">
-              R${Math.max(0, costMeta - currentMonthAccumulated).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            <p className={`text-3xl font-bold mb-3 ${
+              currentMonthAccumulated <= (currentMonthIndex + 1) * monthlyMeta
+                ? 'text-green-600'
+                : 'text-red-600'
+            }`}>
+              R${Math.abs((currentMonthIndex + 1) * monthlyMeta - currentMonthAccumulated).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </p>
-            <div className="text-xs text-gray-600 space-y-0.5 bg-green-50/50 rounded p-2">
-              <p>Meta: <span className="font-semibold text-gray-900">R${(costMeta / 1000).toFixed(1)}k</span></p>
-              <p>Gasto: <span className="font-semibold text-gray-900">R${(currentMonthAccumulated / 1000).toFixed(1)}k</span></p>
+            <div className={`text-xs text-gray-600 space-y-0.5 rounded p-2 ${
+              currentMonthAccumulated <= (currentMonthIndex + 1) * monthlyMeta
+                ? 'bg-green-50/50'
+                : 'bg-red-50/50'
+            }`}>
+              <p>Meta acumulada: <span className="font-semibold text-gray-900">R${((currentMonthIndex + 1) * monthlyMeta).toLocaleString('pt-BR')}</span></p>
+              <p>Gasto acumulado: <span className="font-semibold text-gray-900">R${currentMonthAccumulated.toLocaleString('pt-BR')}</span></p>
+              <p className="mt-1 pt-1 border-t border-gray-200">
+                {currentMonthAccumulated <= (currentMonthIndex + 1) * monthlyMeta
+                  ? '✓ Dentro da meta'
+                  : '✗ Acima da meta'}
+              </p>
             </div>
           </div>
 
