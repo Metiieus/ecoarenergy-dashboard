@@ -225,22 +225,22 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         {/* Right Panel */}
         <div className="space-y-3 flex flex-col">
           {/* Desvio Meta */}
-          <div className="bg-gradient-to-br from-green-50 to-white rounded-lg p-4 shadow-md border-4 border-green-400">
+          <div className="bg-gradient-to-br from-green-50 to-white rounded-lg p-4 shadow-md border border-green-200 hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-gray-600 uppercase">Desvio Meta</p>
               <TrendingUp className="w-4 h-4 text-green-600" />
             </div>
-            <p className="text-2xl font-bold text-green-600 mb-2">
+            <p className="text-3xl font-bold text-green-600 mb-3">
               R${Math.max(0, costMeta - currentMonthAccumulated).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </p>
-            <div className="text-xs text-gray-600 space-y-0.5">
+            <div className="text-xs text-gray-600 space-y-0.5 bg-green-50/50 rounded p-2">
               <p>Meta: <span className="font-semibold text-gray-900">R${(costMeta / 1000).toFixed(1)}k</span></p>
               <p>Gasto: <span className="font-semibold text-gray-900">R${(currentMonthAccumulated / 1000).toFixed(1)}k</span></p>
             </div>
           </div>
 
           {/* Update Table */}
-          <div className="bg-white rounded-lg p-3 shadow-md border border-gray-200">
+          <div className="bg-white rounded-lg p-3 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
             <p className="text-xs font-bold text-gray-700 uppercase mb-2 text-center">Mês / Metas / Atualiz.</p>
             <div className="space-y-1">
               {updateTable.map((item, index) => (
@@ -254,9 +254,9 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
           </div>
 
           {/* Hours Box */}
-          <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-4 shadow-md border-4 border-teal-700 text-center text-white">
-            <Clock className="w-5 h-5 mx-auto mb-1 opacity-90" />
-            <p className="text-lg font-bold mb-0.5">48.5h</p>
+          <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-4 shadow-md border border-teal-700/30 text-center text-white hover:shadow-lg transition-shadow">
+            <Clock className="w-6 h-6 mx-auto mb-2 opacity-90" />
+            <p className="text-2xl font-bold mb-0.5">48.5h</p>
             <p className="text-xs font-semibold leading-tight">Atualização Mensal</p>
           </div>
         </div>
