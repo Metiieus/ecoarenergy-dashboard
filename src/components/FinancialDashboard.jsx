@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Calendar, TrendingDown, DollarSign, TrendingUp } from 'lucide-react';
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Calendar, TrendingDown, Edit2, Check } from 'lucide-react';
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 
 const FinancialDashboard = ({ selectedEstablishment }) => {
   const [periodFilter, setPeriodFilter] = useState('monthly');
   const [costMeta, setCostMeta] = useState(3000);
+  const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [costInputValue, setCostInputValue] = useState('3000');
 
   const monthLabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
