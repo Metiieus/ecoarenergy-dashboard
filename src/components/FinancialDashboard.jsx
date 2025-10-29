@@ -62,6 +62,24 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
     }
   };
 
+  const handleActivationTimeInputChange = (e) => {
+    setActivationTimeInputValue(e.target.value);
+  };
+
+  const handleActivationTimeKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSaveActivationTimeMeta();
+    }
+  };
+
+  const handleSaveActivationTimeMeta = () => {
+    const newValue = parseFloat(activationTimeInputValue);
+    if (!isNaN(newValue) && newValue > 0) {
+      setActivationTimeMeta(newValue);
+      setIsEditingActivationMeta(false);
+    }
+  };
+
   const currentMonthAccumulated = monthlyCostData.slice(0, new Date().getMonth() + 1)
     .reduce((sum, month) => sum + month.consumed, 0);
 
