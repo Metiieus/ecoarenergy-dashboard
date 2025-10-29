@@ -1,33 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, TrendingDown, Edit2, Check, TrendingUp, Clock, Zap, Leaf } from 'lucide-react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { deviceRankings } from '../data/mockData';
+import { useApiData } from '../hooks/useApiData';
 
 const FinancialDashboard = ({ selectedEstablishment }) => {
   const [periodFilter, setPeriodFilter] = useState('monthly');
-  const [costMeta, setCostMeta] = useState(3000);
+  const [costMeta, setCostMeta] = useState(10000);
   const [isEditingMeta, setIsEditingMeta] = useState(false);
-  const [costInputValue, setCostInputValue] = useState('3000');
+  const [costInputValue, setCostInputValue] = useState('10000');
   const [activationTimeMeta, setActivationTimeMeta] = useState(50);
   const [isEditingActivationMeta, setIsEditingActivationMeta] = useState(false);
   const [activationTimeInputValue, setActivationTimeInputValue] = useState('50');
   const [monthlyActivationTime, setMonthlyActivationTime] = useState(48.5);
+  const [monthlyCostData, setMonthlyCostData] = useState([]);
 
-  const monthlyCostData = [
-    { month: 'Jan', consumed: 2100, ecoAir: 1850, previsto: 3000 },
-    { month: 'Fev', consumed: 2400, ecoAir: 2100, previsto: 3000 },
-    { month: 'Mar', consumed: 2850, ecoAir: 2480, previsto: 3000 },
-    { month: 'Abr', consumed: 3100, ecoAir: 2710, previsto: 3000 },
-    { month: 'Mai', consumed: 2800, ecoAir: 2450, previsto: 3000 },
-    { month: 'Jun', consumed: 2600, ecoAir: 2270, previsto: 3000 },
-    { month: 'Jul', consumed: 2900, ecoAir: 2530, previsto: 3000 },
-    { month: 'Ago', consumed: 2700, ecoAir: 2360, previsto: 3000 },
-    { month: 'Set', consumed: 2500, ecoAir: 2180, previsto: 3000 },
-    { month: 'Out', consumed: 2400, ecoAir: 2090, previsto: 3000 },
-    { month: 'Nov', consumed: 2200, ecoAir: 1920, previsto: 3000 },
-    { month: 'Dez', consumed: 2300, ecoAir: 2010, previsto: 3000 }
-  ];
+  const { data: apiData, loading, error } = useApiData(selectedEstablishment, true);
+
+  useEffect(() => {
+    if (apiData && apiData.consumo_mensal && apiData.consumo_mensal.length > 0) {
+      const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const transformedData = apiData.consumo_mensal.map((consumoAcumulado, index) => {
+        // Consumo anterior (para calcular consumo mensal real)
+        const consumoAnterior = index > 0 ? apiData.consumo_mensal[index - 1] : 0;
+        const consumoMensal = consumoAcumulado - consumoAnterior;
+
+        // Eco Ar é 80% do consumo (simulação de otimização)
+        const consumoComEcoAr = consumoMensal * 0.8;
+
+        // Previsto é 85% do consumo mensal (meta otimista)
+        const consumoPrevisto = consumoMensal * 0.85;
+
+        return {
+          month: monthNames[index],
+          consumed: Math.round(consumoMensal),
+          ecoAir: Math.round(consumoComEcoAr),
+          previsto: Math.round(consumoPrevisto),
+          consumoAcumulado: Math.round(consumoAcumulado)
+        };
+      });
+      setMonthlyCostData(transformedData);
+    }
+  }, [apiData, selectedEstablishment]);
 
   const totalConsumptionYear = 32450;
   const totalEconomyYear = 5750;
