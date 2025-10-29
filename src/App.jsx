@@ -2,18 +2,12 @@ import './App.css';
 import { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import EnergyStatistics from './components/EnergyStatistics';
-import DeviceList from './components/DeviceList';
-import MetricCard from './components/MetricCard';
-import ActionBanner from './components/ActionBanner';
-import DashboardCharts from './components/DashboardCharts';
+import FinancialDashboard from './components/FinancialDashboard';
 import AllDevices from './components/AllDevices';
 import DeviceDetailView from './components/DeviceDetailView';
 import ControlCenter from './components/ControlCenter';
 import ConsumptionTab from './components/ConsumptionTab';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs';
-import { Activity, DollarSign, TrendingUp, Star } from 'lucide-react';
-import { metrics } from './data/mockData';
 import { ApiDataProvider } from './context/ApiDataContext';
 
 function AppContent() {
