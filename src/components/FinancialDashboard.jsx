@@ -63,37 +63,69 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
   const yearOverYearGrowth = 114;
 
   return (
-    <div className="space-y-8">
-      {/* Top Metrics Row */}
-      <div className="grid grid-cols-4 gap-6">
+    <div className="space-y-6">
+      {/* Top Metrics Row - 4 Cards */}
+      <div className="grid grid-cols-4 gap-4">
         {/* Meta Card */}
-        <div className="bg-white rounded-xl p-6 shadow-md border border-yellow-300 border-2">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm font-bold text-gray-700 uppercase">Meta</p>
+        <div className="bg-white rounded-lg p-6 shadow-md border-4 border-yellow-400">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">1 META</p>
             <TrendingDown className="w-5 h-5 text-green-600" />
           </div>
-          <p className="text-3xl font-bold text-gray-900">R${costMeta.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+          <p className="text-3xl font-bold text-gray-900">
+            {isEditingMeta ? (
+              <div className="flex gap-2">
+                <input
+                  autoFocus
+                  type="number"
+                  value={costInputValue}
+                  onChange={handleCostInputChange}
+                  onKeyPress={handleCostKeyPress}
+                  className="w-32 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+                <button
+                  onClick={handleSaveCostMeta}
+                  className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-sm font-medium transition-colors"
+                >
+                  <Check className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <span>R${costMeta.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                <button
+                  onClick={() => {
+                    setCostInputValue(costMeta.toString());
+                    setIsEditingMeta(true);
+                  }}
+                  className="ml-2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+              </div>
+            )}
+          </p>
         </div>
 
         {/* Acumulado Card */}
-        <div className="bg-white rounded-xl p-6 shadow-md border border-yellow-300 border-2">
-          <p className="text-sm font-bold text-gray-700 uppercase mb-4">Acumulado</p>
+        <div className="bg-white rounded-lg p-6 shadow-md border-4 border-yellow-400">
+          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">2 ACUMULADO</p>
           <p className="text-3xl font-bold text-gray-900">R${currentMonthAccumulated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
         </div>
 
         {/* Economia Total do Ano */}
-        <div className="bg-white rounded-xl p-6 shadow-md border border-yellow-300 border-2">
-          <p className="text-sm font-bold text-gray-700 uppercase mb-4">Economia Total Ano</p>
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-20">
+        <div className="bg-white rounded-lg p-6 shadow-md border-4 border-yellow-400">
+          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">3 ECONOMIA TOTAL ANO</p>
+          <div className="flex items-center gap-3">
+            <div className="w-16 h-16">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={economyPieData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={25}
-                    outerRadius={40}
+                    innerRadius={20}
+                    outerRadius={32}
                     dataKey="value"
                     startAngle={90}
                     endAngle={-270}
@@ -106,7 +138,7 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
               </ResponsiveContainer>
             </div>
             <div>
-              <p className="text-xs text-gray-600 mb-2">
+              <p className="text-xs text-gray-600">
                 <span className="font-bold text-red-600">R$ {totalConsumptionYear.toLocaleString('pt-BR')}</span>
               </p>
               <p className="text-xs text-gray-600">
@@ -117,17 +149,17 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         </div>
 
         {/* % vs Ano Anterior */}
-        <div className="bg-blue-600 rounded-xl p-6 shadow-md border border-yellow-300 border-2 text-white">
-          <p className="text-lg font-bold opacity-90 mb-2">{yearOverYearGrowth + 100}%</p>
-          <p className="text-xs font-semibold opacity-75">EM RELAÇÃO AO ANO PASSADO</p>
+        <div className="bg-blue-600 rounded-lg p-6 shadow-md border-4 border-yellow-400 text-white">
+          <p className="text-sm font-bold mb-1">{yearOverYearGrowth}%</p>
+          <p className="text-xs font-semibold leading-tight">EM RELAÇÃO AO ANO PASSADO</p>
         </div>
       </div>
 
-      {/* Client Info and Filter */}
-      <div className="flex items-center justify-between bg-white rounded-xl p-6 shadow-md border border-gray-200">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center">
-            <span className="text-xl font-bold text-gray-600">E</span>
+      {/* Info and Filter Bar */}
+      <div className="flex items-center justify-between bg-white rounded-lg p-5 shadow-md border border-gray-200">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center">
+            <span className="text-lg font-bold text-gray-600">E</span>
           </div>
           <div>
             <p className="text-sm font-semibold text-gray-700">Unidade {selectedEstablishment}</p>
@@ -135,119 +167,93 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-2">
-          <UITooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => setPeriodFilter('monthly')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                  periodFilter === 'monthly'
-                    ? 'bg-teal-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <Calendar className="w-4 h-4" />
-                <span className="text-sm font-medium">Mensal</span>
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>
-              Visualizar dados por mês
-            </TooltipContent>
-          </UITooltip>
-          <UITooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => setPeriodFilter('daily')}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                  periodFilter === 'daily'
-                    ? 'bg-teal-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <Calendar className="w-4 h-4" />
-                <span className="text-sm font-medium">Diário</span>
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>
-              Visualizar dados por dia
-            </TooltipContent>
-          </UITooltip>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-gray-500 font-medium">FILTRO MENSAL/DIÁRIO</span>
+          <div className="flex items-center gap-2">
+            <UITooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setPeriodFilter('monthly')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                    periodFilter === 'monthly'
+                      ? 'bg-teal-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span className="text-sm">Mensal</span>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Visualizar dados por mês</TooltipContent>
+            </UITooltip>
+            <UITooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setPeriodFilter('daily')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                    periodFilter === 'daily'
+                      ? 'bg-teal-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <Calendar className="w-4 h-4" />
+                  <span className="text-sm">Diário</span>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Visualizar dados por dia</TooltipContent>
+            </UITooltip>
+          </div>
         </div>
       </div>
 
-      {/* Main Charts Grid */}
+      {/* Main Content - Graph and Right Panel */}
       <div className="grid grid-cols-3 gap-6">
-        {/* Gráfico Mensal */}
-        <div className="col-span-2 bg-white rounded-xl p-6 shadow-md border border-yellow-300 border-2">
-          <div className="flex items-center gap-2 mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Gráfico Mensal</h3>
-            <UITooltip>
-              <TooltipTrigger asChild>
-                <p className="text-xs text-gray-500">Consumo Mensal para o Ano Atual</p>
-              </TooltipTrigger>
-              <TooltipContent>
-                Comparação de consumo e economia por mês
-              </TooltipContent>
-            </UITooltip>
-          </div>
+        {/* Large Graph Section */}
+        <div className="col-span-2 bg-white rounded-lg p-6 shadow-md border-4 border-yellow-400">
+          <h3 className="text-base font-bold text-gray-900 mb-1">7 GRÁFICO MENSAL</h3>
+          <p className="text-xs text-gray-500 mb-4">Consumo Mensal para o Ano Atual</p>
 
-          <ResponsiveContainer width="100%" height={350}>
-            <BarChart data={monthlyCostData}>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip formatter={(value) => `R$ ${value.toLocaleString('pt-BR')}`} />
               <Legend />
-              <Bar dataKey="consumed" fill="#22c55e" name="Consumo (R$)" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="economy" fill="#ef4444" name="Desvio (R$)" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="consumed" fill="#22c55e" name="Consumo (R$) em R$ (R$)" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="economia" fill="#ef4444" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Right Side Panel */}
-        <div className="space-y-6">
+        {/* Right Panel */}
+        <div className="space-y-4 flex flex-col">
           {/* Desvio Meta */}
-          <div className="bg-white rounded-xl p-6 shadow-md border border-green-300 border-2">
-            <p className="text-sm font-bold text-gray-700 uppercase mb-4">Desvio EM RELAÇÃO À META</p>
+          <div className="bg-white rounded-lg p-6 shadow-md border-4 border-green-400 flex-1">
+            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">5 DESVIO EM RELAÇÃO A META</p>
             <p className="text-2xl font-bold text-green-600 mb-4">
               R${Math.max(0, costMeta - currentMonthAccumulated).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </p>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                value={costInputValue}
-                onChange={handleCostInputChange}
-                onKeyPress={handleCostKeyPress}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-                placeholder="Nova meta"
-              />
-              <button
-                onClick={handleSaveCostMeta}
-                className="px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg transition-colors"
-              >
-                Salvar
-              </button>
-            </div>
           </div>
 
           {/* Update Table */}
-          <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-            <p className="text-xs font-bold text-gray-700 uppercase mb-4 text-center">Atualização Mensal</p>
+          <div className="bg-white rounded-lg p-5 shadow-md border border-gray-200 flex-1">
+            <p className="text-xs font-bold text-gray-700 uppercase mb-3 text-center">MÊS METAS ATUALIZ.</p>
             <div className="space-y-2">
               {updateTable.map((item, index) => (
-                <div key={index} className="flex items-center justify-between text-xs border-b border-gray-200 pb-2 last:border-b-0">
-                  <span className="font-semibold text-gray-700 w-12">{item.month}</span>
-                  <span className="text-gray-600">{item.value}</span>
-                  <span className="font-semibold text-gray-700 w-12 text-right">{item.timeUpdate}</span>
+                <div key={index} className="flex justify-between items-center text-xs border-b border-gray-100 pb-2 last:border-b-0">
+                  <span className="font-bold text-gray-700 min-w-12">{item.month}</span>
+                  <span className="text-gray-600 flex-1 text-center">{item.value}</span>
+                  <span className="font-bold text-gray-700 text-right w-12">{item.atualização}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Hours Box */}
-          <div className="bg-blue-600 rounded-xl p-6 shadow-md border border-gray-200 text-white text-center">
-            <p className="text-xs font-bold uppercase mb-3 opacity-90">Quantidade de Horas</p>
-            <p className="text-xs font-bold opacity-75">de Atualização Mensal</p>
+          <div className="bg-blue-600 rounded-lg p-6 shadow-md border-4 border-gray-300 text-center text-white flex-1 flex flex-col justify-center">
+            <p className="text-xs font-bold uppercase mb-2 opacity-90">QUANTIDADE DE</p>
+            <p className="text-xs font-bold uppercase opacity-75">HORAS DE ATUALIZAÇÃO MENSAL</p>
           </div>
         </div>
       </div>
