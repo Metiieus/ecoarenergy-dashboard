@@ -114,37 +114,33 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         </div>
 
         {/* Economia Total do Ano */}
-        <div className="bg-white rounded-lg p-6 shadow-md border-4 border-yellow-400">
-          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">3 ECONOMIA TOTAL ANO</p>
-          <div className="flex items-center gap-3">
-            <div className="w-16 h-16">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={economyPieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={20}
-                    outerRadius={32}
-                    dataKey="value"
-                    startAngle={90}
-                    endAngle={-270}
-                  >
-                    {economyPieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">
-                <span className="font-bold text-red-600">R$ {totalConsumptionYear.toLocaleString('pt-BR')}</span>
-              </p>
-              <p className="text-xs text-gray-600">
-                <span className="font-bold text-green-600">Economia</span>
-              </p>
-            </div>
+        <div className="bg-white rounded-lg p-6 shadow-md border-4 border-yellow-400 flex flex-col items-center justify-center">
+          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-4">3 ECONOMIA TOTAL ANO</p>
+          <div className="w-28 h-28">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={economyPieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={40}
+                  outerRadius={56}
+                  dataKey="value"
+                  startAngle={90}
+                  endAngle={-270}
+                >
+                  {economyPieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="text-center mt-4 space-y-1">
+            <p className="text-sm font-bold text-gray-900">
+              R$ {totalConsumptionYear.toLocaleString('pt-BR')}
+            </p>
+            <p className="text-xs font-semibold text-green-600">Economia</p>
           </div>
         </div>
 
