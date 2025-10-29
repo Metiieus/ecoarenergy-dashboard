@@ -15,18 +15,18 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
   const [monthlyActivationTime, setMonthlyActivationTime] = useState(48.5);
 
   const monthlyCostData = [
-    { month: 'Jan', consumed: 2100, economia: 900 },
-    { month: 'Fev', consumed: 2400, economia: 600 },
-    { month: 'Mar', consumed: 2850, economia: 150 },
-    { month: 'Abr', consumed: 3100, economia: -100 },
-    { month: 'Mai', consumed: 2800, economia: 200 },
-    { month: 'Jun', consumed: 2600, economia: 400 },
-    { month: 'Jul', consumed: 2900, economia: 100 },
-    { month: 'Ago', consumed: 2700, economia: 300 },
-    { month: 'Set', consumed: 2500, economia: 500 },
-    { month: 'Out', consumed: 2400, economia: 600 },
-    { month: 'Nov', consumed: 2200, economia: 800 },
-    { month: 'Dez', consumed: 2300, economia: 700 }
+    { month: 'Jan', consumed: 2100, ecoAir: 1850, previsto: 3000 },
+    { month: 'Fev', consumed: 2400, ecoAir: 2100, previsto: 3000 },
+    { month: 'Mar', consumed: 2850, ecoAir: 2480, previsto: 3000 },
+    { month: 'Abr', consumed: 3100, ecoAir: 2710, previsto: 3000 },
+    { month: 'Mai', consumed: 2800, ecoAir: 2450, previsto: 3000 },
+    { month: 'Jun', consumed: 2600, ecoAir: 2270, previsto: 3000 },
+    { month: 'Jul', consumed: 2900, ecoAir: 2530, previsto: 3000 },
+    { month: 'Ago', consumed: 2700, ecoAir: 2360, previsto: 3000 },
+    { month: 'Set', consumed: 2500, ecoAir: 2180, previsto: 3000 },
+    { month: 'Out', consumed: 2400, ecoAir: 2090, previsto: 3000 },
+    { month: 'Nov', consumed: 2200, ecoAir: 1920, previsto: 3000 },
+    { month: 'Dez', consumed: 2300, ecoAir: 2010, previsto: 3000 }
   ];
 
   const totalConsumptionYear = 32450;
