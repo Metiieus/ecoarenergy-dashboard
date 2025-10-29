@@ -225,11 +225,20 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         {/* Right Panel */}
         <div className="space-y-4 flex flex-col">
           {/* Desvio Meta */}
-          <div className="bg-white rounded-lg p-6 shadow-md border-4 border-green-400 flex-1">
-            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">5 DESVIO EM RELAÇÃO A META</p>
-            <p className="text-2xl font-bold text-green-600 mb-4">
-              R${Math.max(0, costMeta - currentMonthAccumulated).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-            </p>
+          <div className="bg-gradient-to-br from-green-50 to-white rounded-lg p-6 shadow-md border-4 border-green-400 flex-1 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">5 DESVIO RELAÇÃO META</p>
+                <TrendingUp className="w-5 h-5 text-green-600" />
+              </div>
+              <p className="text-4xl font-bold text-green-600 mb-2">
+                R${Math.max(0, costMeta - currentMonthAccumulated).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </p>
+            </div>
+            <div className="text-xs text-gray-600">
+              <p>Meta: <span className="font-semibold text-gray-900">R${costMeta.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></p>
+              <p>Gasto: <span className="font-semibold text-gray-900">R${currentMonthAccumulated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></p>
+            </div>
           </div>
 
           {/* Update Table */}
@@ -237,19 +246,23 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
             <p className="text-xs font-bold text-gray-700 uppercase mb-3 text-center">MÊS METAS ATUALIZ.</p>
             <div className="space-y-2">
               {updateTable.map((item, index) => (
-                <div key={index} className="flex justify-between items-center text-xs border-b border-gray-100 pb-2 last:border-b-0">
+                <div key={index} className="flex justify-between items-center text-xs border-b border-gray-100 pb-2 last:border-b-0 hover:bg-gray-50 px-2 py-1 rounded transition-colors">
                   <span className="font-bold text-gray-700 min-w-12">{item.month}</span>
-                  <span className="text-gray-600 flex-1 text-center">{item.value}</span>
-                  <span className="font-bold text-gray-700 text-right w-12">{item.atualização}</span>
+                  <span className="text-teal-600 flex-1 text-center font-medium">{item.value}</span>
+                  <span className="font-bold text-gray-900 text-right w-12">{item.atualização}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Hours Box */}
-          <div className="bg-blue-600 rounded-lg p-6 shadow-md border-4 border-gray-300 text-center text-white flex-1 flex flex-col justify-center">
-            <p className="text-xs font-bold uppercase mb-2 opacity-90">QUANTIDADE DE</p>
-            <p className="text-xs font-bold uppercase opacity-75">HORAS DE ATUALIZAÇÃO MENSAL</p>
+          <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-6 shadow-lg border-4 border-teal-700 text-center text-white flex-1 flex flex-col justify-center gap-3">
+            <Clock className="w-8 h-8 mx-auto opacity-90" />
+            <div>
+              <p className="text-2xl font-bold mb-1">48.5h</p>
+              <p className="text-xs font-semibold uppercase opacity-90">Horas de</p>
+              <p className="text-xs font-semibold uppercase opacity-90">Atualização Mensal</p>
+            </div>
           </div>
         </div>
       </div>
