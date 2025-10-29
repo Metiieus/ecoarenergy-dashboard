@@ -1,13 +1,18 @@
 import { useState } from 'react';
-import { Calendar, TrendingDown, Edit2, Check, TrendingUp, Clock } from 'lucide-react';
+import { Calendar, TrendingDown, Edit2, Check, TrendingUp, Clock, Zap, Leaf } from 'lucide-react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
+import { deviceRankings } from '../data/mockData';
 
 const FinancialDashboard = ({ selectedEstablishment }) => {
   const [periodFilter, setPeriodFilter] = useState('monthly');
   const [costMeta, setCostMeta] = useState(3000);
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [costInputValue, setCostInputValue] = useState('3000');
+  const [activationTimeMeta, setActivationTimeMeta] = useState(50);
+  const [isEditingActivationMeta, setIsEditingActivationMeta] = useState(false);
+  const [activationTimeInputValue, setActivationTimeInputValue] = useState('50');
+  const [monthlyActivationTime, setMonthlyActivationTime] = useState(48.5);
 
   const monthlyCostData = [
     { month: 'Jan', consumed: 2100, economia: 900 },
