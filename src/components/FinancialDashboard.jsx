@@ -283,17 +283,37 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
           <h3 className="text-sm font-bold text-gray-900 mb-1">Gráfico Mensal</h3>
           <p className="text-xs text-gray-500 mb-3">Consumo para o Ano Atual</p>
 
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
-              <Bar dataKey="ecoAir" fill="#10b981" name="Consumo com Eco Ar (R$)" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="previsto" fill="#f87171" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {loading ? (
+            <div className="h-80 flex items-center justify-center">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600 mx-auto mb-3"></div>
+                <p className="text-xs text-gray-600">Carregando dados da API...</p>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="h-80 flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-xs text-red-600 mb-2">Erro ao carregar dados</p>
+                <p className="text-xs text-gray-500">{error}</p>
+              </div>
+            </div>
+          ) : monthlyCostData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar dataKey="ecoAir" fill="#10b981" name="Consumo com Eco Ar (R$)" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="previsto" fill="#f87171" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-80 flex items-center justify-center">
+              <p className="text-xs text-gray-600">Nenhum dado disponível</p>
+            </div>
+          )}
         </div>
 
         {/* Right Panel */}
