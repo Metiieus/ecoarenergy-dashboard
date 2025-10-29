@@ -9,36 +9,34 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [costInputValue, setCostInputValue] = useState('3000');
 
-  const monthLabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-
   const monthlyCostData = [
-    { month: 'Jan', consumed: 2100, economy: 900 },
-    { month: 'Fev', consumed: 2400, economy: 600 },
-    { month: 'Mar', consumed: 2850, economy: 150 },
-    { month: 'Abr', consumed: 3100, economy: -100 },
-    { month: 'Mai', consumed: 2800, economy: 200 },
-    { month: 'Jun', consumed: 2600, economy: 400 },
-    { month: 'Jul', consumed: 2900, economy: 100 },
-    { month: 'Ago', consumed: 2700, economy: 300 },
-    { month: 'Set', consumed: 2500, economy: 500 },
-    { month: 'Out', consumed: 2400, economy: 600 },
-    { month: 'Nov', consumed: 2200, economy: 800 },
-    { month: 'Dez', consumed: 2300, economy: 700 }
+    { month: 'Jan', consumed: 2100, economia: 900 },
+    { month: 'Fev', consumed: 2400, economia: 600 },
+    { month: 'Mar', consumed: 2850, economia: 150 },
+    { month: 'Abr', consumed: 3100, economia: -100 },
+    { month: 'Mai', consumed: 2800, economia: 200 },
+    { month: 'Jun', consumed: 2600, economia: 400 },
+    { month: 'Jul', consumed: 2900, economia: 100 },
+    { month: 'Ago', consumed: 2700, economia: 300 },
+    { month: 'Set', consumed: 2500, economia: 500 },
+    { month: 'Out', consumed: 2400, economia: 600 },
+    { month: 'Nov', consumed: 2200, economia: 800 },
+    { month: 'Dez', consumed: 2300, economia: 700 }
   ];
 
   const totalConsumptionYear = 32450;
   const totalEconomyYear = 5750;
 
   const economyPieData = [
-    { name: 'Consumo Total', value: totalConsumptionYear, fill: '#ef4444' },
+    { name: 'Consumo Total', value: totalConsumptionYear, fill: '#dc2626' },
     { name: 'Economia', value: totalEconomyYear, fill: '#22c55e' }
   ];
 
   const updateTable = [
-    { month: 'JAN', value: '50 h', timeUpdate: '46 H' },
-    { month: 'FEV', value: '50 h', timeUpdate: '51 H' },
-    { month: 'MAR', value: '45 h', timeUpdate: '29 H' },
-    { month: 'ABR', value: '49 h', timeUpdate: '32 H' }
+    { month: 'JAN', value: '50 h', atualização: '46 H' },
+    { month: 'FEV', value: '50 h', atualização: '51 H' },
+    { month: 'MAR', value: '45 h', atualização: '29 H' },
+    { month: 'ABR', value: '49 h', atualização: '32 H' }
   ];
 
   const handleCostInputChange = (e) => {
@@ -53,15 +51,16 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
 
   const handleSaveCostMeta = () => {
     const newValue = parseFloat(costInputValue);
-    if (!isNaN(newValue)) {
+    if (!isNaN(newValue) && newValue > 0) {
       setCostMeta(newValue);
+      setIsEditingMeta(false);
     }
   };
 
   const currentMonthAccumulated = monthlyCostData.slice(0, new Date().getMonth() + 1)
     .reduce((sum, month) => sum + month.consumed, 0);
-  
-  const yearOverYearGrowth = 14; // 114% vs ano anterior
+
+  const yearOverYearGrowth = 114;
 
   return (
     <div className="space-y-8">
