@@ -240,7 +240,7 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
               <Tooltip formatter={(value) => `R$ ${value.toLocaleString('pt-BR')}`} />
               <Legend />
               <Bar dataKey="ecoAir" fill="#10b981" name="Consumo com Eco Ar (R$)" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="previsto" fill="#3b82f6" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="previsto" fill="#f87171" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
