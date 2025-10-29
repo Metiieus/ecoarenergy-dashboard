@@ -1,10 +1,11 @@
 import { LayoutDashboard, BarChart3, Settings } from 'lucide-react';
+import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 
 const Sidebar = ({ activeTab = 'dashboard', setActiveTab }) => {
   const menuItems = [
-    { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { id: 'consumption', icon: BarChart3, label: 'Consumo' },
-    { id: 'control', icon: Settings, label: 'Central de Controle' }
+    { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', tooltip: 'Visualize métricas e gráficos de energia' },
+    { id: 'consumption', icon: BarChart3, label: 'Consumo', tooltip: 'Analise o consumo detalhado dos dispositivos' },
+    { id: 'control', icon: Settings, label: 'Central de Controle', tooltip: 'Controle os dispositivos em tempo real' }
   ];
 
   return (
@@ -25,18 +26,24 @@ const Sidebar = ({ activeTab = 'dashboard', setActiveTab }) => {
       {/* Menu Items */}
       <nav className="flex-1 p-4 space-y-2">
         {menuItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setActiveTab(item.id)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-              activeTab === item.id
-                ? 'bg-white/25 shadow-lg backdrop-blur-sm'
-                : 'text-teal-100 hover:bg-white/15'
-            }`}
-          >
-            <item.icon className="w-5 h-5 flex-shrink-0" />
-            <span className="font-medium text-sm">{item.label}</span>
-          </button>
+          <Tooltip key={item.id}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => setActiveTab(item.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                  activeTab === item.id
+                    ? 'bg-white/25 shadow-lg backdrop-blur-sm'
+                    : 'text-teal-100 hover:bg-white/15'
+                }`}
+              >
+                <item.icon className="w-5 h-5 flex-shrink-0" />
+                <span className="font-medium text-sm">{item.label}</span>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              {item.tooltip}
+            </TooltipContent>
+          </Tooltip>
         ))}
       </nav>
 
