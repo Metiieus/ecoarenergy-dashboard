@@ -92,4 +92,12 @@ function AppContent() {
   );
 }
 
+function App() {
+  return (
+    <ApiDataProvider>
+      <AppContent />
+    </ApiDataProvider>
+  );
+}
+
 export default App;
