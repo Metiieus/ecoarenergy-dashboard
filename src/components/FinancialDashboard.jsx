@@ -268,7 +268,7 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
-              <Tooltip formatter={(value) => `R$ ${value.toLocaleString('pt-BR')}`} />
+              <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Bar dataKey="ecoAir" fill="#10b981" name="Consumo com Eco Ar (R$)" radius={[8, 8, 0, 0]} />
               <Bar dataKey="previsto" fill="#f87171" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
