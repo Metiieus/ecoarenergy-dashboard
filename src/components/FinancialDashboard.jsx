@@ -154,32 +154,32 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
       </div>
 
       {/* Info and Filter Bar */}
-      <div className="flex items-center justify-between bg-white rounded-lg p-5 shadow-md border border-gray-200">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center">
-            <span className="text-lg font-bold text-gray-600">E</span>
+      <div className="flex items-center justify-between bg-white rounded-lg p-3 shadow-md border border-gray-200">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center">
+            <span className="text-sm font-bold text-gray-600">E</span>
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-700">Unidade {selectedEstablishment}</p>
-            <p className="text-xs text-gray-500">Dados em Reais (R$)</p>
+            <p className="text-xs font-semibold text-gray-700">Unidade {selectedEstablishment}</p>
+            <p className="text-xs text-gray-500">Reais (R$)</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-500 font-medium">FILTRO MENSAL/DIÁRIO</span>
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500 font-medium">Período:</span>
+          <div className="flex items-center gap-1">
             <UITooltip>
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setPeriodFilter('monthly')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                  className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium text-xs transition-all ${
                     periodFilter === 'monthly'
                       ? 'bg-teal-600 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  <Calendar className="w-4 h-4" />
-                  <span className="text-sm">Mensal</span>
+                  <Calendar className="w-3 h-3" />
+                  <span>Mensal</span>
                 </button>
               </TooltipTrigger>
               <TooltipContent>Visualizar dados por mês</TooltipContent>
@@ -188,14 +188,14 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setPeriodFilter('daily')}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                  className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium text-xs transition-all ${
                     periodFilter === 'daily'
                       ? 'bg-teal-600 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  <Calendar className="w-4 h-4" />
-                  <span className="text-sm">Diário</span>
+                  <Calendar className="w-3 h-3" />
+                  <span>Diário</span>
                 </button>
               </TooltipTrigger>
               <TooltipContent>Visualizar dados por dia</TooltipContent>
