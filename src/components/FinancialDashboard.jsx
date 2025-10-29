@@ -44,12 +44,12 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
     }
   }, [apiData, selectedEstablishment]);
 
-  const totalConsumptionYear = 32450;
-  const totalEconomyYear = 5750;
+  const totalConsumptionYear = monthlyCostData.reduce((sum, month) => sum + month.consumoAcumulado, 0) || 0;
+  const totalEconomyYear = monthlyCostData.reduce((sum, month) => sum + (month.consumed - month.ecoAir), 0) || 0;
 
   const economyPieData = [
-    { name: 'Consumo Total', value: totalConsumptionYear, fill: '#dc2626' },
-    { name: 'Economia', value: totalEconomyYear, fill: '#22c55e' }
+    { name: 'Consumo Total', value: Math.max(totalConsumptionYear, 1), fill: '#dc2626' },
+    { name: 'Economia', value: Math.max(totalEconomyYear, 1), fill: '#22c55e' }
   ];
 
   const updateTable = [
