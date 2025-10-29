@@ -65,42 +65,42 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
   return (
     <div className="space-y-6">
       {/* Top Metrics Row - 4 Cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-3">
         {/* Meta Card */}
-        <div className="bg-white rounded-lg p-6 shadow-md border-4 border-yellow-400">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">1 META</p>
-            <TrendingDown className="w-5 h-5 text-green-600" />
+        <div className="bg-white rounded-lg p-4 shadow-md border-4 border-yellow-400">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Meta</p>
+            <TrendingDown className="w-4 h-4 text-green-600" />
           </div>
-          <p className="text-3xl font-bold text-gray-900">
+          <p className="text-2xl font-bold text-gray-900">
             {isEditingMeta ? (
-              <div className="flex gap-2">
+              <div className="flex gap-1">
                 <input
                   autoFocus
                   type="number"
                   value={costInputValue}
                   onChange={handleCostInputChange}
                   onKeyPress={handleCostKeyPress}
-                  className="w-32 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-24 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
                 <button
                   onClick={handleSaveCostMeta}
-                  className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-sm font-medium transition-colors"
+                  className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors"
                 >
-                  <Check className="w-4 h-4" />
+                  <Check className="w-3 h-3" />
                 </button>
               </div>
             ) : (
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-1">
                 <span>R${costMeta.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                 <button
                   onClick={() => {
                     setCostInputValue(costMeta.toString());
                     setIsEditingMeta(true);
                   }}
-                  className="ml-2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="p-1 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
                 >
-                  <Edit2 className="w-4 h-4" />
+                  <Edit2 className="w-3 h-3" />
                 </button>
               </div>
             )}
@@ -108,46 +108,48 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         </div>
 
         {/* Acumulado Card */}
-        <div className="bg-white rounded-lg p-6 shadow-md border-4 border-yellow-400">
-          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">2 ACUMULADO</p>
-          <p className="text-3xl font-bold text-gray-900">R${currentMonthAccumulated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+        <div className="bg-white rounded-lg p-4 shadow-md border-4 border-yellow-400">
+          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">Acumulado</p>
+          <p className="text-2xl font-bold text-gray-900">R${currentMonthAccumulated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
         </div>
 
         {/* Economia Total do Ano */}
-        <div className="bg-white rounded-lg p-6 shadow-md border-4 border-yellow-400 flex flex-col items-center justify-center">
-          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-4">3 ECONOMIA TOTAL ANO</p>
-          <div className="w-28 h-28">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={economyPieData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={40}
-                  outerRadius={56}
-                  dataKey="value"
-                  startAngle={90}
-                  endAngle={-270}
-                >
-                  {economyPieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="text-center mt-4 space-y-1">
-            <p className="text-sm font-bold text-gray-900">
-              R$ {totalConsumptionYear.toLocaleString('pt-BR')}
-            </p>
-            <p className="text-xs font-semibold text-green-600">Economia</p>
+        <div className="bg-white rounded-lg p-4 shadow-md border-4 border-yellow-400">
+          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">Economia Ano</p>
+          <div className="flex items-center gap-2">
+            <div className="w-20 h-20">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={economyPieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={32}
+                    outerRadius={44}
+                    dataKey="value"
+                    startAngle={90}
+                    endAngle={-270}
+                  >
+                    {economyPieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="text-sm">
+              <p className="font-bold text-gray-900 leading-tight">
+                R$ {(totalConsumptionYear / 1000).toFixed(1)}k
+              </p>
+              <p className="text-xs font-semibold text-green-600">Economia</p>
+            </div>
           </div>
         </div>
 
         {/* % vs Ano Anterior */}
-        <div className="bg-blue-600 rounded-lg p-6 shadow-md border-4 border-yellow-400 text-white">
-          <p className="text-sm font-bold mb-1">{yearOverYearGrowth}%</p>
-          <p className="text-xs font-semibold leading-tight">EM RELAÇÃO AO ANO PASSADO</p>
+        <div className="bg-blue-600 rounded-lg p-4 shadow-md border-4 border-yellow-400 text-white flex flex-col justify-center">
+          <p className="text-2xl font-bold mb-0.5">{yearOverYearGrowth}%</p>
+          <p className="text-xs font-semibold leading-tight">Relação Ano Passado</p>
         </div>
       </div>
 
