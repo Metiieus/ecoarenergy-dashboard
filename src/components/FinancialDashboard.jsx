@@ -80,10 +80,41 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
     }
   };
 
-  const currentMonthAccumulated = monthlyCostData.slice(0, new Date().getMonth() + 1)
-    .reduce((sum, month) => sum + month.consumed, 0);
+  const currentMonthIndex = new Date().getMonth();
+  const currentMonthData = monthlyCostData[currentMonthIndex];
+  const currentMonthAccumulated = monthlyCostData.slice(0, currentMonthIndex + 1)
+    .reduce((sum, month) => sum + month.ecoAir, 0);
 
   const yearOverYearGrowth = 114;
+  const monthlyMeta = costMeta;
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      const metaValue = monthlyMeta;
+      const ecoAirValue = data.ecoAir;
+      const deviation = metaValue - ecoAirValue;
+      const deviationPercent = ((deviation / metaValue) * 100).toFixed(1);
+
+      return (
+        <div className="bg-white p-3 rounded-lg border border-gray-300 shadow-lg">
+          <p className="font-semibold text-gray-900 text-sm mb-2">{data.month}</p>
+          <p className="text-xs text-green-600 mb-1">
+            Eco Ar: <span className="font-semibold">R$ {data.ecoAir.toLocaleString('pt-BR')}</span>
+          </p>
+          <p className="text-xs text-red-400 mb-1">
+            Previsto: <span className="font-semibold">R$ {data.previsto.toLocaleString('pt-BR')}</span>
+          </p>
+          <div className="border-t border-gray-200 mt-2 pt-2">
+            <p className={`text-xs font-semibold ${deviation >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              Desvio Meta: R$ {deviation.toLocaleString('pt-BR')} ({deviationPercent}%)
+            </p>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-6">
