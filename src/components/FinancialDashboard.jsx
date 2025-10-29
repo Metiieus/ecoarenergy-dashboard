@@ -106,10 +106,9 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const metaValue = monthlyMeta;
       const ecoAirValue = data.ecoAir;
-      const deviation = metaValue - ecoAirValue;
-      const deviationPercent = ((deviation / metaValue) * 100).toFixed(1);
+      const deviation = monthlyMeta - ecoAirValue;
+      const deviationPercent = monthlyMeta > 0 ? ((deviation / monthlyMeta) * 100).toFixed(1) : 0;
 
       return (
         <div className="bg-white p-3 rounded-lg border border-gray-300 shadow-lg">
@@ -118,11 +117,11 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
             Eco Ar: <span className="font-semibold">R$ {data.ecoAir.toLocaleString('pt-BR')}</span>
           </p>
           <p className="text-xs text-red-400 mb-1">
-            Previsto: <span className="font-semibold">R$ {data.previsto.toLocaleString('pt-BR')}</span>
+            Meta: <span className="font-semibold">R$ {Math.round(monthlyMeta).toLocaleString('pt-BR')}</span>
           </p>
           <div className="border-t border-gray-200 mt-2 pt-2">
             <p className={`text-xs font-semibold ${deviation >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              Desvio Meta: R$ {deviation.toLocaleString('pt-BR')} ({deviationPercent}%)
+              Desvio: R$ {deviation.toFixed(0).toLocaleString('pt-BR')} ({deviationPercent}%)
             </p>
           </div>
         </div>
