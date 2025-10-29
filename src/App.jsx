@@ -2,20 +2,15 @@ import './App.css';
 import { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import EnergyStatistics from './components/EnergyStatistics';
-import DeviceList from './components/DeviceList';
-import MetricCard from './components/MetricCard';
-import ActionBanner from './components/ActionBanner';
-import DashboardCharts from './components/DashboardCharts';
+import FinancialDashboard from './components/FinancialDashboard';
 import AllDevices from './components/AllDevices';
 import DeviceDetailView from './components/DeviceDetailView';
 import ControlCenter from './components/ControlCenter';
 import ConsumptionTab from './components/ConsumptionTab';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs';
-import { Activity, DollarSign, TrendingUp, Star } from 'lucide-react';
-import { metrics } from './data/mockData';
+import { ApiDataProvider } from './context/ApiDataContext';
 
-function App() {
+function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSidebarTab, setActiveSidebarTab] = useState('dashboard');
   const [selectedEstablishment, setSelectedEstablishment] = useState(1);
@@ -61,34 +56,6 @@ function App() {
         <div className="p-8">
           {activeSidebarTab === 'dashboard' && (
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-              {/* Top Metrics Row */}
-              <div className="grid grid-cols-4 gap-6">
-                <MetricCard
-                  icon={DollarSign}
-                  title="Custo Total"
-                  value={`R$${metrics.totalCost}k`}
-                  color="pink"
-                />
-                <MetricCard
-                  icon={Activity}
-                  title="Eficiência"
-                  value={`${metrics.efficiency}%`}
-                  color="teal"
-                />
-                <MetricCard
-                  icon={TrendingUp}
-                  title="Orçamento Mensal"
-                  value={`R$${metrics.monthlyBudget}k`}
-                  color="yellow"
-                />
-                <MetricCard
-                  icon={Star}
-                  title="Score Médio"
-                  value={metrics.averageScore}
-                  color="blue"
-                />
-              </div>
-
               {/* Tabs Navigation */}
               <TabsList className="bg-white border border-gray-200 rounded-lg p-1 w-fit">
                 <TabsTrigger value="dashboard" className="px-4 py-2">
@@ -101,17 +68,8 @@ function App() {
 
               {/* Dashboard Tab */}
               <TabsContent value="dashboard" className="space-y-8">
-                {/* Charts Section */}
-                <DashboardCharts selectedEstablishment={selectedEstablishment} />
-
-                {/* Device List from API - Main Content */}
-                <DeviceList onSelectDevice={setSelectedDeviceId} />
-
-                {/* Energy Statistics */}
-                <EnergyStatistics />
-
-                {/* Action Banner */}
-                <ActionBanner onControlCenterClick={() => setActiveSidebarTab('control')} />
+                {/* Financial Dashboard */}
+                <FinancialDashboard selectedEstablishment={selectedEstablishment} />
               </TabsContent>
 
               {/* All Devices Tab */}
@@ -131,6 +89,14 @@ function App() {
         </div>
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ApiDataProvider>
+      <AppContent />
+    </ApiDataProvider>
   );
 }
 

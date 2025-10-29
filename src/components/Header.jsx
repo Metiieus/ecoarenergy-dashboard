@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Bell, ChevronDown } from 'lucide-react';
+import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { establishments } from '../data/establishments';
 
 const Header = ({ selectedEstablishment, onEstablishmentChange }) => {
@@ -23,13 +24,20 @@ const Header = ({ selectedEstablishment, onEstablishmentChange }) => {
         <div className="flex items-center gap-3">
           {/* Establishment Dropdown */}
           <div className="relative">
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
-            >
-              <span className="text-sm font-medium text-gray-700">{currentEstablishment.name}</span>
-              <ChevronDown className="w-4 h-4 text-gray-600" />
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                  <span className="text-sm font-medium text-gray-700">{currentEstablishment.name}</span>
+                  <ChevronDown className="w-4 h-4 text-gray-600" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Selecione uma unidade para visualizar dados
+              </TooltipContent>
+            </Tooltip>
 
             {isDropdownOpen && (
               <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
@@ -57,10 +65,17 @@ const Header = ({ selectedEstablishment, onEstablishmentChange }) => {
           </div>
 
           {/* Notification Bell */}
-          <button className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors relative">
-            <Bell className="w-5 h-5 text-gray-600" />
-            <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors relative">
+                <Bell className="w-5 h-5 text-gray-600" />
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Você tem 1 notificação pendente
+            </TooltipContent>
+          </Tooltip>
 
           {/* User Profile */}
           <div className="flex items-center gap-3 ml-4 pl-4 border-l border-gray-200">
