@@ -239,8 +239,9 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
               <YAxis />
               <Tooltip formatter={(value) => `R$ ${value.toLocaleString('pt-BR')}`} />
               <Legend />
-              <Bar dataKey="consumed" fill="#22c55e" name="Consumo (R$) em R$ (R$)" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="economia" fill="#ef4444" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="consumed" fill="#22c55e" name="Consumo (R$)" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="ecoAir" fill="#10b981" name="Consumo com Eco Ar (R$)" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="previsto" fill="#3b82f6" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
