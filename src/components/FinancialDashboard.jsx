@@ -179,11 +179,11 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
           <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">Acumulado</p>
           <div className="mb-2">
-            <p className="text-2xl font-bold text-gray-900">R${currentMonthAccumulated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+            <p className="text-2xl font-bold text-gray-900">R${Math.round(currentMonthAccumulated).toLocaleString('pt-BR')}</p>
             <p className="text-xs text-gray-500 mt-1">com Eco Ar</p>
           </div>
           <div className="bg-gray-50 rounded p-2">
-            <p className="text-xs text-gray-600">Meta acumulada: <span className="font-semibold text-gray-900">R${((currentMonthIndex + 1) * monthlyMeta).toLocaleString('pt-BR')}</span></p>
+            <p className="text-xs text-gray-600">Meta acumulada: <span className="font-semibold text-gray-900">R${Math.round((currentMonthIndex + 1) * monthlyMeta).toLocaleString('pt-BR')}</span></p>
           </div>
         </div>
 
