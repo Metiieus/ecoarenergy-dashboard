@@ -205,13 +205,13 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
       </div>
 
       {/* Main Content - Graph and Right Panel */}
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-3 gap-3">
         {/* Large Graph Section */}
-        <div className="col-span-2 bg-white rounded-lg p-6 shadow-md border-4 border-yellow-400">
-          <h3 className="text-base font-bold text-gray-900 mb-1">7 GRÁFICO MENSAL</h3>
-          <p className="text-xs text-gray-500 mb-4">Consumo Mensal para o Ano Atual</p>
+        <div className="col-span-2 bg-white rounded-lg p-4 shadow-md border-4 border-yellow-400">
+          <h3 className="text-sm font-bold text-gray-900 mb-1">Gráfico Mensal</h3>
+          <p className="text-xs text-gray-500 mb-3">Consumo para o Ano Atual</p>
 
-          <ResponsiveContainer width="100%" height={400}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
