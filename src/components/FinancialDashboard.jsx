@@ -317,15 +317,15 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
                 ? 'text-green-600'
                 : 'text-red-600'
             }`}>
-              R${Math.abs((currentMonthIndex + 1) * monthlyMeta - currentMonthAccumulated).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              R${Math.round(Math.abs((currentMonthIndex + 1) * monthlyMeta - currentMonthAccumulated)).toLocaleString('pt-BR')}
             </p>
             <div className={`text-xs text-gray-600 space-y-0.5 rounded p-2 ${
               currentMonthAccumulated <= (currentMonthIndex + 1) * monthlyMeta
                 ? 'bg-green-50/50'
                 : 'bg-red-50/50'
             }`}>
-              <p>Meta acumulada: <span className="font-semibold text-gray-900">R${((currentMonthIndex + 1) * monthlyMeta).toLocaleString('pt-BR')}</span></p>
-              <p>Gasto acumulado: <span className="font-semibold text-gray-900">R${currentMonthAccumulated.toLocaleString('pt-BR')}</span></p>
+              <p>Meta acumulada: <span className="font-semibold text-gray-900">R${Math.round((currentMonthIndex + 1) * monthlyMeta).toLocaleString('pt-BR')}</span></p>
+              <p>Gasto acumulado: <span className="font-semibold text-gray-900">R${Math.round(currentMonthAccumulated).toLocaleString('pt-BR')}</span></p>
               <p className="mt-1 pt-1 border-t border-gray-200">
                 {currentMonthAccumulated <= (currentMonthIndex + 1) * monthlyMeta
                   ? '✓ Dentro da meta'
