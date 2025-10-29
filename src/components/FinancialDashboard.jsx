@@ -98,10 +98,10 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
   const currentMonthIndex = new Date().getMonth();
   const currentMonthData = monthlyCostData[currentMonthIndex];
   const currentMonthAccumulated = monthlyCostData.slice(0, currentMonthIndex + 1)
-    .reduce((sum, month) => sum + month.ecoAir, 0);
+    .reduce((sum, month) => sum + month.ecoAir, 0) || 0;
 
-  const yearOverYearGrowth = 114;
-  const monthlyMeta = costMeta;
+  const yearOverYearGrowth = 12;
+  const monthlyMeta = costMeta / 12; // Divide a meta anual pela quantidade de meses
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
