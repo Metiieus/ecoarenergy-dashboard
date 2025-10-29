@@ -277,11 +277,75 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
             </div>
           </div>
 
-          {/* Hours Box */}
-          <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-4 shadow-md border border-teal-700/30 text-center text-white hover:shadow-lg transition-shadow">
-            <Clock className="w-6 h-6 mx-auto mb-2 opacity-90" />
-            <p className="text-2xl font-bold mb-0.5">48.5h</p>
-            <p className="text-xs font-semibold leading-tight">Atualização Mensal</p>
+          {/* Activation Time with Meta and Device Details */}
+          <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow space-y-4">
+            {/* Header with Icon */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-teal-600" />
+                <p className="text-xs font-bold text-gray-700 uppercase">Tempo de Atuação</p>
+              </div>
+            </div>
+
+            {/* Activation Time Meta */}
+            <div className="space-y-2">
+              <p className="text-xs text-gray-600 font-semibold">Meta Mensal (h)</p>
+              <div className="flex items-center gap-2">
+                {isEditingActivationMeta ? (
+                  <>
+                    <input
+                      autoFocus
+                      type="number"
+                      value={activationTimeInputValue}
+                      onChange={handleActivationTimeInputChange}
+                      onKeyPress={handleActivationTimeKeyPress}
+                      className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                    <button
+                      onClick={handleSaveActivationTimeMeta}
+                      className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors"
+                    >
+                      <Check className="w-3 h-3" />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-lg font-bold text-teal-600">{activationTimeMeta}h</p>
+                    <button
+                      onClick={() => {
+                        setActivationTimeInputValue(activationTimeMeta.toString());
+                        setIsEditingActivationMeta(true);
+                      }}
+                      className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <Edit2 className="w-3 h-3" />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Current Month Activation Time */}
+            <div className="space-y-2 border-t border-gray-200 pt-3">
+              <p className="text-xs text-gray-600 font-semibold">Atuação do Mês</p>
+              <p className="text-lg font-bold text-gray-900">{monthlyActivationTime}h</p>
+            </div>
+
+            {/* Device Details */}
+            <div className="space-y-2 border-t border-gray-200 pt-3">
+              <p className="text-xs text-gray-600 font-semibold mb-2">Dispositivos Ativos</p>
+              <div className="space-y-1 max-h-28 overflow-y-auto">
+                {deviceRankings.slice(0, 3).map((device) => (
+                  <div key={device.id} className="flex items-center gap-2 text-xs bg-gray-50 p-2 rounded">
+                    <span className="text-base">{device.icon}</span>
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-700">{device.name}</p>
+                      <p className="text-gray-500">{device.activeTime}h - Score: {device.score}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
