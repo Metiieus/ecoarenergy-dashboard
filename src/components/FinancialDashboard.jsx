@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar, TrendingDown, Edit2, Check } from 'lucide-react';
+import { Calendar, TrendingDown, Edit2, Check, TrendingUp, Clock } from 'lucide-react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 
