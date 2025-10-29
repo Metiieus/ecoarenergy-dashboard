@@ -1,35 +1,79 @@
-import { useState } from 'react';
-import { Calendar, TrendingDown, Edit2, Check, TrendingUp, Clock } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Calendar, TrendingDown, Edit2, Check, TrendingUp, Clock, Zap, Leaf } from 'lucide-react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
+import { deviceRankings } from '../data/mockData';
+import { useApiData } from '../hooks/useApiData';
 
 const FinancialDashboard = ({ selectedEstablishment }) => {
   const [periodFilter, setPeriodFilter] = useState('monthly');
-  const [costMeta, setCostMeta] = useState(3000);
+  const [costMeta, setCostMeta] = useState(10000);
   const [isEditingMeta, setIsEditingMeta] = useState(false);
-  const [costInputValue, setCostInputValue] = useState('3000');
+  const [costInputValue, setCostInputValue] = useState('10000');
+  const [activationTimeMeta, setActivationTimeMeta] = useState(50);
+  const [isEditingActivationMeta, setIsEditingActivationMeta] = useState(false);
+  const [activationTimeInputValue, setActivationTimeInputValue] = useState('50');
+  const [monthlyActivationTime, setMonthlyActivationTime] = useState(48.5);
+  const [monthlyCostData, setMonthlyCostData] = useState([]);
 
-  const monthlyCostData = [
-    { month: 'Jan', consumed: 2100, economia: 900 },
-    { month: 'Fev', consumed: 2400, economia: 600 },
-    { month: 'Mar', consumed: 2850, economia: 150 },
-    { month: 'Abr', consumed: 3100, economia: -100 },
-    { month: 'Mai', consumed: 2800, economia: 200 },
-    { month: 'Jun', consumed: 2600, economia: 400 },
-    { month: 'Jul', consumed: 2900, economia: 100 },
-    { month: 'Ago', consumed: 2700, economia: 300 },
-    { month: 'Set', consumed: 2500, economia: 500 },
-    { month: 'Out', consumed: 2400, economia: 600 },
-    { month: 'Nov', consumed: 2200, economia: 800 },
-    { month: 'Dez', consumed: 2300, economia: 700 }
-  ];
+  const { data: apiData, loading, error } = useApiData(selectedEstablishment, true);
 
-  const totalConsumptionYear = 32450;
-  const totalEconomyYear = 5750;
+  useEffect(() => {
+    console.log('API Data:', apiData);
+    console.log('Loading:', loading);
+    console.log('Error:', error);
+
+    if (apiData && apiData.consumo_mensal && apiData.consumo_mensal.length > 0) {
+      const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const transformedData = apiData.consumo_mensal.map((consumoAcumulado, index) => {
+        // Consumo anterior (para calcular consumo mensal real)
+        const consumoAnterior = index > 0 ? apiData.consumo_mensal[index - 1] : 0;
+        const consumoMensal = consumoAcumulado - consumoAnterior;
+
+        // Eco Ar é 80% do consumo (simulação de otimização)
+        const consumoComEcoAir = consumoMensal * 0.8;
+
+        // Previsto é 85% do consumo mensal (meta otimista)
+        const consumoPrevisto = consumoMensal * 0.85;
+
+        return {
+          month: monthNames[index],
+          consumed: Math.round(consumoMensal),
+          ecoAir: Math.round(consumoComEcoAir),
+          previsto: Math.round(consumoPrevisto),
+          consumoAcumulado: Math.round(consumoAcumulado)
+        };
+      });
+      console.log('Transformed data:', transformedData);
+      setMonthlyCostData(transformedData);
+    } else if (!loading && !apiData?.consumo_mensal) {
+      // Se não houver dados e não estiver carregando, usa mock data
+      console.warn('Nenhum dado da API, usando dados fictícios');
+      const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const mockData = [
+        { month: 'Jan', consumed: 257, ecoAir: 206, previsto: 218, consumoAcumulado: 257 },
+        { month: 'Fev', consumed: 825, ecoAir: 660, previsto: 701, consumoAcumulado: 1082 },
+        { month: 'Mar', consumed: 1959, ecoAir: 1567, previsto: 1666, consumoAcumulado: 3041 },
+        { month: 'Abr', consumed: 3029, ecoAir: 2423, previsto: 2575, consumoAcumulado: 6070 },
+        { month: 'Mai', consumed: 2931, ecoAir: 2345, previsto: 2491, consumoAcumulado: 9001 },
+        { month: 'Jun', consumed: 1811, ecoAir: 1449, previsto: 1539, consumoAcumulado: 10812 },
+        { month: 'Jul', consumed: 1822, ecoAir: 1458, previsto: 1549, consumoAcumulado: 12634 },
+        { month: 'Ago', consumed: 1957, ecoAir: 1566, previsto: 1664, consumoAcumulado: 14591 },
+        { month: 'Set', consumed: 1397, ecoAir: 1118, previsto: 1188, consumoAcumulado: 15988 },
+        { month: 'Out', consumed: 2603, ecoAir: 2082, previsto: 2212, consumoAcumulado: 18591 },
+        { month: 'Nov', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591 },
+        { month: 'Dez', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591 }
+      ];
+      setMonthlyCostData(mockData);
+    }
+  }, [apiData, selectedEstablishment]);
+
+  const totalConsumptionYear = monthlyCostData.reduce((sum, month) => sum + month.consumoAcumulado, 0) || 0;
+  const totalEconomyYear = monthlyCostData.reduce((sum, month) => sum + (month.consumed - month.ecoAir), 0) || 0;
 
   const economyPieData = [
-    { name: 'Consumo Total', value: totalConsumptionYear, fill: '#dc2626' },
-    { name: 'Economia', value: totalEconomyYear, fill: '#22c55e' }
+    { name: 'Consumo Total', value: Math.max(totalConsumptionYear, 1), fill: '#dc2626' },
+    { name: 'Economia', value: Math.max(totalEconomyYear, 1), fill: '#22c55e' }
   ];
 
   const updateTable = [
@@ -57,10 +101,58 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
     }
   };
 
-  const currentMonthAccumulated = monthlyCostData.slice(0, new Date().getMonth() + 1)
-    .reduce((sum, month) => sum + month.consumed, 0);
+  const handleActivationTimeInputChange = (e) => {
+    setActivationTimeInputValue(e.target.value);
+  };
 
-  const yearOverYearGrowth = 114;
+  const handleActivationTimeKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSaveActivationTimeMeta();
+    }
+  };
+
+  const handleSaveActivationTimeMeta = () => {
+    const newValue = parseFloat(activationTimeInputValue);
+    if (!isNaN(newValue) && newValue > 0) {
+      setActivationTimeMeta(newValue);
+      setIsEditingActivationMeta(false);
+    }
+  };
+
+  const currentMonthIndex = new Date().getMonth();
+  const currentMonthData = monthlyCostData[currentMonthIndex];
+  const currentMonthAccumulated = monthlyCostData.slice(0, currentMonthIndex + 1)
+    .reduce((sum, month) => sum + month.ecoAir, 0) || 0;
+
+  const yearOverYearGrowth = 12;
+  const monthlyMeta = costMeta / 12; // Divide a meta anual pela quantidade de meses
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      const ecoAirValue = data.ecoAir;
+      const deviation = monthlyMeta - ecoAirValue;
+      const deviationPercent = monthlyMeta > 0 ? ((deviation / monthlyMeta) * 100).toFixed(1) : 0;
+
+      return (
+        <div className="bg-white p-3 rounded-lg border border-gray-300 shadow-lg">
+          <p className="font-semibold text-gray-900 text-sm mb-2">{data.month}</p>
+          <p className="text-xs text-green-600 mb-1">
+            Eco Ar: <span className="font-semibold">R$ {data.ecoAir.toLocaleString('pt-BR')}</span>
+          </p>
+          <p className="text-xs text-red-400 mb-1">
+            Meta: <span className="font-semibold">R$ {Math.round(monthlyMeta).toLocaleString('pt-BR')}</span>
+          </p>
+          <div className="border-t border-gray-200 mt-2 pt-2">
+            <p className={`text-xs font-semibold ${deviation >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              Desvio: R$ {deviation.toFixed(0).toLocaleString('pt-BR')} ({deviationPercent}%)
+            </p>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-6">
@@ -110,7 +202,13 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         {/* Acumulado Card */}
         <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
           <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">Acumulado</p>
-          <p className="text-2xl font-bold text-gray-900">R${currentMonthAccumulated.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+          <div className="mb-2">
+            <p className="text-2xl font-bold text-gray-900">R${Math.round(currentMonthAccumulated).toLocaleString('pt-BR')}</p>
+            <p className="text-xs text-gray-500 mt-1">com Eco Ar</p>
+          </div>
+          <div className="bg-gray-50 rounded p-2">
+            <p className="text-xs text-gray-600">Meta acumulada: <span className="font-semibold text-gray-900">R${Math.round((currentMonthIndex + 1) * monthlyMeta).toLocaleString('pt-BR')}</span></p>
+          </div>
         </div>
 
         {/* Economia Total do Ano */}
@@ -209,33 +307,74 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
           <h3 className="text-sm font-bold text-gray-900 mb-1">Gráfico Mensal</h3>
           <p className="text-xs text-gray-500 mb-3">Consumo para o Ano Atual</p>
 
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip formatter={(value) => `R$ ${value.toLocaleString('pt-BR')}`} />
-              <Legend />
-              <Bar dataKey="consumed" fill="#22c55e" name="Consumo (R$) em R$ (R$)" radius={[8, 8, 0, 0]} />
-              <Bar dataKey="economia" fill="#ef4444" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {loading ? (
+            <div className="h-80 flex items-center justify-center">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600 mx-auto mb-3"></div>
+                <p className="text-xs text-gray-600">Carregando dados da API...</p>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="h-80 flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-xs text-red-600 mb-2">Erro ao carregar dados</p>
+                <p className="text-xs text-gray-500">{error}</p>
+              </div>
+            </div>
+          ) : monthlyCostData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar dataKey="ecoAir" fill="#10b981" name="Consumo com Eco Ar (R$)" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="previsto" fill="#f87171" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-80 flex items-center justify-center">
+              <p className="text-xs text-gray-600">Nenhum dado disponível</p>
+            </div>
+          )}
         </div>
 
         {/* Right Panel */}
         <div className="space-y-3 flex flex-col">
           {/* Desvio Meta */}
-          <div className="bg-gradient-to-br from-green-50 to-white rounded-lg p-4 shadow-md border border-green-200 hover:shadow-lg transition-shadow">
+          <div className={`bg-gradient-to-br rounded-lg p-4 shadow-md border hover:shadow-lg transition-shadow ${
+            currentMonthAccumulated <= (currentMonthIndex + 1) * monthlyMeta
+              ? 'from-green-50 to-white border-green-200'
+              : 'from-red-50 to-white border-red-200'
+          }`}>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-gray-600 uppercase">Desvio Meta</p>
-              <TrendingUp className="w-4 h-4 text-green-600" />
+              {currentMonthAccumulated <= (currentMonthIndex + 1) * monthlyMeta ? (
+                <TrendingUp className="w-4 h-4 text-green-600" />
+              ) : (
+                <TrendingDown className="w-4 h-4 text-red-600" />
+              )}
             </div>
-            <p className="text-3xl font-bold text-green-600 mb-3">
-              R${Math.max(0, costMeta - currentMonthAccumulated).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            <p className={`text-3xl font-bold mb-3 ${
+              currentMonthAccumulated <= (currentMonthIndex + 1) * monthlyMeta
+                ? 'text-green-600'
+                : 'text-red-600'
+            }`}>
+              R${Math.round(Math.abs((currentMonthIndex + 1) * monthlyMeta - currentMonthAccumulated)).toLocaleString('pt-BR')}
             </p>
-            <div className="text-xs text-gray-600 space-y-0.5 bg-green-50/50 rounded p-2">
-              <p>Meta: <span className="font-semibold text-gray-900">R${(costMeta / 1000).toFixed(1)}k</span></p>
-              <p>Gasto: <span className="font-semibold text-gray-900">R${(currentMonthAccumulated / 1000).toFixed(1)}k</span></p>
+            <div className={`text-xs text-gray-600 space-y-0.5 rounded p-2 ${
+              currentMonthAccumulated <= (currentMonthIndex + 1) * monthlyMeta
+                ? 'bg-green-50/50'
+                : 'bg-red-50/50'
+            }`}>
+              <p>Meta acumulada: <span className="font-semibold text-gray-900">R${Math.round((currentMonthIndex + 1) * monthlyMeta).toLocaleString('pt-BR')}</span></p>
+              <p>Gasto acumulado: <span className="font-semibold text-gray-900">R${Math.round(currentMonthAccumulated).toLocaleString('pt-BR')}</span></p>
+              <p className="mt-1 pt-1 border-t border-gray-200">
+                {currentMonthAccumulated <= (currentMonthIndex + 1) * monthlyMeta
+                  ? '✓ Dentro da meta'
+                  : '✗ Acima da meta'}
+              </p>
             </div>
           </div>
 
@@ -253,11 +392,75 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
             </div>
           </div>
 
-          {/* Hours Box */}
-          <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-4 shadow-md border border-teal-700/30 text-center text-white hover:shadow-lg transition-shadow">
-            <Clock className="w-6 h-6 mx-auto mb-2 opacity-90" />
-            <p className="text-2xl font-bold mb-0.5">48.5h</p>
-            <p className="text-xs font-semibold leading-tight">Atualização Mensal</p>
+          {/* Activation Time with Meta and Device Details */}
+          <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow space-y-4">
+            {/* Header with Icon */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-teal-600" />
+                <p className="text-xs font-bold text-gray-700 uppercase">Tempo de Atuação</p>
+              </div>
+            </div>
+
+            {/* Activation Time Meta */}
+            <div className="space-y-2">
+              <p className="text-xs text-gray-600 font-semibold">Meta Mensal (h)</p>
+              <div className="flex items-center gap-2">
+                {isEditingActivationMeta ? (
+                  <>
+                    <input
+                      autoFocus
+                      type="number"
+                      value={activationTimeInputValue}
+                      onChange={handleActivationTimeInputChange}
+                      onKeyPress={handleActivationTimeKeyPress}
+                      className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                    <button
+                      onClick={handleSaveActivationTimeMeta}
+                      className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors"
+                    >
+                      <Check className="w-3 h-3" />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-lg font-bold text-teal-600">{activationTimeMeta}h</p>
+                    <button
+                      onClick={() => {
+                        setActivationTimeInputValue(activationTimeMeta.toString());
+                        setIsEditingActivationMeta(true);
+                      }}
+                      className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <Edit2 className="w-3 h-3" />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Current Month Activation Time */}
+            <div className="space-y-2 border-t border-gray-200 pt-3">
+              <p className="text-xs text-gray-600 font-semibold">Atuação do Mês</p>
+              <p className="text-lg font-bold text-gray-900">{monthlyActivationTime}h</p>
+            </div>
+
+            {/* Device Details */}
+            <div className="space-y-2 border-t border-gray-200 pt-3">
+              <p className="text-xs text-gray-600 font-semibold mb-2">Dispositivos Ativos</p>
+              <div className="space-y-1 max-h-28 overflow-y-auto">
+                {deviceRankings.slice(0, 3).map((device) => (
+                  <div key={device.id} className="flex items-center gap-2 text-xs bg-gray-50 p-2 rounded">
+                    <span className="text-base">{device.icon}</span>
+                    <div className="flex-1">
+                      <p className="font-semibold text-gray-700">{device.name}</p>
+                      <p className="text-gray-500">{device.activeTime}h - Score: {device.score}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
