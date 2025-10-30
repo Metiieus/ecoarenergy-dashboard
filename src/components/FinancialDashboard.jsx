@@ -237,12 +237,6 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
                 <p className="text-xs text-gray-600 font-semibold mb-1">Economia Alcançada</p>
                 <p className="text-3xl font-bold text-green-600">R$ {(totalEconomyYear / 1000).toFixed(1)}k</p>
               </div>
-              <div>
-                <p className="text-xs text-gray-600 font-semibold mb-1">Percentual</p>
-                <p className="text-3xl font-bold text-teal-600">
-                  {totalConsumptionYear > 0 ? ((totalEconomyYear / totalConsumptionYear) * 100).toFixed(1) : 0}%
-                </p>
-              </div>
             </div>
           </div>
         </div>
