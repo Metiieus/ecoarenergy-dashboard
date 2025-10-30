@@ -200,13 +200,13 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         </div>
 
         {/* Economia Total do Ano - Gauge */}
-        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow col-span-2 flex flex-col">
+        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow col-span-2 flex flex-col min-h-80">
           <div className="mb-3">
             <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Economia Ano</p>
             <p className="text-xs text-gray-500 mt-1">Consumo vs Economia</p>
           </div>
-          <div className="flex-1 flex items-center justify-center gap-8 min-h-0">
-            <div className="flex-1 h-full min-h-0">
+          <div className="flex-1 flex items-center justify-center gap-8">
+            <div className="w-64 h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
