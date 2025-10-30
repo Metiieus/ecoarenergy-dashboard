@@ -159,7 +159,7 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
       {/* Top Metrics Row - 4 Cards */}
       <div className="grid grid-cols-5 gap-3">
         {/* Meta Card */}
-        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow h-fit">
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Meta</p>
             <TrendingDown className="w-4 h-4 text-green-600" />
