@@ -200,15 +200,13 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         </div>
 
         {/* Economia Total do Ano - Gauge */}
-        <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 hover:shadow-lg transition-shadow col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Economia Ano</p>
-              <p className="text-xs text-gray-500 mt-1">Consumo vs Economia</p>
-            </div>
+        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow col-span-2 flex flex-col">
+          <div className="mb-3">
+            <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Economia Ano</p>
+            <p className="text-xs text-gray-500 mt-1">Consumo vs Economia</p>
           </div>
-          <div className="flex items-center justify-center gap-8">
-            <div className="w-64 h-64">
+          <div className="flex-1 flex items-center justify-center gap-8 min-h-0">
+            <div className="flex-1 h-full min-h-0">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -228,14 +226,14 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-4 flex-shrink-0">
               <div>
                 <p className="text-xs text-gray-600 font-semibold mb-1">Consumo Total</p>
-                <p className="text-3xl font-bold text-gray-900">R$ {(totalConsumptionYear / 1000).toFixed(1)}k</p>
+                <p className="text-2xl font-bold text-gray-900">R$ {(totalConsumptionYear / 1000).toFixed(1)}k</p>
               </div>
               <div>
                 <p className="text-xs text-gray-600 font-semibold mb-1">Economia Alcançada</p>
-                <p className="text-3xl font-bold text-green-600">R$ {(totalEconomyYear / 1000).toFixed(1)}k</p>
+                <p className="text-2xl font-bold text-green-600">R$ {(totalEconomyYear / 1000).toFixed(1)}k</p>
               </div>
             </div>
           </div>
