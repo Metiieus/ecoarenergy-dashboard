@@ -300,6 +300,55 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         </div>
       </div>
 
+      {/* Economy Gauge Chart */}
+      <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+        <h3 className="text-sm font-bold text-gray-900 mb-1">Análise de Economia</h3>
+        <p className="text-xs text-gray-500 mb-4">Economia total comparado com consumo padrão</p>
+        <div className="flex items-center justify-center gap-12">
+          {/* Gauge Chart */}
+          <div className="w-48 h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={economyPieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={90}
+                  dataKey="value"
+                  startAngle={180}
+                  endAngle={0}
+                >
+                  {economyPieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Economy Stats */}
+          <div className="space-y-6">
+            <div>
+              <p className="text-xs text-gray-600 font-semibold mb-2">Consumo Total</p>
+              <p className="text-3xl font-bold text-gray-900">R$ {(totalConsumptionYear / 1000).toFixed(1)}k</p>
+              <p className="text-xs text-gray-500 mt-1">no ano atual</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcançada</p>
+              <p className="text-3xl font-bold text-green-600">R$ {(totalEconomyYear / 1000).toFixed(1)}k</p>
+              <p className="text-xs text-gray-500 mt-1">com Eco Ar</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-600 font-semibold mb-2">Percentual de Economia</p>
+              <p className="text-2xl font-bold text-teal-600">
+                {totalConsumptionYear > 0 ? ((totalEconomyYear / totalConsumptionYear) * 100).toFixed(1) : 0}%
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content - Graph and Right Panel */}
       <div className="grid grid-cols-3 gap-3">
         {/* Large Graph Section */}
