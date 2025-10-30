@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, TrendingDown, Edit2, Check, TrendingUp, Clock, Zap, Leaf } from 'lucide-react';
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { deviceRankings } from '../data/mockData';
 import { useApiData } from '../hooks/useApiData';
@@ -157,9 +157,9 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
   return (
     <div className="space-y-6">
       {/* Top Metrics Row - 4 Cards */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-5 gap-3 items-start">
         {/* Meta Card */}
-        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow h-fit">
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Meta</p>
             <TrendingDown className="w-4 h-4 text-green-600" />
@@ -199,8 +199,48 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
           </p>
         </div>
 
+        {/* Economia Total do Ano - Gauge */}
+        <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 hover:shadow-lg transition-shadow col-span-2 flex flex-col h-96">
+          <div className="mb-4">
+            <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Economia Ano</p>
+            <p className="text-xs text-gray-500 mt-1">Consumo vs Economia</p>
+          </div>
+          <div className="flex-1 flex items-center justify-center gap-12 overflow-hidden">
+            <div className="flex-shrink-0">
+              <ResponsiveContainer width={320} height={320}>
+                <PieChart>
+                  <Pie
+                    data={economyPieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={80}
+                    outerRadius={130}
+                    dataKey="value"
+                    startAngle={180}
+                    endAngle={0}
+                  >
+                    {economyPieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="space-y-6 flex-shrink-0">
+              <div>
+                <p className="text-xs text-gray-600 font-semibold mb-2">Consumo Total</p>
+                <p className="text-3xl font-bold text-gray-900">R$ {(totalConsumptionYear / 1000).toFixed(1)}k</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcançada</p>
+                <p className="text-3xl font-bold text-green-600">R$ {(totalEconomyYear / 1000).toFixed(1)}k</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Acumulado Card */}
-        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow h-fit">
           <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">Acumulado</p>
           <div className="mb-2">
             <p className="text-2xl font-bold text-gray-900">R${Math.round(currentMonthAccumulated).toLocaleString('pt-BR')}</p>
@@ -211,39 +251,8 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
           </div>
         </div>
 
-        {/* Economia Total do Ano */}
-        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow flex flex-col items-center justify-center">
-          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">Economia Ano</p>
-          <div className="w-24 h-24 mb-3">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={economyPieData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={36}
-                  outerRadius={48}
-                  dataKey="value"
-                  startAngle={90}
-                  endAngle={-270}
-                >
-                  {economyPieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="text-center">
-            <p className="font-bold text-gray-900 text-sm leading-tight">
-              R$ {(totalConsumptionYear / 1000).toFixed(1)}k
-            </p>
-            <p className="text-xs font-semibold text-green-600">Economia</p>
-          </div>
-        </div>
-
         {/* % vs Ano Anterior */}
-        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-5 shadow-md border border-teal-700/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow">
+        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-5 shadow-md border border-teal-700/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
           <p className="text-3xl font-bold mb-1 text-center">{yearOverYearGrowth}%</p>
           <p className="text-xs font-semibold text-center leading-tight text-teal-50">Em Relação ao Ano Passado</p>
         </div>
