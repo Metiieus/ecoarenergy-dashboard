@@ -252,7 +252,7 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         </div>
 
         {/* % vs Ano Anterior */}
-        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-5 shadow-md border border-teal-700/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow">
+        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-5 shadow-md border border-teal-700/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
           <p className="text-3xl font-bold mb-1 text-center">{yearOverYearGrowth}%</p>
           <p className="text-xs font-semibold text-center leading-tight text-teal-50">Em Relação ao Ano Passado</p>
         </div>
