@@ -199,34 +199,51 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
           </p>
         </div>
 
-        {/* Economia Total do Ano */}
-        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow flex flex-col items-center justify-center">
-          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">Economia Ano</p>
-          <div className="w-24 h-24 mb-3">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={economyPieData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={36}
-                  outerRadius={48}
-                  dataKey="value"
-                  startAngle={90}
-                  endAngle={-270}
-                >
-                  {economyPieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
+        {/* Economia Total do Ano - Gauge */}
+        <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 hover:shadow-lg transition-shadow col-span-2">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Economia Ano</p>
+              <p className="text-xs text-gray-500 mt-1">Consumo vs Economia</p>
+            </div>
           </div>
-          <div className="text-center">
-            <p className="font-bold text-gray-900 text-sm leading-tight">
-              R$ {(totalConsumptionYear / 1000).toFixed(1)}k
-            </p>
-            <p className="text-xs font-semibold text-green-600">Economia</p>
+          <div className="flex items-center justify-center gap-8">
+            <div className="w-64 h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={economyPieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={80}
+                    outerRadius={130}
+                    dataKey="value"
+                    startAngle={180}
+                    endAngle={0}
+                  >
+                    {economyPieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs text-gray-600 font-semibold mb-1">Consumo Total</p>
+                <p className="text-3xl font-bold text-gray-900">R$ {(totalConsumptionYear / 1000).toFixed(1)}k</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-600 font-semibold mb-1">Economia Alcançada</p>
+                <p className="text-3xl font-bold text-green-600">R$ {(totalEconomyYear / 1000).toFixed(1)}k</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-600 font-semibold mb-1">Percentual</p>
+                <p className="text-3xl font-bold text-teal-600">
+                  {totalConsumptionYear > 0 ? ((totalEconomyYear / totalConsumptionYear) * 100).toFixed(1) : 0}%
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
