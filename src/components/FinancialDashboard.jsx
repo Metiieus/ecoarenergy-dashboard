@@ -200,14 +200,14 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         </div>
 
         {/* Economia Total do Ano - Gauge */}
-        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow col-span-2 flex flex-col min-h-80">
-          <div className="mb-3">
+        <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 hover:shadow-lg transition-shadow col-span-2 flex flex-col h-96">
+          <div className="mb-4">
             <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Economia Ano</p>
             <p className="text-xs text-gray-500 mt-1">Consumo vs Economia</p>
           </div>
-          <div className="flex-1 flex items-center justify-center gap-8">
-            <div className="w-64 h-64">
-              <ResponsiveContainer width="100%" height="100%">
+          <div className="flex-1 flex items-center justify-center gap-12 overflow-hidden">
+            <div className="flex-shrink-0">
+              <ResponsiveContainer width={320} height={320}>
                 <PieChart>
                   <Pie
                     data={economyPieData}
@@ -226,14 +226,14 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="space-y-4 flex-shrink-0">
+            <div className="space-y-6 flex-shrink-0">
               <div>
-                <p className="text-xs text-gray-600 font-semibold mb-1">Consumo Total</p>
-                <p className="text-2xl font-bold text-gray-900">R$ {(totalConsumptionYear / 1000).toFixed(1)}k</p>
+                <p className="text-xs text-gray-600 font-semibold mb-2">Consumo Total</p>
+                <p className="text-3xl font-bold text-gray-900">R$ {(totalConsumptionYear / 1000).toFixed(1)}k</p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 font-semibold mb-1">Economia Alcançada</p>
-                <p className="text-2xl font-bold text-green-600">R$ {(totalEconomyYear / 1000).toFixed(1)}k</p>
+                <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcançada</p>
+                <p className="text-3xl font-bold text-green-600">R$ {(totalEconomyYear / 1000).toFixed(1)}k</p>
               </div>
             </div>
           </div>
