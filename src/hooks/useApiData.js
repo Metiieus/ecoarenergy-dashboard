@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 
-const API_BASE_URL = 'https://tb8calt97j.execute-api.sa-east-1.amazonaws.com/dev/dados';
+const API_BASE_URL = import.meta.env.PROD
+  ? 'https://tb8calt97j.execute-api.sa-east-1.amazonaws.com/dev/dados'
+  : '/api/dados';
 
 const defaultApiData = {
   consumo_mensal: [],
