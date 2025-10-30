@@ -199,18 +199,6 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
           </p>
         </div>
 
-        {/* Acumulado Card */}
-        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
-          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">Acumulado</p>
-          <div className="mb-2">
-            <p className="text-2xl font-bold text-gray-900">R${Math.round(currentMonthAccumulated).toLocaleString('pt-BR')}</p>
-            <p className="text-xs text-gray-500 mt-1">com Eco Ar</p>
-          </div>
-          <div className="bg-gray-50 rounded p-2">
-            <p className="text-xs text-gray-600">Meta acumulada: <span className="font-semibold text-gray-900">R${Math.round((currentMonthIndex + 1) * monthlyMeta).toLocaleString('pt-BR')}</span></p>
-          </div>
-        </div>
-
         {/* Economia Total do Ano */}
         <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow flex flex-col items-center justify-center">
           <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-3">Economia Ano</p>
@@ -239,6 +227,18 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
               R$ {(totalConsumptionYear / 1000).toFixed(1)}k
             </p>
             <p className="text-xs font-semibold text-green-600">Economia</p>
+          </div>
+        </div>
+
+        {/* Acumulado Card */}
+        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">Acumulado</p>
+          <div className="mb-2">
+            <p className="text-2xl font-bold text-gray-900">R${Math.round(currentMonthAccumulated).toLocaleString('pt-BR')}</p>
+            <p className="text-xs text-gray-500 mt-1">com Eco Ar</p>
+          </div>
+          <div className="bg-gray-50 rounded p-2">
+            <p className="text-xs text-gray-600">Meta acumulada: <span className="font-semibold text-gray-900">R${Math.round((currentMonthIndex + 1) * monthlyMeta).toLocaleString('pt-BR')}</span></p>
           </div>
         </div>
 
