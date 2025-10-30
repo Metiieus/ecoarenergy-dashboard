@@ -240,7 +240,7 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
         </div>
 
         {/* Acumulado Card */}
-        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow h-fit">
           <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">Acumulado</p>
           <div className="mb-2">
             <p className="text-2xl font-bold text-gray-900">R${Math.round(currentMonthAccumulated).toLocaleString('pt-BR')}</p>
