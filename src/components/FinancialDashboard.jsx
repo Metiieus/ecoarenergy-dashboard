@@ -137,6 +137,13 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     ? monthlyCostData.slice(0, currentMonthIndex + 1).reduce((sum, month) => sum + (month?.ecoAir || 0), 0)
     : 0;
 
+  // Calculate actual monthly activation time from API downtime data
+  // Total hours in a month: 30 days × 24 hours = 720 hours
+  // Activation time = 720 - (minutes off / 60)
+  const calculatedMonthlyActivationTime = apiData && apiData.minutos_desligado_mensal && apiData.minutos_desligado_mensal.length > 0
+    ? Math.max(0, 720 - (apiData.minutos_desligado_mensal[currentMonthIndex] || 0) / 60)
+    : monthlyActivationTime;
+
   // Year-over-year growth: Compare current accumulated consumption with same period last year
   // Currently hardcoded to 12% because API doesn't provide historical year-over-year data
   // TODO: Implement logic to fetch and calculate actual year-over-year growth when API provides historical data
