@@ -280,15 +280,16 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
         </div>
 
-        {/* Acumulado Card */}
-        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow h-fit">
-          <p className="text-xs font-bold text-gray-600 uppercase tracking-wide mb-2">Acumulado</p>
+        {/* Mês Atual Card - DADOS PRINCIPAIS */}
+        <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-4 shadow-md border border-blue-200 hover:shadow-lg transition-shadow h-fit">
+          <p className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-2">Mês Atual</p>
           <div className="mb-2">
-            <p className="text-2xl font-bold text-gray-900">R${isNaN(currentMonthAccumulated) ? '0' : Math.round(currentMonthAccumulated).toLocaleString('pt-BR')}</p>
+            <p className="text-2xl font-bold text-gray-900">R${isNaN(currentMonthOnly) ? '0' : Math.round(currentMonthOnly).toLocaleString('pt-BR')}</p>
             <p className="text-xs text-gray-500 mt-1">com Eco Ar</p>
           </div>
-          <div className="bg-gray-50 rounded p-2">
-            <p className="text-xs text-gray-600">Meta acumulada: <span className="font-semibold text-gray-900">R${isNaN(monthlyMeta) ? '0' : Math.round((currentMonthIndex + 1) * monthlyMeta).toLocaleString('pt-BR')}</span></p>
+          <div className="bg-blue-50/50 rounded p-2 space-y-1">
+            <p className="text-xs text-gray-600">Meta: <span className="font-semibold text-gray-900">R${isNaN(monthlyMeta) ? '0' : Math.round(monthlyMeta).toLocaleString('pt-BR')}</span></p>
+            <p className="text-xs text-gray-600">Economia: <span className="font-semibold text-green-600">R${isNaN(currentMonthSavings) ? '0' : Math.round(currentMonthSavings).toLocaleString('pt-BR')}</span></p>
           </div>
         </div>
 
