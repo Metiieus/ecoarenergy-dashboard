@@ -1,10 +1,12 @@
-import { deviceRankings, deviceDetailMockData } from '../data/mockData';
+import { deviceRankings } from '../data/mockData';
+import { useApiDataContext } from '../context/ApiDataContext';
 import { ArrowLeft, Zap, Thermometer, Droplets, Activity } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const DeviceDetailView = ({ deviceId, onBack }) => {
   const device = deviceRankings.find(d => d.id === deviceId);
-  
+  const { apiData, loading, error } = useApiDataContext();
+
   if (!device) {
     return (
       <div className="text-center py-12">
@@ -19,28 +21,35 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
     );
   }
 
-  const detailData = Object.values(deviceDetailMockData).flat().filter(d => d.id === deviceId);
-  const sectorDevices = deviceDetailMockData[Math.ceil(deviceId / 3)] || [];
+  const consumptionData = apiData?.consumo_diario_mes_corrente?.length > 0
+    ? apiData.consumo_diario_mes_corrente.map((value, index) => ({
+        time: `${String(index + 1).padStart(2, '0')}:00`,
+        consumption: Math.round(value)
+      }))
+    : [
+        { time: '00:00', consumption: Math.round(device.consumption * 0.6) },
+        { time: '04:00', consumption: Math.round(device.consumption * 0.4) },
+        { time: '08:00', consumption: Math.round(device.consumption * 0.8) },
+        { time: '12:00', consumption: Math.round(device.consumption * 1.0) },
+        { time: '16:00', consumption: Math.round(device.consumption * 0.9) },
+        { time: '20:00', consumption: Math.round(device.consumption * 0.7) },
+        { time: '23:59', consumption: Math.round(device.consumption * 0.5) }
+      ];
 
-  const consumptionData = [
-    { time: '00:00', consumption: Math.random() * device.consumption * 0.6 },
-    { time: '04:00', consumption: Math.random() * device.consumption * 0.4 },
-    { time: '08:00', consumption: Math.random() * device.consumption * 0.8 },
-    { time: '12:00', consumption: Math.random() * device.consumption * 1.0 },
-    { time: '16:00', consumption: Math.random() * device.consumption * 0.9 },
-    { time: '20:00', consumption: Math.random() * device.consumption * 0.7 },
-    { time: '23:59', consumption: Math.random() * device.consumption * 0.5 }
-  ];
-
-  const efficiencyData = [
-    { period: 'Seg', efficiency: device.efficiency + Math.random() * 10 - 5 },
-    { period: 'Ter', efficiency: device.efficiency + Math.random() * 10 - 5 },
-    { period: 'Qua', efficiency: device.efficiency + Math.random() * 10 - 5 },
-    { period: 'Qui', efficiency: device.efficiency + Math.random() * 10 - 5 },
-    { period: 'Sex', efficiency: device.efficiency + Math.random() * 10 - 5 },
-    { period: 'Sab', efficiency: device.efficiency + Math.random() * 10 - 5 },
-    { period: 'Dom', efficiency: device.efficiency + Math.random() * 10 - 5 }
-  ];
+  const efficiencyData = apiData?.potencias?.length > 0
+    ? apiData.potencias.map((value, index) => ({
+        period: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'][index % 7],
+        efficiency: Math.round(value)
+      }))
+    : [
+        { period: 'Seg', efficiency: device.efficiency + Math.round(Math.random() * 10 - 5) },
+        { period: 'Ter', efficiency: device.efficiency + Math.round(Math.random() * 10 - 5) },
+        { period: 'Qua', efficiency: device.efficiency + Math.round(Math.random() * 10 - 5) },
+        { period: 'Qui', efficiency: device.efficiency + Math.round(Math.random() * 10 - 5) },
+        { period: 'Sex', efficiency: device.efficiency + Math.round(Math.random() * 10 - 5) },
+        { period: 'Sab', efficiency: device.efficiency + Math.round(Math.random() * 10 - 5) },
+        { period: 'Dom', efficiency: device.efficiency + Math.round(Math.random() * 10 - 5) }
+      ];
 
   return (
     <div className="space-y-8">
@@ -161,7 +170,7 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
                     <td className="py-3 px-4 text-gray-900">{dev.nome}</td>
                     <td className="py-3 px-4 text-gray-600">{dev.potencia} W</td>
                     <td className="py-3 px-4 text-gray-600">{dev.energia} kWh</td>
-                    <td className="py-3 px-4 text-gray-600">{dev.temperatura}°C</td>
+                    <td className="py-3 px-4 text-gray-600">{dev.temperatura}��C</td>
                     <td className="py-3 px-4 text-gray-600">{dev.umidade}%</td>
                   </tr>
                 ))}
