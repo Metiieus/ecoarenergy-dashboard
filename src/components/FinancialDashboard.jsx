@@ -66,7 +66,7 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
       ];
       setMonthlyCostData(mockData);
     }
-  }, [apiData, selectedEstablishment]);
+  }, [apiData]);
 
   const totalConsumptionYear = monthlyCostData.reduce((sum, month) => sum + month.consumoAcumulado, 0) || 0;
   const totalEconomyYear = monthlyCostData.reduce((sum, month) => sum + (month.consumed - month.ecoAir), 0) || 0;
