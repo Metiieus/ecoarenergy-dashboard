@@ -43,7 +43,7 @@ function AppContent() {
         {/* Dashboard Content */}
         <div className="p-8">
           {activeSidebarTab === 'dashboard' && (
-            <div className="space-y-8">
+            <>
               {shouldShowDetailView ? (
                 <DeviceDetailView
                   deviceId={selectedDeviceId}
@@ -55,7 +55,7 @@ function AppContent() {
                   onSelectDevice={setSelectedDeviceId}
                 />
               )}
-            </div>
+            </>
           )}
 
           {activeSidebarTab === 'consumption' && (
