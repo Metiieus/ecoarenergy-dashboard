@@ -187,18 +187,19 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       const ecoAirValue = data.ecoAir || 0;
-      const safeMonthlyMeta = isNaN(monthlyMeta) ? 0 : monthlyMeta;
-      const deviation = safeMonthlyMeta - ecoAirValue;
-      const deviationPercent = safeMonthlyMeta > 0 ? ((deviation / safeMonthlyMeta) * 100).toFixed(1) : 0;
+      const monthIndex = data.month ? monthNames.indexOf(data.month) : selectedMonthIndex;
+      const monthMeta = monthlyMetaValues[monthIndex] || 10000;
+      const deviation = monthMeta - ecoAirValue;
+      const deviationPercent = monthMeta > 0 ? ((deviation / monthMeta) * 100).toFixed(1) : 0;
 
       return (
         <div className="bg-white p-3 rounded-lg border border-gray-300 shadow-lg">
-          <p className="font-semibold text-gray-900 text-sm mb-2">{data.month}</p>
+          <p className="font-semibold text-gray-900 text-sm mb-2">{data.month || 'Dia'} {data.day || ''}</p>
           <p className="text-xs text-green-600 mb-1">
             Eco Ar: <span className="font-semibold">R$ {(ecoAirValue || 0).toLocaleString('pt-BR')}</span>
           </p>
           <p className="text-xs text-red-400 mb-1">
-            Meta: <span className="font-semibold">R$ {Math.round(safeMonthlyMeta).toLocaleString('pt-BR')}</span>
+            Meta: <span className="font-semibold">R$ {Math.round(monthMeta).toLocaleString('pt-BR')}</span>
           </p>
           <div className="border-t border-gray-200 mt-2 pt-2">
             <p className={`text-xs font-semibold ${deviation >= 0 ? 'text-green-600' : 'text-red-600'}`}>
