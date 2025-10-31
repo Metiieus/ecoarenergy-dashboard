@@ -297,16 +297,31 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
         </div>
 
-        {/* Mês Atual Card - DADOS PRINCIPAIS */}
+        {/* Mês Selecionado Card - DADOS PRINCIPAIS */}
         <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-4 shadow-md border border-blue-200 hover:shadow-lg transition-shadow h-fit">
-          <p className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-2">Mês Atual</p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs font-bold text-blue-700 uppercase tracking-wide">{monthNames[selectedMonthIndex]}</p>
+            <select
+              value={selectedMonthIndex}
+              onChange={(e) => {
+                const newIndex = parseInt(e.target.value);
+                setSelectedMonthIndex(newIndex);
+                setCostInputValue(monthlyMetaValues[newIndex].toString());
+              }}
+              className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-gray-700 hover:border-blue-500 transition-colors"
+            >
+              {monthNames.map((name, index) => (
+                <option key={index} value={index}>{name}</option>
+              ))}
+            </select>
+          </div>
           <div className="mb-2">
-            <p className="text-2xl font-bold text-gray-900">R${isNaN(currentMonthOnly) ? '0' : Math.round(currentMonthOnly).toLocaleString('pt-BR')}</p>
+            <p className="text-2xl font-bold text-gray-900">R${isNaN(selectedMonthOnly) ? '0' : Math.round(selectedMonthOnly).toLocaleString('pt-BR')}</p>
             <p className="text-xs text-gray-500 mt-1">com Eco Ar</p>
           </div>
           <div className="bg-blue-50/50 rounded p-2 space-y-1">
-            <p className="text-xs text-gray-600">Meta: <span className="font-semibold text-gray-900">R${isNaN(monthlyMeta) ? '0' : Math.round(monthlyMeta).toLocaleString('pt-BR')}</span></p>
-            <p className="text-xs text-gray-600">Economia: <span className="font-semibold text-green-600">R${isNaN(currentMonthSavings) ? '0' : Math.round(currentMonthSavings).toLocaleString('pt-BR')}</span></p>
+            <p className="text-xs text-gray-600">Meta: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthMeta) ? '0' : Math.round(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
+            <p className="text-xs text-gray-600">Economia: <span className="font-semibold text-green-600">R${isNaN(selectedMonthSavings) ? '0' : Math.round(selectedMonthSavings).toLocaleString('pt-BR')}</span></p>
           </div>
         </div>
 
