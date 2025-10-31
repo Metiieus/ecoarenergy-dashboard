@@ -172,7 +172,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   // Currently hardcoded to 12% because API doesn't provide historical year-over-year data
   // TODO: Implement logic to fetch and calculate actual year-over-year growth when API provides historical data
   const yearOverYearGrowth = 12;
-  const monthlyMeta = isNaN(costMeta) ? 0 : costMeta / 12;
 
   // Daily chart data transformation
   const dailyCostData = apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
