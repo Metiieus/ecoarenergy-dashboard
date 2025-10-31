@@ -228,11 +228,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             <div className="space-y-6 flex-shrink-0">
               <div>
                 <p className="text-xs text-gray-600 font-semibold mb-2">Consumo Total</p>
-                <p className="text-3xl font-bold text-gray-900">R$ {(totalConsumptionYear / 1000).toFixed(1)}k</p>
+                <p className="text-3xl font-bold text-gray-900">R$ {isNaN(totalConsumptionYear) ? '0' : (totalConsumptionYear / 1000).toFixed(1)}k</p>
               </div>
               <div>
                 <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcançada</p>
-                <p className="text-3xl font-bold text-green-600">R$ {(totalEconomyYear / 1000).toFixed(1)}k</p>
+                <p className="text-3xl font-bold text-green-600">R$ {isNaN(totalEconomyYear) ? '0' : (totalEconomyYear / 1000).toFixed(1)}k</p>
               </div>
             </div>
           </div>
