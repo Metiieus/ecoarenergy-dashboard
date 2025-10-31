@@ -9,7 +9,6 @@ import ConsumptionTab from './components/ConsumptionTab';
 import { ApiDataProvider, useApiDataContext } from './context/ApiDataContext';
 
 function AppContent() {
-  const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSidebarTab, setActiveSidebarTab] = useState('dashboard');
   const [selectedEstablishment, setSelectedEstablishment] = useState(1);
   const [selectedDeviceId, setSelectedDeviceId] = useState(() => {
@@ -27,7 +26,6 @@ function AppContent() {
     }
   }, [selectedDeviceId, selectedEstablishment, handleDeviceChange]);
 
-  // If a device is selected via AllDevices, show dashboard with that device's data
   const shouldShowDetailView = selectedDeviceId !== null;
 
   return (
