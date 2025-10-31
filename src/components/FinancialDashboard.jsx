@@ -7,9 +7,19 @@ import { useApiDataContext } from '../context/ApiDataContext';
 
 const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const [periodFilter, setPeriodFilter] = useState('monthly');
-  const [costMeta, setCostMeta] = useState(10000);
+  const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+  // Metas por mês - permite diferentes metas para cada mês
+  const [monthlyMetaValues, setMonthlyMetaValues] = useState({
+    0: 10000, 1: 10000, 2: 10000, 3: 10000, 4: 10000, 5: 10000,
+    6: 10000, 7: 10000, 8: 10000, 9: 10000, 10: 10000, 11: 10000
+  });
+
+  const currentMonthIndex = new Date().getMonth();
+  const [selectedMonthIndex, setSelectedMonthIndex] = useState(currentMonthIndex);
   const [isEditingMeta, setIsEditingMeta] = useState(false);
-  const [costInputValue, setCostInputValue] = useState('10000');
+  const [costInputValue, setCostInputValue] = useState(monthlyMetaValues[currentMonthIndex].toString());
+
   const [activationTimeMeta, setActivationTimeMeta] = useState(50);
   const [isEditingActivationMeta, setIsEditingActivationMeta] = useState(false);
   const [activationTimeInputValue, setActivationTimeInputValue] = useState('50');
