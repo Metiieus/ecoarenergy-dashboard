@@ -118,7 +118,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const handleSaveCostMeta = () => {
     const newValue = parseFloat(costInputValue);
     if (!isNaN(newValue) && newValue > 0) {
-      setCostMeta(newValue);
+      setMonthlyMetaValues({
+        ...monthlyMetaValues,
+        [selectedMonthIndex]: newValue
+      });
       setIsEditingMeta(false);
     }
   };
@@ -427,7 +430,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
         {/* Right Panel */}
         <div className="space-y-3 flex flex-col">
-          {/* Desvio Meta - Mês Atual */}
+          {/* Desvio Meta - M��s Atual */}
           <div className={`bg-gradient-to-br rounded-lg p-4 shadow-md border hover:shadow-lg transition-shadow ${
             isNaN(currentMonthOnly) || isNaN(monthlyMeta) || currentMonthOnly <= monthlyMeta
               ? 'from-green-50 to-white border-green-200'
