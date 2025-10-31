@@ -419,34 +419,34 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         <div className="space-y-3 flex flex-col">
           {/* Desvio Meta - Mês Atual */}
           <div className={`bg-gradient-to-br rounded-lg p-4 shadow-md border hover:shadow-lg transition-shadow ${
-            currentMonthOnly <= monthlyMeta
+            isNaN(currentMonthOnly) || isNaN(monthlyMeta) || currentMonthOnly <= monthlyMeta
               ? 'from-green-50 to-white border-green-200'
               : 'from-red-50 to-white border-red-200'
           }`}>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-gray-600 uppercase">Desvio Meta</p>
-              {currentMonthOnly <= monthlyMeta ? (
+              {isNaN(currentMonthOnly) || isNaN(monthlyMeta) || currentMonthOnly <= monthlyMeta ? (
                 <TrendingUp className="w-4 h-4 text-green-600" />
               ) : (
                 <TrendingDown className="w-4 h-4 text-red-600" />
               )}
             </div>
             <p className={`text-3xl font-bold mb-3 ${
-              currentMonthOnly <= monthlyMeta
+              isNaN(currentMonthOnly) || isNaN(monthlyMeta) || currentMonthOnly <= monthlyMeta
                 ? 'text-green-600'
                 : 'text-red-600'
             }`}>
-              R${isNaN(monthlyMeta - currentMonthOnly) ? '0' : Math.round(Math.abs(monthlyMeta - currentMonthOnly)).toLocaleString('pt-BR')}
+              R${isNaN(monthlyMeta) || isNaN(currentMonthOnly) ? '0' : Math.round(Math.abs(monthlyMeta - currentMonthOnly)).toLocaleString('pt-BR')}
             </p>
             <div className={`text-xs text-gray-600 space-y-0.5 rounded p-2 ${
-              currentMonthOnly <= monthlyMeta
+              isNaN(currentMonthOnly) || isNaN(monthlyMeta) || currentMonthOnly <= monthlyMeta
                 ? 'bg-green-50/50'
                 : 'bg-red-50/50'
             }`}>
               <p>Meta do mês: <span className="font-semibold text-gray-900">R${isNaN(monthlyMeta) ? '0' : Math.round(monthlyMeta).toLocaleString('pt-BR')}</span></p>
               <p>Gasto do mês: <span className="font-semibold text-gray-900">R${isNaN(currentMonthOnly) ? '0' : Math.round(currentMonthOnly).toLocaleString('pt-BR')}</span></p>
               <p className="mt-1 pt-1 border-t border-gray-200">
-                {currentMonthOnly <= monthlyMeta
+                {isNaN(currentMonthOnly) || isNaN(monthlyMeta) || currentMonthOnly <= monthlyMeta
                   ? '✓ Dentro da meta'
                   : '✗ Acima da meta'}
               </p>
