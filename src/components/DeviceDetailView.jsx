@@ -74,7 +74,7 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
             </div>
             <span className="text-sm text-gray-600">Potência Média</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900">{device.avgPower.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-gray-900">{isNaN(device.avgPower) ? '0' : device.avgPower.toLocaleString()}</p>
           <p className="text-xs text-gray-500 mt-1">W</p>
         </div>
 
@@ -85,7 +85,7 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
             </div>
             <span className="text-sm text-gray-600">Consumo</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900">{device.consumption.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-gray-900">{isNaN(device.consumption) ? '0' : device.consumption.toLocaleString()}</p>
           <p className="text-xs text-gray-500 mt-1">kWh</p>
         </div>
 
@@ -96,7 +96,7 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
             </div>
             <span className="text-sm text-gray-600">Tempo Ativo</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900">{device.activeTime}</p>
+          <p className="text-2xl font-bold text-gray-900">{isNaN(device.activeTime) ? '0' : device.activeTime}</p>
           <p className="text-xs text-gray-500 mt-1">Horas/dia</p>
         </div>
 
@@ -107,7 +107,7 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
             </div>
             <span className="text-sm text-gray-600">Economia</span>
           </div>
-          <p className="text-2xl font-bold text-gray-900">R${device.savings}k</p>
+          <p className="text-2xl font-bold text-gray-900">R${isNaN(device.savings) ? '0' : device.savings}k</p>
           <p className="text-xs text-gray-500 mt-1">Potencial</p>
         </div>
       </div>
