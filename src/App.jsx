@@ -8,7 +8,7 @@ import DeviceDetailView from './components/DeviceDetailView';
 import ControlCenter from './components/ControlCenter';
 import ConsumptionTab from './components/ConsumptionTab';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs';
-import { ApiDataProvider } from './context/ApiDataContext';
+import { ApiDataProvider, useApiDataContext } from './context/ApiDataContext';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -19,26 +19,10 @@ function AppContent() {
     return params.get('device') ? parseInt(params.get('device')) : null;
   });
 
-  // If a device is selected, show the detail view
-  if (selectedDeviceId !== null) {
-    return (
-      <div className="flex min-h-screen bg-gray-50">
-        <Sidebar activeTab={activeSidebarTab} setActiveTab={setActiveSidebarTab} />
-        <div className="flex-1 ml-64">
-          <Header
-            selectedEstablishment={selectedEstablishment}
-            onEstablishmentChange={setSelectedEstablishment}
-          />
-          <div className="p-8">
-            <DeviceDetailView
-              deviceId={selectedDeviceId}
-              onBack={() => setSelectedDeviceId(null)}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const { selectedDeviceId: contextSelectedDeviceId } = useApiDataContext();
+
+  // If a device is selected via AllDevices, show dashboard with that device's data
+  const shouldShowDetailView = selectedDeviceId !== null;
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -68,13 +52,24 @@ function AppContent() {
 
               {/* Dashboard Tab */}
               <TabsContent value="dashboard" className="space-y-8">
-                {/* Financial Dashboard */}
-                <FinancialDashboard selectedEstablishment={selectedEstablishment} />
+                {shouldShowDetailView ? (
+                  <DeviceDetailView
+                    deviceId={selectedDeviceId}
+                    onBack={() => setSelectedDeviceId(null)}
+                  />
+                ) : (
+                  <FinancialDashboard selectedEstablishment={selectedEstablishment} />
+                )}
               </TabsContent>
 
               {/* All Devices Tab */}
               <TabsContent value="all-devices" className="space-y-8">
-                <AllDevices onSelectDevice={setSelectedDeviceId} />
+                <AllDevices
+                  onSelectDevice={setSelectedDeviceId}
+                  onViewDetails={() => {
+                    setActiveTab('dashboard');
+                  }}
+                />
               </TabsContent>
             </Tabs>
           )}
