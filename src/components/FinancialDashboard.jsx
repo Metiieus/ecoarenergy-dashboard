@@ -5,7 +5,7 @@ import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/toolt
 import { deviceRankings } from '../data/mockData';
 import { useApiDataContext } from '../context/ApiDataContext';
 
-const FinancialDashboard = ({ selectedEstablishment }) => {
+const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const [periodFilter, setPeriodFilter] = useState('monthly');
   const [costMeta, setCostMeta] = useState(10000);
   const [isEditingMeta, setIsEditingMeta] = useState(false);
