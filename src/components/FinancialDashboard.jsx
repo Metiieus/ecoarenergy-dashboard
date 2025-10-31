@@ -114,31 +114,33 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const currentMonthIndex = new Date().getMonth();
   const currentMonthData = monthlyCostData[currentMonthIndex];
-  const currentMonthAccumulated = monthlyCostData.slice(0, currentMonthIndex + 1)
-    .reduce((sum, month) => sum + month.ecoAir, 0) || 0;
+  const currentMonthAccumulated = monthlyCostData.length > 0
+    ? monthlyCostData.slice(0, currentMonthIndex + 1).reduce((sum, month) => sum + (month?.ecoAir || 0), 0)
+    : 0;
 
   const yearOverYearGrowth = 12;
-  const monthlyMeta = costMeta / 12; // Divide a meta anual pela quantidade de meses
+  const monthlyMeta = isNaN(costMeta) ? 0 : costMeta / 12;
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const ecoAirValue = data.ecoAir;
-      const deviation = monthlyMeta - ecoAirValue;
-      const deviationPercent = monthlyMeta > 0 ? ((deviation / monthlyMeta) * 100).toFixed(1) : 0;
+      const ecoAirValue = data.ecoAir || 0;
+      const safeMonthlyMeta = isNaN(monthlyMeta) ? 0 : monthlyMeta;
+      const deviation = safeMonthlyMeta - ecoAirValue;
+      const deviationPercent = safeMonthlyMeta > 0 ? ((deviation / safeMonthlyMeta) * 100).toFixed(1) : 0;
 
       return (
         <div className="bg-white p-3 rounded-lg border border-gray-300 shadow-lg">
           <p className="font-semibold text-gray-900 text-sm mb-2">{data.month}</p>
           <p className="text-xs text-green-600 mb-1">
-            Eco Ar: <span className="font-semibold">R$ {data.ecoAir.toLocaleString('pt-BR')}</span>
+            Eco Ar: <span className="font-semibold">R$ {(ecoAirValue || 0).toLocaleString('pt-BR')}</span>
           </p>
           <p className="text-xs text-red-400 mb-1">
-            Meta: <span className="font-semibold">R$ {Math.round(monthlyMeta).toLocaleString('pt-BR')}</span>
+            Meta: <span className="font-semibold">R$ {Math.round(safeMonthlyMeta).toLocaleString('pt-BR')}</span>
           </p>
           <div className="border-t border-gray-200 mt-2 pt-2">
             <p className={`text-xs font-semibold ${deviation >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              Desvio: R$ {deviation.toFixed(0).toLocaleString('pt-BR')} ({deviationPercent}%)
+              Desvio: R$ {(isNaN(deviation) ? 0 : deviation).toFixed(0).toLocaleString('pt-BR')} ({deviationPercent}%)
             </p>
           </div>
         </div>
