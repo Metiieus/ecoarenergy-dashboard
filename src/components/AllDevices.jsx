@@ -1,19 +1,27 @@
 import { deviceRankings } from '../data/mockData';
+import { useApiDataContext } from '../context/ApiDataContext';
 import { ChevronRight, TrendingUp, Zap } from 'lucide-react';
 
-const AllDevices = ({ onSelectDevice }) => {
+const AllDevices = ({ onSelectDevice, onViewDetails }) => {
+  const { handleDeviceChange } = useApiDataContext();
+
+  const handleDeviceClick = (deviceId) => {
+    handleDeviceChange(deviceId);
+    onViewDetails ? onViewDetails(deviceId) : onSelectDevice(deviceId);
+  };
+
   return (
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Todos os Dispositivos</h2>
-        <p className="text-gray-600">Gerenciar e monitorar todos os dispositivos do sistema</p>
+        <p className="text-gray-600">Clique em um dispositivo para ver seus dados no dashboard</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {deviceRankings.map((device) => (
           <div
             key={device.id}
-            onClick={() => onSelectDevice(device.id)}
+            onClick={() => handleDeviceClick(device.id)}
             className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg border border-gray-100 cursor-pointer transition-all duration-300 group"
           >
             <div className="flex items-start justify-between mb-4">
