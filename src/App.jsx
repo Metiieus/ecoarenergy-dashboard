@@ -1,5 +1,5 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import FinancialDashboard from './components/FinancialDashboard';
@@ -19,7 +19,13 @@ function AppContent() {
     return params.get('device') ? parseInt(params.get('device')) : null;
   });
 
-  const { selectedDeviceId: contextSelectedDeviceId } = useApiDataContext();
+  const { handleDeviceChange } = useApiDataContext();
+
+  useEffect(() => {
+    if (selectedDeviceId !== null) {
+      handleDeviceChange(selectedDeviceId);
+    }
+  }, [selectedDeviceId, handleDeviceChange]);
 
   // If a device is selected via AllDevices, show dashboard with that device's data
   const shouldShowDetailView = selectedDeviceId !== null;
