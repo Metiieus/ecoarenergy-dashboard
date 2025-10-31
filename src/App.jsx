@@ -24,8 +24,10 @@ function AppContent() {
   useEffect(() => {
     if (selectedDeviceId !== null) {
       handleDeviceChange(selectedDeviceId);
+    } else {
+      handleDeviceChange(selectedEstablishment);
     }
-  }, [selectedDeviceId, handleDeviceChange]);
+  }, [selectedDeviceId, selectedEstablishment, handleDeviceChange]);
 
   // If a device is selected via AllDevices, show dashboard with that device's data
   const shouldShowDetailView = selectedDeviceId !== null;
