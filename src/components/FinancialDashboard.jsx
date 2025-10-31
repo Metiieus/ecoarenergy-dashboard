@@ -18,6 +18,18 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const { apiData, loading, error } = useApiDataContext();
 
+  // ========================================
+  // METRIC CALCULATIONS EXPLANATION:
+  // ========================================
+  // Meta: User-set monthly budget (default R$10,000)
+  // Consumo Mensal: Monthly consumption from API (difference from previous month)
+  // Consumo com Eco Ar (ecoAir): Monthly × 0.8 (simulated 20% savings with Eco Air equipment)
+  // Consumo Previsto: Monthly × 0.85 (85% of actual consumption)
+  // Economia: Consumo Mensal - Consumo com Eco Ar (savings per month)
+  // Acumulado: Sum of all ecoAir values from start of year to current month
+  // Desvio Meta: (Meta - Accumulated Spending) = surplus/deficit against target
+  // ========================================
+
   useEffect(() => {
     console.log('API Data:', apiData);
     console.log('Loading:', loading);
