@@ -47,34 +47,19 @@ function AppContent() {
         {/* Dashboard Content */}
         <div className="p-8">
           {activeSidebarTab === 'dashboard' && (
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-              {/* Tabs Navigation */}
-              <TabsList className="bg-white border border-gray-200 rounded-lg p-1 w-fit">
-                <TabsTrigger value="dashboard" className="px-4 py-2">
-                  Dashboard
-                </TabsTrigger>
-                <TabsTrigger value="all-devices" className="px-4 py-2">
-                  Todos os Dispositivos
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Dashboard Tab */}
-              <TabsContent value="dashboard" className="space-y-8">
-                {shouldShowDetailView ? (
-                  <DeviceDetailView
-                    deviceId={selectedDeviceId}
-                    onBack={() => setSelectedDeviceId(null)}
-                  />
-                ) : (
-                  <FinancialDashboard selectedEstablishment={selectedEstablishment} />
-                )}
-              </TabsContent>
-
-              {/* All Devices Tab */}
-              <TabsContent value="all-devices" className="space-y-8">
-                <AllDevices onSelectDevice={setSelectedDeviceId} />
-              </TabsContent>
-            </Tabs>
+            <div className="space-y-8">
+              {shouldShowDetailView ? (
+                <DeviceDetailView
+                  deviceId={selectedDeviceId}
+                  onBack={() => setSelectedDeviceId(null)}
+                />
+              ) : (
+                <FinancialDashboard
+                  selectedEstablishment={selectedEstablishment}
+                  onSelectDevice={setSelectedDeviceId}
+                />
+              )}
+            </div>
           )}
 
           {activeSidebarTab === 'consumption' && (
