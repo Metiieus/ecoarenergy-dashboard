@@ -144,24 +144,28 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     }
   };
 
-  const currentMonthIndex = new Date().getMonth();
-  const currentMonthData = monthlyCostData[currentMonthIndex];
+  // Get data for the ACTUAL current month (for history and comparisons)
+  const actualCurrentMonthIndex = new Date().getMonth();
 
-  // DADOS DO MÊS ATUAL (não acumulado)
-  const currentMonthOnly = isNaN(currentMonthData?.ecoAir) ? 0 : Math.max(0, currentMonthData?.ecoAir || 0);
-  const currentMonthConsumption = isNaN(currentMonthData?.consumed) ? 0 : Math.max(0, currentMonthData?.consumed || 0);
-  const currentMonthSavings = isNaN(currentMonthConsumption - currentMonthOnly) ? 0 : Math.max(0, currentMonthConsumption - currentMonthOnly);
+  // Get data for the SELECTED month (what user is viewing)
+  const selectedMonthData = monthlyCostData[selectedMonthIndex];
 
-  // DADOS ACUMULADOS (para comparativo histórico)
+  // DADOS DO MÊS SELECIONADO (não acumulado)
+  const selectedMonthOnly = isNaN(selectedMonthData?.ecoAir) ? 0 : Math.max(0, selectedMonthData?.ecoAir || 0);
+  const selectedMonthConsumption = isNaN(selectedMonthData?.consumed) ? 0 : Math.max(0, selectedMonthData?.consumed || 0);
+  const selectedMonthSavings = isNaN(selectedMonthConsumption - selectedMonthOnly) ? 0 : Math.max(0, selectedMonthConsumption - selectedMonthOnly);
+
+  // Meta do mês selecionado
+  const selectedMonthMeta = monthlyMetaValues[selectedMonthIndex] || 10000;
+
+  // DADOS ACUMULADOS ATÉ O MÊS ATUAL (para comparativo histórico)
   const currentMonthAccumulated = monthlyCostData.length > 0
-    ? monthlyCostData.slice(0, currentMonthIndex + 1).reduce((sum, month) => sum + (month?.ecoAir || 0), 0)
+    ? monthlyCostData.slice(0, actualCurrentMonthIndex + 1).reduce((sum, month) => sum + (month?.ecoAir || 0), 0)
     : 0;
 
   // Calculate actual monthly activation time from API downtime data
-  // Total hours in a month: 30 days × 24 hours = 720 hours
-  // Activation time = 720 - (minutes off / 60)
   const calculatedMonthlyActivationTime = apiData && apiData.minutos_desligado_mensal && apiData.minutos_desligado_mensal.length > 0
-    ? Math.max(0, 720 - (apiData.minutos_desligado_mensal[currentMonthIndex] || 0) / 60)
+    ? Math.max(0, 720 - (apiData.minutos_desligado_mensal[selectedMonthIndex] || 0) / 60)
     : monthlyActivationTime;
 
   // Year-over-year growth: Compare current accumulated consumption with same period last year
