@@ -436,15 +436,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 ? 'text-green-600'
                 : 'text-red-600'
             }`}>
-              R${Math.round(Math.abs(monthlyMeta - currentMonthOnly)).toLocaleString('pt-BR')}
+              R${isNaN(monthlyMeta - currentMonthOnly) ? '0' : Math.round(Math.abs(monthlyMeta - currentMonthOnly)).toLocaleString('pt-BR')}
             </p>
             <div className={`text-xs text-gray-600 space-y-0.5 rounded p-2 ${
               currentMonthOnly <= monthlyMeta
                 ? 'bg-green-50/50'
                 : 'bg-red-50/50'
             }`}>
-              <p>Meta do mês: <span className="font-semibold text-gray-900">R${Math.round(monthlyMeta).toLocaleString('pt-BR')}</span></p>
-              <p>Gasto do mês: <span className="font-semibold text-gray-900">R${Math.round(currentMonthOnly).toLocaleString('pt-BR')}</span></p>
+              <p>Meta do mês: <span className="font-semibold text-gray-900">R${isNaN(monthlyMeta) ? '0' : Math.round(monthlyMeta).toLocaleString('pt-BR')}</span></p>
+              <p>Gasto do mês: <span className="font-semibold text-gray-900">R${isNaN(currentMonthOnly) ? '0' : Math.round(currentMonthOnly).toLocaleString('pt-BR')}</span></p>
               <p className="mt-1 pt-1 border-t border-gray-200">
                 {currentMonthOnly <= monthlyMeta
                   ? '✓ Dentro da meta'
