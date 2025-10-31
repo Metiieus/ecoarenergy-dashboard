@@ -23,17 +23,12 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     console.log('Loading:', loading);
     console.log('Error:', error);
 
-    if (apiData && apiData.consumo_mensal && apiData.consumo_mensal.length > 0) {
+    if (apiData && Array.isArray(apiData.consumo_mensal) && apiData.consumo_mensal.length > 0) {
       const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
       const transformedData = apiData.consumo_mensal.map((consumoAcumulado, index) => {
-        // Consumo anterior (para calcular consumo mensal real)
         const consumoAnterior = index > 0 ? apiData.consumo_mensal[index - 1] : 0;
-        const consumoMensal = consumoAcumulado - consumoAnterior;
-
-        // Eco Ar é 80% do consumo (simulação de otimização)
+        const consumoMensal = Math.max(0, consumoAcumulado - consumoAnterior);
         const consumoComEcoAir = consumoMensal * 0.8;
-
-        // Previsto é 85% do consumo mensal (meta otimista)
         const consumoPrevisto = consumoMensal * 0.85;
 
         return {
@@ -46,10 +41,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       });
       console.log('Transformed data:', transformedData);
       setMonthlyCostData(transformedData);
-    } else if (!loading && !apiData?.consumo_mensal) {
-      // Se não houver dados e não estiver carregando, usa mock data
+    } else if (!loading && (!apiData || !Array.isArray(apiData.consumo_mensal) || apiData.consumo_mensal.length === 0)) {
       console.warn('Nenhum dado da API, usando dados fictícios');
-      const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
       const mockData = [
         { month: 'Jan', consumed: 257, ecoAir: 206, previsto: 218, consumoAcumulado: 257 },
         { month: 'Fev', consumed: 825, ecoAir: 660, previsto: 701, consumoAcumulado: 1082 },
@@ -66,7 +59,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       ];
       setMonthlyCostData(mockData);
     }
-  }, [apiData]);
+  }, [apiData, loading]);
 
   const totalConsumptionYear = monthlyCostData.reduce((sum, month) => sum + month.consumoAcumulado, 0) || 0;
   const totalEconomyYear = monthlyCostData.reduce((sum, month) => sum + (month.consumed - month.ecoAir), 0) || 0;
