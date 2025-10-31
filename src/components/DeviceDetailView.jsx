@@ -53,7 +53,6 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <button
           onClick={onBack}
@@ -67,7 +66,6 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
         </div>
       </div>
 
-      {/* Main Stats */}
       <div className="grid grid-cols-4 gap-6">
         <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
           <div className="flex items-center gap-3 mb-3">
@@ -114,69 +112,56 @@ const DeviceDetailView = ({ deviceId, onBack }) => {
         </div>
       </div>
 
-      {/* Charts */}
       <div className="grid grid-cols-2 gap-6">
         <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Consumo de Energia (24h)</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={consumptionData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
-              <YAxis />
-              <Tooltip />
-              <Line 
-                type="monotone" 
-                dataKey="consumption" 
-                stroke="#14b8a6" 
-                strokeWidth={2}
-                dot={{ fill: '#14b8a6', r: 4 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          {loading ? (
+            <div className="h-80 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={consumptionData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="time" />
+                <YAxis />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="consumption"
+                  stroke="#14b8a6"
+                  strokeWidth={2}
+                  dot={{ fill: '#14b8a6', r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
         </div>
 
         <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Eficiência Semanal (%)</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={efficiencyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="period" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="efficiency" fill="#06b6d4" />
-            </BarChart>
-          </ResponsiveContainer>
+          {loading ? (
+            <div className="h-80 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={efficiencyData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="period" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="efficiency" fill="#06b6d4" />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 
-      {/* Devices in Sector */}
-      {sectorDevices.length > 0 && (
-        <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Dispositivos no Setor</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Dispositivo</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Potência</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Energia</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Temperatura</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Umidade</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sectorDevices.map((dev) => (
-                  <tr key={dev.id} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="py-3 px-4 text-gray-900">{dev.nome}</td>
-                    <td className="py-3 px-4 text-gray-600">{dev.potencia} W</td>
-                    <td className="py-3 px-4 text-gray-600">{dev.energia} kWh</td>
-                    <td className="py-3 px-4 text-gray-600">{dev.temperatura}��C</td>
-                    <td className="py-3 px-4 text-gray-600">{dev.umidade}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      {error && (
+        <div className="bg-white rounded-xl p-6 shadow-md border border-red-200 bg-red-50">
+          <p className="text-red-600 font-semibold">Erro ao carregar dados</p>
+          <p className="text-red-500 text-sm mt-1">{error}</p>
         </div>
       )}
     </div>
