@@ -460,7 +460,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <p className="text-xs text-gray-600 font-semibold mb-2">Dispositivos Ativos</p>
               <div className="space-y-1 max-h-28 overflow-y-auto">
                 {deviceRankings.slice(0, 3).map((device) => (
-                  <div key={device.id} className="flex items-center gap-2 text-xs bg-gray-50 p-2 rounded">
+                  <div
+                    key={device.id}
+                    onClick={() => onSelectDevice && onSelectDevice(device.id)}
+                    className="flex items-center gap-2 text-xs bg-gray-50 p-2 rounded hover:bg-teal-50 cursor-pointer transition-colors"
+                  >
                     <span className="text-base">{device.icon}</span>
                     <div className="flex-1">
                       <p className="font-semibold text-gray-700">{device.name}</p>
