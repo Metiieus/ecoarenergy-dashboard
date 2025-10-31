@@ -70,12 +70,7 @@ function AppContent() {
 
               {/* All Devices Tab */}
               <TabsContent value="all-devices" className="space-y-8">
-                <AllDevices
-                  onSelectDevice={setSelectedDeviceId}
-                  onViewDetails={() => {
-                    setActiveTab('dashboard');
-                  }}
-                />
+                <AllDevices onSelectDevice={setSelectedDeviceId} />
               </TabsContent>
             </Tabs>
           )}
