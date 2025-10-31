@@ -137,6 +137,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     ? monthlyCostData.slice(0, currentMonthIndex + 1).reduce((sum, month) => sum + (month?.ecoAir || 0), 0)
     : 0;
 
+  // Year-over-year growth: Compare current accumulated consumption with same period last year
+  // Currently hardcoded to 12% because API doesn't provide historical year-over-year data
+  // TODO: Implement logic to fetch and calculate actual year-over-year growth when API provides historical data
   const yearOverYearGrowth = 12;
   const monthlyMeta = isNaN(costMeta) ? 0 : costMeta / 12;
 
