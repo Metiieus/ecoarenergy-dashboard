@@ -3,7 +3,7 @@ import { Calendar, TrendingDown, Edit2, Check, TrendingUp, Clock, Zap, Leaf } fr
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { deviceRankings } from '../data/mockData';
-import { useApiData } from '../hooks/useApiData';
+import { useApiDataContext } from '../context/ApiDataContext';
 
 const FinancialDashboard = ({ selectedEstablishment }) => {
   const [periodFilter, setPeriodFilter] = useState('monthly');
@@ -16,7 +16,7 @@ const FinancialDashboard = ({ selectedEstablishment }) => {
   const [monthlyActivationTime, setMonthlyActivationTime] = useState(48.5);
   const [monthlyCostData, setMonthlyCostData] = useState([]);
 
-  const { data: apiData, loading, error } = useApiData(selectedEstablishment, true);
+  const { apiData, loading, error } = useApiDataContext();
 
   useEffect(() => {
     console.log('API Data:', apiData);
