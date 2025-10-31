@@ -3,11 +3,9 @@ import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import FinancialDashboard from './components/FinancialDashboard';
-import AllDevices from './components/AllDevices';
 import DeviceDetailView from './components/DeviceDetailView';
 import ControlCenter from './components/ControlCenter';
 import ConsumptionTab from './components/ConsumptionTab';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './components/ui/tabs';
 import { ApiDataProvider, useApiDataContext } from './context/ApiDataContext';
 
 function AppContent() {
