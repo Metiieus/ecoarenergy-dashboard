@@ -322,8 +322,12 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       <div className="grid grid-cols-3 gap-3">
         {/* Large Graph Section */}
         <div className="col-span-2 bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
-          <h3 className="text-sm font-bold text-gray-900 mb-1">Gráfico Mensal</h3>
-          <p className="text-xs text-gray-500 mb-3">Consumo para o Ano Atual</p>
+          <h3 className="text-sm font-bold text-gray-900 mb-1">
+            Gráfico {periodFilter === 'monthly' ? 'Mensal' : 'Diário'}
+          </h3>
+          <p className="text-xs text-gray-500 mb-3">
+            {periodFilter === 'monthly' ? 'Consumo para o Ano Atual' : 'Consumo para o Mês Atual'}
+          </p>
 
           {loading ? (
             <div className="h-80 flex items-center justify-center">
@@ -339,22 +343,42 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 <p className="text-xs text-gray-500">{error}</p>
               </div>
             </div>
-          ) : monthlyCostData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend />
-                <Bar dataKey="ecoAir" fill="#10b981" name="Consumo com Eco Ar (R$)" radius={[8, 8, 0, 0]} />
-                <Bar dataKey="previsto" fill="#f87171" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          ) : periodFilter === 'monthly' ? (
+            monthlyCostData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Bar dataKey="ecoAir" fill="#10b981" name="Consumo com Eco Ar (R$)" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="previsto" fill="#f87171" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-80 flex items-center justify-center">
+                <p className="text-xs text-gray-600">Nenhum dado disponível</p>
+              </div>
+            )
           ) : (
-            <div className="h-80 flex items-center justify-center">
-              <p className="text-xs text-gray-600">Nenhum dado disponível</p>
-            </div>
+            dailyCostData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={dailyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Bar dataKey="ecoAir" fill="#10b981" name="Consumo com Eco Ar (R$)" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="previsto" fill="#f87171" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-80 flex items-center justify-center">
+                <p className="text-xs text-gray-600">Nenhum dado disponível para este mês</p>
+              </div>
+            )
           )}
         </div>
 
