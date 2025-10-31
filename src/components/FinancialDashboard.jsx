@@ -61,11 +61,14 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     }
   }, [apiData, loading]);
 
+  // Total consumption is the final accumulated value (not sum of all accumulated values)
   const totalConsumptionYear = monthlyCostData.length > 0
-    ? monthlyCostData.reduce((sum, month) => sum + (month?.consumoAcumulado || 0), 0)
+    ? monthlyCostData[monthlyCostData.length - 1]?.consumoAcumulado || 0
     : 0;
+
+  // Total economy is the sum of monthly savings (consumed - ecoAir for each month)
   const totalEconomyYear = monthlyCostData.length > 0
-    ? monthlyCostData.reduce((sum, month) => sum + ((month?.consumed || 0) - (month?.ecoAir || 0)), 0)
+    ? monthlyCostData.reduce((sum, month) => sum + Math.max(0, (month?.consumed || 0) - (month?.ecoAir || 0)), 0)
     : 0;
 
   const economyPieData = [
