@@ -510,7 +510,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             {/* Current Month Activation Time */}
             <div className="space-y-2 border-t border-gray-200 pt-3">
               <p className="text-xs text-gray-600 font-semibold">Atuação do Mês</p>
-              <p className="text-lg font-bold text-gray-900">{monthlyActivationTime}h</p>
+              <p className="text-lg font-bold text-gray-900">{Math.round(calculatedMonthlyActivationTime)}h</p>
             </div>
 
             {/* Device Details */}
