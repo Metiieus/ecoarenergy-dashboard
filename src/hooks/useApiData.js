@@ -23,11 +23,21 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
         setLoading(true);
         setError(null);
 
-        const url = new URL(API_BASE_URL);
-        url.searchParams.append('device_id', deviceId);
-        url.searchParams.append('historico', includeHistory);
+        let urlString;
+        if (import.meta.env.PROD) {
+          const url = new URL(API_BASE_URL);
+          url.searchParams.append('device_id', deviceId);
+          url.searchParams.append('historico', includeHistory);
+          urlString = url.toString();
+        } else {
+          const baseUrl = `${window.location.origin}${API_BASE_URL}`;
+          const url = new URL(baseUrl);
+          url.searchParams.append('device_id', deviceId);
+          url.searchParams.append('historico', includeHistory);
+          urlString = url.toString();
+        }
 
-        const response = await fetch(url.toString(), {
+        const response = await fetch(urlString, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
