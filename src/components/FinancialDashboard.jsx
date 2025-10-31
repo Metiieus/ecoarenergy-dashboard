@@ -125,6 +125,16 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const yearOverYearGrowth = 12;
   const monthlyMeta = isNaN(costMeta) ? 0 : costMeta / 12;
 
+  // Daily chart data transformation
+  const dailyCostData = apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
+    ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
+        day: `D${index + 1}`,
+        consumed: Math.round(consumoDiario),
+        ecoAir: Math.round(consumoDiario * 0.8),
+        previsto: Math.round(consumoDiario * 0.85)
+      }))
+    : [];
+
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
