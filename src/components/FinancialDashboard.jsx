@@ -135,9 +135,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const currentMonthData = monthlyCostData[currentMonthIndex];
 
   // DADOS DO MÊS ATUAL (não acumulado)
-  const currentMonthOnly = currentMonthData?.ecoAir || 0;  // Apenas consumo do mês atual com Eco Ar
-  const currentMonthConsumption = currentMonthData?.consumed || 0;  // Consumo bruto do mês atual
-  const currentMonthSavings = currentMonthConsumption - currentMonthOnly;  // Economia do mês atual
+  const currentMonthOnly = Math.max(0, currentMonthData?.ecoAir || 0);  // Apenas consumo do mês atual com Eco Ar
+  const currentMonthConsumption = Math.max(0, currentMonthData?.consumed || 0);  // Consumo bruto do mês atual
+  const currentMonthSavings = Math.max(0, currentMonthConsumption - currentMonthOnly);  // Economia do mês atual
 
   // DADOS ACUMULADOS (para comparativo histórico)
   const currentMonthAccumulated = monthlyCostData.length > 0
