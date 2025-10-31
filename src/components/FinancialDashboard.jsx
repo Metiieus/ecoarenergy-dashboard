@@ -61,8 +61,12 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     }
   }, [apiData, loading]);
 
-  const totalConsumptionYear = monthlyCostData.reduce((sum, month) => sum + month.consumoAcumulado, 0) || 0;
-  const totalEconomyYear = monthlyCostData.reduce((sum, month) => sum + (month.consumed - month.ecoAir), 0) || 0;
+  const totalConsumptionYear = monthlyCostData.length > 0
+    ? monthlyCostData.reduce((sum, month) => sum + (month?.consumoAcumulado || 0), 0)
+    : 0;
+  const totalEconomyYear = monthlyCostData.length > 0
+    ? monthlyCostData.reduce((sum, month) => sum + ((month?.consumed || 0) - (month?.ecoAir || 0)), 0)
+    : 0;
 
   const economyPieData = [
     { name: 'Consumo Total', value: Math.max(totalConsumptionYear, 1), fill: '#dc2626' },
