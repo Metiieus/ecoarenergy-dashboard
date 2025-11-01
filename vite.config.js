@@ -5,7 +5,8 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),tailwindcss()],
+  plugins: [react(), tailwindcss()],
+  base: '/ecoarenergy-dashboard/', // 👈 Adiciona isso pro GitHub Pages
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
