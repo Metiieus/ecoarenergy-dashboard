@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { Calendar, TrendingDown, Edit2, Check, TrendingUp, Clock, Zap, Leaf } from 'lucide-react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
@@ -40,14 +40,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   // Desvio Meta: (Meta - Accumulated Spending) = surplus/deficit against target
   // ========================================
 
-  useEffect(() => {
-    console.log('API Data:', apiData);
-    console.log('Loading:', loading);
-    console.log('Error:', error);
-
+  const monthlyCostDataMemo = useMemo(() => {
     if (apiData && Array.isArray(apiData.consumo_mensal) && apiData.consumo_mensal.length > 0) {
-      const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-      const transformedData = apiData.consumo_mensal.map((consumoAcumulado, index) => {
+      return apiData.consumo_mensal.map((consumoAcumulado, index) => {
         const consumoAnterior = index > 0 ? apiData.consumo_mensal[index - 1] : 0;
         const consumoMensal = Math.max(0, consumoAcumulado - consumoAnterior);
         const consumoComEcoAir = consumoMensal * 0.8;
@@ -61,42 +56,50 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           consumoAcumulado: Math.round(consumoAcumulado)
         };
       });
-      console.log('Transformed data:', transformedData);
-      setMonthlyCostData(transformedData);
-    } else if (!loading && (!apiData || !Array.isArray(apiData.consumo_mensal) || apiData.consumo_mensal.length === 0)) {
-      console.warn('Nenhum dado da API, usando dados fictícios');
-      const mockData = [
-        { month: 'Jan', consumed: 257, ecoAir: 206, previsto: 218, consumoAcumulado: 257 },
-        { month: 'Fev', consumed: 825, ecoAir: 660, previsto: 701, consumoAcumulado: 1082 },
-        { month: 'Mar', consumed: 1959, ecoAir: 1567, previsto: 1666, consumoAcumulado: 3041 },
-        { month: 'Abr', consumed: 3029, ecoAir: 2423, previsto: 2575, consumoAcumulado: 6070 },
-        { month: 'Mai', consumed: 2931, ecoAir: 2345, previsto: 2491, consumoAcumulado: 9001 },
-        { month: 'Jun', consumed: 1811, ecoAir: 1449, previsto: 1539, consumoAcumulado: 10812 },
-        { month: 'Jul', consumed: 1822, ecoAir: 1458, previsto: 1549, consumoAcumulado: 12634 },
-        { month: 'Ago', consumed: 1957, ecoAir: 1566, previsto: 1664, consumoAcumulado: 14591 },
-        { month: 'Set', consumed: 1397, ecoAir: 1118, previsto: 1188, consumoAcumulado: 15988 },
-        { month: 'Out', consumed: 2603, ecoAir: 2082, previsto: 2212, consumoAcumulado: 18591 },
-        { month: 'Nov', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591 },
-        { month: 'Dez', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591 }
-      ];
-      setMonthlyCostData(mockData);
     }
-  }, [apiData, loading]);
 
-  // Total consumption is the final accumulated value (not sum of all accumulated values)
-  const totalConsumptionYear = monthlyCostData.length > 0
-    ? monthlyCostData[monthlyCostData.length - 1]?.consumoAcumulado || 0
-    : 0;
+    const mockData = [
+      { month: 'Jan', consumed: 257, ecoAir: 206, previsto: 218, consumoAcumulado: 257 },
+      { month: 'Fev', consumed: 825, ecoAir: 660, previsto: 701, consumoAcumulado: 1082 },
+      { month: 'Mar', consumed: 1959, ecoAir: 1567, previsto: 1666, consumoAcumulado: 3041 },
+      { month: 'Abr', consumed: 3029, ecoAir: 2423, previsto: 2575, consumoAcumulado: 6070 },
+      { month: 'Mai', consumed: 2931, ecoAir: 2345, previsto: 2491, consumoAcumulado: 9001 },
+      { month: 'Jun', consumed: 1811, ecoAir: 1449, previsto: 1539, consumoAcumulado: 10812 },
+      { month: 'Jul', consumed: 1822, ecoAir: 1458, previsto: 1549, consumoAcumulado: 12634 },
+      { month: 'Ago', consumed: 1957, ecoAir: 1566, previsto: 1664, consumoAcumulado: 14591 },
+      { month: 'Set', consumed: 1397, ecoAir: 1118, previsto: 1188, consumoAcumulado: 15988 },
+      { month: 'Out', consumed: 2603, ecoAir: 2082, previsto: 2212, consumoAcumulado: 18591 },
+      { month: 'Nov', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591 },
+      { month: 'Dez', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591 }
+    ];
 
-  // Total economy is the sum of monthly savings (consumed - ecoAir for each month)
-  const totalEconomyYear = monthlyCostData.length > 0
-    ? monthlyCostData.reduce((sum, month) => sum + Math.max(0, (month?.consumed || 0) - (month?.ecoAir || 0)), 0)
-    : 0;
+    return mockData;
+  }, [apiData?.consumo_mensal]);
 
-  const economyPieData = [
-    { name: 'Consumo Total', value: Math.max(totalConsumptionYear, 1), fill: '#dc2626' },
-    { name: 'Economia', value: Math.max(totalEconomyYear, 1), fill: '#22c55e' }
-  ];
+  useEffect(() => {
+    setMonthlyCostData(monthlyCostDataMemo);
+  }, [monthlyCostDataMemo]);
+
+  const { totalConsumptionYear, totalEconomyYear, economyPieData } = useMemo(() => {
+    const totalConsumption = monthlyCostData.length > 0
+      ? monthlyCostData[monthlyCostData.length - 1]?.consumoAcumulado || 0
+      : 0;
+
+    const totalEconomy = monthlyCostData.length > 0
+      ? monthlyCostData.reduce((sum, month) => sum + Math.max(0, (month?.consumed || 0) - (month?.ecoAir || 0)), 0)
+      : 0;
+
+    const pieData = [
+      { name: 'Consumo Total', value: Math.max(totalConsumption, 1), fill: '#dc2626' },
+      { name: 'Economia', value: Math.max(totalEconomy, 1), fill: '#22c55e' }
+    ];
+
+    return {
+      totalConsumptionYear: totalConsumption,
+      totalEconomyYear: totalEconomy,
+      economyPieData: pieData
+    };
+  }, [monthlyCostData]);
 
   const updateTable = [
     { month: 'JAN', value: '50 h', atualização: '46 H' },
@@ -173,15 +176,16 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   // TODO: Implement logic to fetch and calculate actual year-over-year growth when API provides historical data
   const yearOverYearGrowth = 12;
 
-  // Daily chart data transformation
-  const dailyCostData = apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
-    ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
-        day: `D${index + 1}`,
-        consumed: Math.round(consumoDiario),
-        ecoAir: Math.round(consumoDiario * 0.8),
-        previsto: Math.round(consumoDiario * 0.85)
-      }))
-    : [];
+  const dailyCostData = useMemo(() => {
+    return apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
+      ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
+          day: `D${index + 1}`,
+          consumed: Math.round(consumoDiario),
+          ecoAir: Math.round(consumoDiario * 0.8),
+          previsto: Math.round(consumoDiario * 0.85)
+        }))
+      : [];
+  }, [apiData?.consumo_diario_mes_corrente]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -265,8 +269,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
           <div className="flex-1 flex items-center justify-center gap-12 overflow-hidden">
             <div className="flex-shrink-0">
-              <ResponsiveContainer width={320} height={320}>
-                <PieChart>
+              <ResponsiveContainer width={320} height={320} debounce={100}>
+                <PieChart isAnimationActive={false}>
                   <Pie
                     data={economyPieData}
                     cx="50%"
@@ -308,10 +312,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 setSelectedMonthIndex(newIndex);
                 setCostInputValue(monthlyMetaValues[newIndex].toString());
               }}
-              className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-gray-700 hover:border-blue-500 transition-colors"
+              className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-gray-700 hover:border-blue-500 transition-colors appearance-none cursor-pointer"
             >
               {monthNames.map((name, index) => (
-                <option key={index} value={index}>{name}</option>
+                <option key={index} value={String(index)}>{name}</option>
               ))}
             </select>
           </div>
@@ -410,8 +414,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
           ) : periodFilter === 'monthly' ? (
             monthlyCostData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+              <ResponsiveContainer width="100%" height={300} debounce={100}>
+                <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
@@ -428,8 +432,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             )
           ) : (
             dailyCostData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={dailyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+              <ResponsiveContainer width="100%" height={300} debounce={100}>
+                <BarChart data={dailyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="day" />
                   <YAxis />
@@ -579,4 +583,4 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   );
 };
 
-export default FinancialDashboard;
+export default memo(FinancialDashboard);

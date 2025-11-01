@@ -6,7 +6,7 @@ const ApiDataContext = createContext();
 
 export const ApiDataProvider = ({ children }) => {
   const [selectedDeviceId, setSelectedDeviceId] = useState(33);
-  const { data: apiData, loading, error } = useApiData(selectedDeviceId, true);
+  const { data: apiData, loading, error } = useApiData(selectedDeviceId, false);
   const chartData = useChartData(apiData);
 
   const handleDeviceChange = useCallback((deviceId) => {
