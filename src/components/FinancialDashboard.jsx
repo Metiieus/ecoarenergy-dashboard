@@ -187,7 +187,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       : [];
   }, [apiData?.consumo_diario_mes_corrente]);
 
-  const CustomTooltip = useCallback(({ active, payload, label }) => {
+  const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       const ecoAirValue = data.ecoAir || 0;
@@ -214,7 +214,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       );
     }
     return null;
-  }, [monthNames, selectedMonthIndex, monthlyMetaValues]);
+  };
 
   return (
     <div className="space-y-6">
