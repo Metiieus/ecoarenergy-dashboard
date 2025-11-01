@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { Calendar, TrendingDown, Edit2, Check, TrendingUp, Clock, Zap, Leaf } from 'lucide-react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
@@ -583,4 +583,4 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   );
 };
 
-export default FinancialDashboard;
+export default memo(FinancialDashboard);
