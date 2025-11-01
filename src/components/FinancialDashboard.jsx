@@ -80,20 +80,26 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     setMonthlyCostData(monthlyCostDataMemo);
   }, [monthlyCostDataMemo]);
 
-  // Total consumption is the final accumulated value (not sum of all accumulated values)
-  const totalConsumptionYear = monthlyCostData.length > 0
-    ? monthlyCostData[monthlyCostData.length - 1]?.consumoAcumulado || 0
-    : 0;
+  const { totalConsumptionYear, totalEconomyYear, economyPieData } = useMemo(() => {
+    const totalConsumption = monthlyCostData.length > 0
+      ? monthlyCostData[monthlyCostData.length - 1]?.consumoAcumulado || 0
+      : 0;
 
-  // Total economy is the sum of monthly savings (consumed - ecoAir for each month)
-  const totalEconomyYear = monthlyCostData.length > 0
-    ? monthlyCostData.reduce((sum, month) => sum + Math.max(0, (month?.consumed || 0) - (month?.ecoAir || 0)), 0)
-    : 0;
+    const totalEconomy = monthlyCostData.length > 0
+      ? monthlyCostData.reduce((sum, month) => sum + Math.max(0, (month?.consumed || 0) - (month?.ecoAir || 0)), 0)
+      : 0;
 
-  const economyPieData = [
-    { name: 'Consumo Total', value: Math.max(totalConsumptionYear, 1), fill: '#dc2626' },
-    { name: 'Economia', value: Math.max(totalEconomyYear, 1), fill: '#22c55e' }
-  ];
+    const pieData = [
+      { name: 'Consumo Total', value: Math.max(totalConsumption, 1), fill: '#dc2626' },
+      { name: 'Economia', value: Math.max(totalEconomy, 1), fill: '#22c55e' }
+    ];
+
+    return {
+      totalConsumptionYear: totalConsumption,
+      totalEconomyYear: totalEconomy,
+      economyPieData: pieData
+    };
+  }, [monthlyCostData]);
 
   const updateTable = [
     { month: 'JAN', value: '50 h', atualização: '46 H' },
@@ -170,15 +176,16 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   // TODO: Implement logic to fetch and calculate actual year-over-year growth when API provides historical data
   const yearOverYearGrowth = 12;
 
-  // Daily chart data transformation
-  const dailyCostData = apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
-    ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
-        day: `D${index + 1}`,
-        consumed: Math.round(consumoDiario),
-        ecoAir: Math.round(consumoDiario * 0.8),
-        previsto: Math.round(consumoDiario * 0.85)
-      }))
-    : [];
+  const dailyCostData = useMemo(() => {
+    return apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
+      ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
+          day: `D${index + 1}`,
+          consumed: Math.round(consumoDiario),
+          ecoAir: Math.round(consumoDiario * 0.8),
+          previsto: Math.round(consumoDiario * 0.85)
+        }))
+      : [];
+  }, [apiData?.consumo_diario_mes_corrente]);
 
   const CustomTooltip = useCallback(({ active, payload, label }) => {
     if (active && payload && payload.length) {
