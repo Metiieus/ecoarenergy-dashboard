@@ -312,10 +312,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 setSelectedMonthIndex(newIndex);
                 setCostInputValue(monthlyMetaValues[newIndex].toString());
               }}
-              className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-gray-700 hover:border-blue-500 transition-colors"
+              className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-gray-700 hover:border-blue-500 transition-colors appearance-none cursor-pointer"
             >
               {monthNames.map((name, index) => (
-                <option key={index} value={index}>{name}</option>
+                <option key={index} value={String(index)}>{name}</option>
               ))}
             </select>
           </div>
