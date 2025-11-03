@@ -66,7 +66,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           ecoAir: Math.round(consumoComEcoAir),
           previsto: Math.round(consumoPrevisto),
           consumoSemSistema: Math.round(consumoSemSistema),
-          consumoAcumulado: Math.round(consumoAcumulado)
+          consumoAcumulado: Math.round(consumoAcumulado),
+          isSelected: index === selectedMonthIndex
         };
       });
     }
