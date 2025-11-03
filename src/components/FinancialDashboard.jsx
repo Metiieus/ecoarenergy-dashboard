@@ -89,13 +89,19 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       ? monthlyCostData[monthlyCostData.length - 1]?.consumoAcumulado || 0
       : 0;
 
-    const totalEconomy = monthlyCostData.length > 0
-      ? monthlyCostData.reduce((sum, month) => sum + Math.max(0, (month?.consumed || 0) - (month?.ecoAir || 0)), 0)
+    const totalConsumptionWithSystem = monthlyCostData.length > 0
+      ? monthlyCostData.reduce((sum, month) => sum + (month?.consumed || 0), 0)
       : 0;
 
+    const totalConsumptionWithoutSystem = monthlyCostData.length > 0
+      ? monthlyCostData.reduce((sum, month) => sum + (month?.consumoSemSistema || 0), 0)
+      : 0;
+
+    const totalEconomy = totalConsumptionWithoutSystem - totalConsumptionWithSystem;
+
     const pieData = [
-      { name: 'Consumo Total', value: Math.max(totalConsumption, 1), fill: '#dc2626' },
-      { name: 'Economia', value: Math.max(totalEconomy, 1), fill: '#22c55e' }
+      { name: 'Consumo com Sistema', value: Math.max(totalConsumptionWithSystem, 1), fill: '#10b981' },
+      { name: 'Consumo sem Sistema', value: Math.max(totalConsumptionWithoutSystem, 1), fill: '#dc2626' }
     ];
 
     return {
