@@ -25,9 +25,10 @@ export const useChartData = (apiData) => {
     return apiData.consumo_diario_mes_corrente.map((consumption, index) => ({
       day: `D${index + 1}`,
       consumption: consumption,
+      consumoSemSistema: apiData.consumo_sem_sistema_diario?.[index] || consumption / 0.8,
       target: 4200 / 31
     }));
-  }, [apiData?.consumo_diario_mes_corrente]);
+  }, [apiData?.consumo_diario_mes_corrente, apiData?.consumo_sem_sistema_diario]);
 
   const peakHoursData = useMemo(() => {
     if (!apiData?.potencias || apiData.potencias.length === 0) {
