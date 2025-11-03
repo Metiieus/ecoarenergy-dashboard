@@ -16,6 +16,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   });
 
   const currentMonthIndex = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(currentMonthIndex);
 
   const handleMonthChange = (monthIndex) => {
