@@ -487,23 +487,34 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               </div>
             )
           ) : (
-            dailyCostData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300} debounce={100}>
-                <BarChart data={dailyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="day" />
-                  <YAxis />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Bar dataKey="consumed" fill="#10b981" name="Consumo com Sistema (R$)" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="consumoSemSistema" fill="#dc2626" name="Consumo sem Sistema (R$)" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-80 flex items-center justify-center">
-                <p className="text-xs text-gray-600">Nenhum dado disponível para este mês</p>
-              </div>
-            )
+            <div className="space-y-2">
+              {selectedMonthIndex !== currentMonthIndex && (
+                <div className="bg-blue-50 border border-blue-200 rounded p-2 flex items-start gap-2">
+                  <span className="text-blue-600 text-xs mt-0.5">ℹ️</span>
+                  <p className="text-xs text-blue-700">
+                    Exibindo dados simulados para <strong>{monthNames[selectedMonthIndex]}</strong>.
+                    Dados reais disponíveis apenas para o mês atual.
+                  </p>
+                </div>
+              )}
+              {dailyCostData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300} debounce={100}>
+                  <BarChart data={dailyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="day" />
+                    <YAxis />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend />
+                    <Bar dataKey="consumed" name="Consumo com Sistema (R$)" radius={[8, 8, 0, 0]} fill="#10b981" />
+                    <Bar dataKey="consumoSemSistema" name="Consumo sem Sistema (R$)" radius={[8, 8, 0, 0]} fill="#dc2626" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-80 flex items-center justify-center">
+                  <p className="text-xs text-gray-600">Nenhum dado disponível para este mês</p>
+                </div>
+              )}
+            </div>
           )}
         </div>
 
