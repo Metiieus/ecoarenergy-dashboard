@@ -329,8 +329,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               value={selectedMonthIndex}
               onChange={(e) => {
                 const newIndex = parseInt(e.target.value);
-                setSelectedMonthIndex(newIndex);
-                setCostInputValue(monthlyMetaValues[newIndex].toString());
+                handleMonthChange(newIndex);
               }}
               className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-gray-700 hover:border-blue-500 transition-colors appearance-none cursor-pointer"
             >
