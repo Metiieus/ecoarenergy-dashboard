@@ -7,6 +7,8 @@ const API_BASE_URL = import.meta.env.PROD
 const defaultApiData = {
   consumo_mensal: [],
   consumo_diario_mes_corrente: [],
+  consumo_sem_sistema_mensal: [],
+  consumo_sem_sistema_diario: [],
   potencias: [],
   minutos_desligado_diario: [],
   minutos_desligado_mensal: []
