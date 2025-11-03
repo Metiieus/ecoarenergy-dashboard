@@ -441,8 +441,16 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   <YAxis />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
-                  <Bar dataKey="consumed" fill="#10b981" name="Consumo com Sistema (R$)" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="consumoSemSistema" fill="#dc2626" name="Consumo sem Sistema (R$)" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="consumed" name="Consumo com Sistema (R$)" radius={[8, 8, 0, 0]}>
+                    {monthlyCostData.map((entry, index) => (
+                      <Cell key={`consumed-${index}`} fill={entry.isSelected ? '#059669' : '#10b981'} />
+                    ))}
+                  </Bar>
+                  <Bar dataKey="consumoSemSistema" name="Consumo sem Sistema (R$)" radius={[8, 8, 0, 0]}>
+                    {monthlyCostData.map((entry, index) => (
+                      <Cell key={`semSistema-${index}`} fill={entry.isSelected ? '#b91c1c' : '#dc2626'} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             ) : (
