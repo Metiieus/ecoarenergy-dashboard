@@ -12,9 +12,10 @@ export const useChartData = (apiData) => {
       month: monthLabels[index % 12],
       cost: consumption * 0.80,
       consumption: consumption,
+      consumoSemSistema: apiData.consumo_sem_sistema_mensal?.[index] || consumption / 0.8,
       target: 3000
     }));
-  }, [apiData?.consumo_mensal]);
+  }, [apiData?.consumo_mensal, apiData?.consumo_sem_sistema_mensal]);
 
   const dailyConsumptionData = useMemo(() => {
     if (!apiData?.consumo_diario_mes_corrente || apiData.consumo_diario_mes_corrente.length === 0) {
