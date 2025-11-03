@@ -186,10 +186,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           day: `D${index + 1}`,
           consumed: Math.round(consumoDiario),
           ecoAir: Math.round(consumoDiario * 0.8),
-          previsto: Math.round(consumoDiario * 0.85)
+          previsto: Math.round(consumoDiario * 0.85),
+          consumoSemSistema: Math.round(apiData.consumo_sem_sistema_diario?.[index] || consumoDiario / 0.8)
         }))
       : [];
-  }, [apiData?.consumo_diario_mes_corrente]);
+  }, [apiData?.consumo_diario_mes_corrente, apiData?.consumo_sem_sistema_diario]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
