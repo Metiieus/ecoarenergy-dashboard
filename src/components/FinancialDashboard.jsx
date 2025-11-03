@@ -197,16 +197,44 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const yearOverYearGrowth = 12;
 
   const dailyCostData = useMemo(() => {
-    return apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
-      ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
-          day: `D${index + 1}`,
-          consumed: Math.round(consumoDiario),
-          ecoAir: Math.round(consumoDiario * 0.8),
-          previsto: Math.round(consumoDiario * 0.85),
-          consumoSemSistema: Math.round(apiData.consumo_sem_sistema_diario?.[index] || consumoDiario / 0.8)
-        }))
-      : [];
-  }, [apiData?.consumo_diario_mes_corrente, apiData?.consumo_sem_sistema_diario]);
+    // If viewing current month, show actual daily consumption
+    if (selectedMonthIndex === currentMonthIndex) {
+      return apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
+        ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
+            day: `D${index + 1}`,
+            consumed: Math.round(consumoDiario),
+            ecoAir: Math.round(consumoDiario * 0.8),
+            previsto: Math.round(consumoDiario * 0.85),
+            consumoSemSistema: Math.round(apiData.consumo_sem_sistema_diario?.[index] || consumoDiario / 0.8)
+          }))
+        : [];
+    }
+
+    // If viewing past month, simulate daily data based on monthly consumption
+    if (apiData && Array.isArray(apiData.consumo_mensal) && selectedMonthIndex < apiData.consumo_mensal.length) {
+      const monthlyConsumption = apiData.consumo_mensal[selectedMonthIndex];
+      const monthlyWithoutSystem = apiData.consumo_sem_sistema_mensal?.[selectedMonthIndex] || monthlyConsumption / 0.8;
+      const daysInMonth = new Date(currentYear, selectedMonthIndex + 1, 0).getDate();
+
+      // Distribute monthly consumption evenly across days
+      const avgDailyConsumption = monthlyConsumption / daysInMonth;
+      const avgDailyWithoutSystem = monthlyWithoutSystem / daysInMonth;
+
+      const dailyData = [];
+      for (let i = 0; i < daysInMonth; i++) {
+        dailyData.push({
+          day: `D${i + 1}`,
+          consumed: Math.round(avgDailyConsumption),
+          ecoAir: Math.round(avgDailyConsumption * 0.8),
+          previsto: Math.round(avgDailyConsumption * 0.85),
+          consumoSemSistema: Math.round(avgDailyWithoutSystem)
+        });
+      }
+      return dailyData;
+    }
+
+    return [];
+  }, [apiData?.consumo_diario_mes_corrente, apiData?.consumo_sem_sistema_diario, apiData?.consumo_mensal, apiData?.consumo_sem_sistema_mensal, selectedMonthIndex, currentMonthIndex]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
