@@ -17,6 +17,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const currentMonthIndex = new Date().getMonth();
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(currentMonthIndex);
+
+  const handleMonthChange = (monthIndex) => {
+    setSelectedMonthIndex(monthIndex);
+    setCostInputValue(monthlyMetaValues[monthIndex].toString());
+    // Switch to daily view only if selecting current month, otherwise stay on monthly
+    if (monthIndex !== currentMonthIndex) {
+      setPeriodFilter('monthly');
+    }
+  };
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [costInputValue, setCostInputValue] = useState(monthlyMetaValues[currentMonthIndex].toString());
 
