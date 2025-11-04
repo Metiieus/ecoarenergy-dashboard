@@ -11,6 +11,7 @@ import { ApiDataProvider, useApiDataContext } from './context/ApiDataContext';
 function AppContent() {
   const [activeSidebarTab, setActiveSidebarTab] = useState('dashboard');
   const [selectedEstablishment, setSelectedEstablishment] = useState(1);
+  const [selectedApiDeviceId, setSelectedApiDeviceId] = useState(33);
   const [selectedDeviceId, setSelectedDeviceId] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get('device') ? parseInt(params.get('device')) : null;
@@ -19,12 +20,8 @@ function AppContent() {
   const { handleDeviceChange } = useApiDataContext();
 
   useEffect(() => {
-    if (selectedDeviceId !== null) {
-      handleDeviceChange(selectedDeviceId);
-    } else {
-      handleDeviceChange(selectedEstablishment);
-    }
-  }, [selectedDeviceId, selectedEstablishment, handleDeviceChange]);
+    handleDeviceChange(selectedApiDeviceId);
+  }, [selectedApiDeviceId, handleDeviceChange]);
 
   const shouldShowDetailView = selectedDeviceId !== null;
 
@@ -38,6 +35,8 @@ function AppContent() {
         <Header
           selectedEstablishment={selectedEstablishment}
           onEstablishmentChange={setSelectedEstablishment}
+          selectedDeviceId={selectedApiDeviceId}
+          onDeviceChange={setSelectedApiDeviceId}
         />
 
         {/* Dashboard Content */}
