@@ -13,7 +13,12 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
 
   const handleSelectEstablishment = (establishmentId) => {
     onEstablishmentChange(establishmentId);
-    setIsDropdownOpen(false);
+    setIsEstablishmentDropdownOpen(false);
+  };
+
+  const handleSelectDevice = (deviceId) => {
+    onDeviceChange(deviceId);
+    setIsDeviceDropdownOpen(false);
   };
 
   return (
