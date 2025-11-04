@@ -35,8 +35,8 @@ function AppContent() {
         <Header
           selectedEstablishment={selectedEstablishment}
           onEstablishmentChange={setSelectedEstablishment}
-          selectedDeviceId={selectedDeviceId}
-          onDeviceChange={setSelectedDeviceId}
+          selectedDeviceId={selectedApiDeviceId}
+          onDeviceChange={setSelectedApiDeviceId}
         />
 
         {/* Dashboard Content */}
