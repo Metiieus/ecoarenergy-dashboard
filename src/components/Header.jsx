@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { Bell, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { establishments } from '../data/establishments';
+import { devices } from '../data/devices';
 
-const Header = ({ selectedEstablishment, onEstablishmentChange }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId, onDeviceChange }) => {
+  const [isEstablishmentDropdownOpen, setIsEstablishmentDropdownOpen] = useState(false);
+  const [isDeviceDropdownOpen, setIsDeviceDropdownOpen] = useState(false);
 
   const currentEstablishment = establishments.find(est => est.id === selectedEstablishment) || establishments[0];
+  const currentDevice = devices.find(dev => dev.id === selectedDeviceId) || devices[0];
 
   const handleSelectEstablishment = (establishmentId) => {
     onEstablishmentChange(establishmentId);
