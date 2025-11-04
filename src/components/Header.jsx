@@ -2,15 +2,23 @@ import { useState } from 'react';
 import { Bell, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { establishments } from '../data/establishments';
+import { devices } from '../data/devices';
 
-const Header = ({ selectedEstablishment, onEstablishmentChange }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId, onDeviceChange }) => {
+  const [isEstablishmentDropdownOpen, setIsEstablishmentDropdownOpen] = useState(false);
+  const [isDeviceDropdownOpen, setIsDeviceDropdownOpen] = useState(false);
 
   const currentEstablishment = establishments.find(est => est.id === selectedEstablishment) || establishments[0];
+  const currentDevice = devices.find(dev => dev.id === selectedDeviceId) || devices[0];
 
   const handleSelectEstablishment = (establishmentId) => {
     onEstablishmentChange(establishmentId);
-    setIsDropdownOpen(false);
+    setIsEstablishmentDropdownOpen(false);
+  };
+
+  const handleSelectDevice = (deviceId) => {
+    onDeviceChange(deviceId);
+    setIsDeviceDropdownOpen(false);
   };
 
   return (
@@ -27,7 +35,7 @@ const Header = ({ selectedEstablishment, onEstablishmentChange }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  onClick={() => setIsEstablishmentDropdownOpen(!isEstablishmentDropdownOpen)}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
                 >
                   <span className="text-sm font-medium text-gray-700">{currentEstablishment.name}</span>
@@ -39,7 +47,7 @@ const Header = ({ selectedEstablishment, onEstablishmentChange }) => {
               </TooltipContent>
             </Tooltip>
 
-            {isDropdownOpen && (
+            {isEstablishmentDropdownOpen && (
               <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                 {establishments.map((est) => (
                   <button
@@ -55,6 +63,48 @@ const Header = ({ selectedEstablishment, onEstablishmentChange }) => {
                         <p className="text-xs text-gray-500">{est.abbreviation}</p>
                       </div>
                       {selectedEstablishment === est.id && (
+                        <div className="w-2 h-2 rounded-full bg-teal-600"></div>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Device Selector Dropdown */}
+          <div className="relative">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setIsDeviceDropdownOpen(!isDeviceDropdownOpen)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                  <span className="text-sm font-medium text-gray-700">{currentDevice.name}</span>
+                  <ChevronDown className="w-4 h-4 text-gray-600" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Selecione um dispositivo para visualizar dados
+              </TooltipContent>
+            </Tooltip>
+
+            {isDeviceDropdownOpen && (
+              <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                {devices.map((dev) => (
+                  <button
+                    key={dev.id}
+                    onClick={() => handleSelectDevice(dev.id)}
+                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 ${
+                      selectedDeviceId === dev.id ? 'bg-teal-50' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{dev.name}</p>
+                        <p className="text-xs text-gray-500">{dev.location}</p>
+                      </div>
+                      {selectedDeviceId === dev.id && (
                         <div className="w-2 h-2 rounded-full bg-teal-600"></div>
                       )}
                     </div>

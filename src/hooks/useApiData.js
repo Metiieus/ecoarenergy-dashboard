@@ -7,6 +7,8 @@ const API_BASE_URL = import.meta.env.PROD
 const defaultApiData = {
   consumo_mensal: [],
   consumo_diario_mes_corrente: [],
+  consumo_sem_sistema_mensal: [],
+  consumo_sem_sistema_diario: [],
   potencias: [],
   minutos_desligado_diario: [],
   minutos_desligado_mensal: []
@@ -49,7 +51,21 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
         }
 
         const apiData = await response.json();
-        setData(apiData);
+
+        // Enrich API data with calculated fields for consumption without system
+        const enrichedData = {
+          ...apiData,
+          // Calculate consumption without system (assuming system reduces consumption to 80%)
+          consumo_sem_sistema_mensal: apiData.consumo_mensal?.length > 0
+            ? apiData.consumo_mensal.map(consumo => consumo / 0.8)
+            : [],
+          consumo_sem_sistema_diario: apiData.consumo_diario_mes_corrente?.length > 0
+            ? apiData.consumo_diario_mes_corrente.map(consumo => consumo / 0.8)
+            : []
+        };
+
+        setData(enrichedData);
+        console.log('📊 Enriched API Data:', enrichedData);
       } catch (err) {
         console.warn('Erro ao buscar dados da API, usando mock data:', err.message);
         setError(err.message);

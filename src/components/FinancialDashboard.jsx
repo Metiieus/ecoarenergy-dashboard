@@ -16,7 +16,17 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   });
 
   const currentMonthIndex = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(currentMonthIndex);
+
+  const handleMonthChange = (monthIndex) => {
+    setSelectedMonthIndex(monthIndex);
+    setCostInputValue(monthlyMetaValues[monthIndex].toString());
+    // Switch to daily view only if selecting current month, otherwise stay on monthly
+    if (monthIndex !== currentMonthIndex) {
+      setPeriodFilter('monthly');
+    }
+  };
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [costInputValue, setCostInputValue] = useState(monthlyMetaValues[currentMonthIndex].toString());
 
@@ -47,30 +57,35 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         const consumoMensal = Math.max(0, consumoAcumulado - consumoAnterior);
         const consumoComEcoAir = consumoMensal * 0.8;
         const consumoPrevisto = consumoMensal * 0.85;
+        const consumoSemSistema = apiData.consumo_sem_sistema_mensal?.[index]
+          ? Math.max(0, apiData.consumo_sem_sistema_mensal[index] - (apiData.consumo_sem_sistema_mensal[index - 1] || 0))
+          : consumoMensal / 0.8;
 
         return {
           month: monthNames[index],
           consumed: Math.round(consumoMensal),
           ecoAir: Math.round(consumoComEcoAir),
           previsto: Math.round(consumoPrevisto),
-          consumoAcumulado: Math.round(consumoAcumulado)
+          consumoSemSistema: Math.round(consumoSemSistema),
+          consumoAcumulado: Math.round(consumoAcumulado),
+          isSelected: index === selectedMonthIndex
         };
       });
     }
 
     const mockData = [
-      { month: 'Jan', consumed: 257, ecoAir: 206, previsto: 218, consumoAcumulado: 257 },
-      { month: 'Fev', consumed: 825, ecoAir: 660, previsto: 701, consumoAcumulado: 1082 },
-      { month: 'Mar', consumed: 1959, ecoAir: 1567, previsto: 1666, consumoAcumulado: 3041 },
-      { month: 'Abr', consumed: 3029, ecoAir: 2423, previsto: 2575, consumoAcumulado: 6070 },
-      { month: 'Mai', consumed: 2931, ecoAir: 2345, previsto: 2491, consumoAcumulado: 9001 },
-      { month: 'Jun', consumed: 1811, ecoAir: 1449, previsto: 1539, consumoAcumulado: 10812 },
-      { month: 'Jul', consumed: 1822, ecoAir: 1458, previsto: 1549, consumoAcumulado: 12634 },
-      { month: 'Ago', consumed: 1957, ecoAir: 1566, previsto: 1664, consumoAcumulado: 14591 },
-      { month: 'Set', consumed: 1397, ecoAir: 1118, previsto: 1188, consumoAcumulado: 15988 },
-      { month: 'Out', consumed: 2603, ecoAir: 2082, previsto: 2212, consumoAcumulado: 18591 },
-      { month: 'Nov', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591 },
-      { month: 'Dez', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591 }
+      { month: 'Jan', consumed: 257, ecoAir: 206, previsto: 218, consumoAcumulado: 257, consumoSemSistema: 321 },
+      { month: 'Fev', consumed: 825, ecoAir: 660, previsto: 701, consumoAcumulado: 1082, consumoSemSistema: 1031 },
+      { month: 'Mar', consumed: 1959, ecoAir: 1567, previsto: 1666, consumoAcumulado: 3041, consumoSemSistema: 2449 },
+      { month: 'Abr', consumed: 3029, ecoAir: 2423, previsto: 2575, consumoAcumulado: 6070, consumoSemSistema: 3786 },
+      { month: 'Mai', consumed: 2931, ecoAir: 2345, previsto: 2491, consumoAcumulado: 9001, consumoSemSistema: 3664 },
+      { month: 'Jun', consumed: 1811, ecoAir: 1449, previsto: 1539, consumoAcumulado: 10812, consumoSemSistema: 2264 },
+      { month: 'Jul', consumed: 1822, ecoAir: 1458, previsto: 1549, consumoAcumulado: 12634, consumoSemSistema: 2278 },
+      { month: 'Ago', consumed: 1957, ecoAir: 1566, previsto: 1664, consumoAcumulado: 14591, consumoSemSistema: 2446 },
+      { month: 'Set', consumed: 1397, ecoAir: 1118, previsto: 1188, consumoAcumulado: 15988, consumoSemSistema: 1746 },
+      { month: 'Out', consumed: 2603, ecoAir: 2082, previsto: 2212, consumoAcumulado: 18591, consumoSemSistema: 3254 },
+      { month: 'Nov', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591, consumoSemSistema: 0 },
+      { month: 'Dez', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591, consumoSemSistema: 0 }
     ];
 
     return mockData;
@@ -85,13 +100,19 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       ? monthlyCostData[monthlyCostData.length - 1]?.consumoAcumulado || 0
       : 0;
 
-    const totalEconomy = monthlyCostData.length > 0
-      ? monthlyCostData.reduce((sum, month) => sum + Math.max(0, (month?.consumed || 0) - (month?.ecoAir || 0)), 0)
+    const totalConsumptionWithSystem = monthlyCostData.length > 0
+      ? monthlyCostData.reduce((sum, month) => sum + (month?.consumed || 0), 0)
       : 0;
 
+    const totalConsumptionWithoutSystem = monthlyCostData.length > 0
+      ? monthlyCostData.reduce((sum, month) => sum + (month?.consumoSemSistema || 0), 0)
+      : 0;
+
+    const totalEconomy = totalConsumptionWithoutSystem - totalConsumptionWithSystem;
+
     const pieData = [
-      { name: 'Consumo Total', value: Math.max(totalConsumption, 1), fill: '#dc2626' },
-      { name: 'Economia', value: Math.max(totalEconomy, 1), fill: '#22c55e' }
+      { name: 'Consumo com Sistema', value: Math.max(totalConsumptionWithSystem, 1), fill: '#10b981' },
+      { name: 'Consumo sem Sistema', value: Math.max(totalConsumptionWithoutSystem, 1), fill: '#dc2626' }
     ];
 
     return {
@@ -177,15 +198,44 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const yearOverYearGrowth = 12;
 
   const dailyCostData = useMemo(() => {
-    return apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
-      ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
-          day: `D${index + 1}`,
-          consumed: Math.round(consumoDiario),
-          ecoAir: Math.round(consumoDiario * 0.8),
-          previsto: Math.round(consumoDiario * 0.85)
-        }))
-      : [];
-  }, [apiData?.consumo_diario_mes_corrente]);
+    // If viewing current month, show actual daily consumption
+    if (selectedMonthIndex === currentMonthIndex) {
+      return apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
+        ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
+            day: `D${index + 1}`,
+            consumed: Math.round(consumoDiario),
+            ecoAir: Math.round(consumoDiario * 0.8),
+            previsto: Math.round(consumoDiario * 0.85),
+            consumoSemSistema: Math.round(apiData.consumo_sem_sistema_diario?.[index] || consumoDiario / 0.8)
+          }))
+        : [];
+    }
+
+    // If viewing past month, simulate daily data based on monthly consumption
+    if (apiData && Array.isArray(apiData.consumo_mensal) && selectedMonthIndex < apiData.consumo_mensal.length) {
+      const monthlyConsumption = apiData.consumo_mensal[selectedMonthIndex];
+      const monthlyWithoutSystem = apiData.consumo_sem_sistema_mensal?.[selectedMonthIndex] || monthlyConsumption / 0.8;
+      const daysInMonth = new Date(currentYear, selectedMonthIndex + 1, 0).getDate();
+
+      // Distribute monthly consumption evenly across days
+      const avgDailyConsumption = monthlyConsumption / daysInMonth;
+      const avgDailyWithoutSystem = monthlyWithoutSystem / daysInMonth;
+
+      const dailyData = [];
+      for (let i = 0; i < daysInMonth; i++) {
+        dailyData.push({
+          day: `D${i + 1}`,
+          consumed: Math.round(avgDailyConsumption),
+          ecoAir: Math.round(avgDailyConsumption * 0.8),
+          previsto: Math.round(avgDailyConsumption * 0.85),
+          consumoSemSistema: Math.round(avgDailyWithoutSystem)
+        });
+      }
+      return dailyData;
+    }
+
+    return [];
+  }, [apiData?.consumo_diario_mes_corrente, apiData?.consumo_sem_sistema_diario, apiData?.consumo_mensal, apiData?.consumo_sem_sistema_mensal, selectedMonthIndex, currentMonthIndex]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -309,8 +359,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               value={selectedMonthIndex}
               onChange={(e) => {
                 const newIndex = parseInt(e.target.value);
-                setSelectedMonthIndex(newIndex);
-                setCostInputValue(monthlyMetaValues[newIndex].toString());
+                handleMonthChange(newIndex);
               }}
               className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-gray-700 hover:border-blue-500 transition-colors appearance-none cursor-pointer"
             >
@@ -421,8 +470,16 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   <YAxis />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
-                  <Bar dataKey="ecoAir" fill="#10b981" name="Consumo com Eco Ar (R$)" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="previsto" fill="#f87171" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="consumed" name="Consumo com Sistema (R$)" radius={[8, 8, 0, 0]}>
+                    {monthlyCostData.map((entry, index) => (
+                      <Cell key={`consumed-${index}`} fill={entry.isSelected ? '#059669' : '#10b981'} />
+                    ))}
+                  </Bar>
+                  <Bar dataKey="consumoSemSistema" name="Consumo sem Sistema (R$)" radius={[8, 8, 0, 0]}>
+                    {monthlyCostData.map((entry, index) => (
+                      <Cell key={`semSistema-${index}`} fill={entry.isSelected ? '#b91c1c' : '#dc2626'} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -431,23 +488,33 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               </div>
             )
           ) : (
-            dailyCostData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300} debounce={100}>
-                <BarChart data={dailyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="day" />
-                  <YAxis />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Bar dataKey="ecoAir" fill="#10b981" name="Consumo com Eco Ar (R$)" radius={[8, 8, 0, 0]} />
-                  <Bar dataKey="previsto" fill="#f87171" name="Consumo Previsto (R$)" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-80 flex items-center justify-center">
-                <p className="text-xs text-gray-600">Nenhum dado disponível para este mês</p>
-              </div>
-            )
+            <div className="space-y-2">
+              {selectedMonthIndex !== currentMonthIndex && (
+                <div className="bg-blue-50 border border-blue-200 rounded p-2 flex items-start gap-2">
+                  <span className="text-blue-600 text-xs mt-0.5">ℹ️</span>
+                  <p className="text-xs text-blue-700">
+                    Exibindo dados simulados para <strong>{monthNames[selectedMonthIndex]}</strong>.
+                    Dados reais disponíveis apenas para o mês atual.
+                  </p>
+                </div>
+              )}
+              {dailyCostData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300} debounce={100}>
+                  <BarChart data={dailyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="day" />
+                    <YAxis />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="consumed" name="Consumo com Sistema (R$)" radius={[8, 8, 0, 0]} fill="#10b981" />
+                    <Bar dataKey="consumoSemSistema" name="Consumo sem Sistema (R$)" radius={[8, 8, 0, 0]} fill="#dc2626" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-80 flex items-center justify-center">
+                  <p className="text-xs text-gray-600">Nenhum dado disponível para este mês</p>
+                </div>
+              )}
+            </div>
           )}
         </div>
 
