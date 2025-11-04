@@ -69,9 +69,6 @@ function AppContent() {
           )}
         </div>
       </div>
-
-      {/* API Validator Debug Tool */}
-      <ApiValidator />
     </div>
   );
 }
