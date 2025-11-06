@@ -368,9 +368,18 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               ))}
             </select>
           </div>
-          <div className="mb-2">
-            <p className="text-2xl font-bold text-gray-900">R${isNaN(selectedMonthOnly) ? '0' : Math.round(selectedMonthOnly).toLocaleString('pt-BR')}</p>
-            <p className="text-xs text-gray-500 mt-1">com Eco Ar</p>
+          <div className="mb-3 space-y-2">
+            <div>
+              <p className="text-xs text-gray-600 mb-1">Valor Principal</p>
+              <p className="text-2xl font-bold text-gray-900">R${isNaN(selectedMonthConsumption) ? '0' : Math.round(selectedMonthConsumption).toLocaleString('pt-BR')}</p>
+            </div>
+            <div className="border-t border-blue-200 pt-2">
+              <p className="text-xs text-gray-600 mb-1">Com Eco Air</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-lg font-bold text-blue-600">R${isNaN(selectedMonthOnly) ? '0' : Math.round(selectedMonthOnly).toLocaleString('pt-BR')}</p>
+                <span className="text-xs text-green-600 font-semibold">(-20%)</span>
+              </div>
+            </div>
           </div>
           <div className="bg-blue-50/50 rounded p-2 space-y-1">
             <p className="text-xs text-gray-600">Meta: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthMeta) ? '0' : Math.round(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
