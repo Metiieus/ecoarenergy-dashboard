@@ -479,14 +479,14 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   <YAxis />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
-                  <Bar dataKey="consumed" name="Consumo com Sistema (R$)" radius={[8, 8, 0, 0]}>
+                  <Bar dataKey="consumed" name="Sem Eco Air (R$)" radius={[8, 8, 0, 0]}>
                     {monthlyCostData.map((entry, index) => (
-                      <Cell key={`consumed-${index}`} fill={entry.isSelected ? '#059669' : '#10b981'} />
+                      <Cell key={`consumed-${index}`} fill={entry.isSelected ? '#b91c1c' : '#dc2626'} />
                     ))}
                   </Bar>
-                  <Bar dataKey="consumoSemSistema" name="Consumo sem Sistema (R$)" radius={[8, 8, 0, 0]}>
+                  <Bar dataKey="ecoAir" name="Com Eco Air (R$)" radius={[8, 8, 0, 0]}>
                     {monthlyCostData.map((entry, index) => (
-                      <Cell key={`semSistema-${index}`} fill={entry.isSelected ? '#b91c1c' : '#dc2626'} />
+                      <Cell key={`ecoAir-${index}`} fill={entry.isSelected ? '#059669' : '#10b981'} />
                     ))}
                   </Bar>
                 </BarChart>
