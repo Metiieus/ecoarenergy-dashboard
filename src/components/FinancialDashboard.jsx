@@ -479,12 +479,12 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   <YAxis />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
-                  <Bar dataKey="consumed" name="Sem Eco Air (R$)" radius={[8, 8, 0, 0]}>
+                  <Bar dataKey="consumed" name="Sem Eco Air (R$)" fill="#dc2626" radius={[8, 8, 0, 0]}>
                     {monthlyCostData.map((entry, index) => (
                       <Cell key={`consumed-${index}`} fill={entry.isSelected ? '#b91c1c' : '#dc2626'} />
                     ))}
                   </Bar>
-                  <Bar dataKey="ecoAir" name="Com Eco Air (R$)" radius={[8, 8, 0, 0]}>
+                  <Bar dataKey="ecoAir" name="Com Eco Air (R$)" fill="#10b981" radius={[8, 8, 0, 0]}>
                     {monthlyCostData.map((entry, index) => (
                       <Cell key={`ecoAir-${index}`} fill={entry.isSelected ? '#059669' : '#10b981'} />
                     ))}
@@ -515,8 +515,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     <YAxis />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
-                    <Bar dataKey="consumed" name="Sem Eco Air (R$)" radius={[8, 8, 0, 0]} fill="#dc2626" />
-                    <Bar dataKey="ecoAir" name="Com Eco Air (R$)" radius={[8, 8, 0, 0]} fill="#10b981" />
+                    <Bar dataKey="consumed" name="Sem Eco Air (R$)" fill="#dc2626" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="ecoAir" name="Com Eco Air (R$)" fill="#10b981" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
