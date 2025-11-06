@@ -54,14 +54,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     if (apiData && Array.isArray(apiData.consumo_mensal) && apiData.consumo_mensal.length > 0) {
       let consumoAcumulado = 0;
       return apiData.consumo_mensal.map((consumoMensal, index) => {
-        consumoAcumulado += consumoMensal;
-        const consumoComEcoAir = consumoMensal * 0.8;
-        const consumoPrevisto = consumoMensal * 0.85;
-        const consumoSemSistema = apiData.consumo_sem_sistema_mensal?.[index] || consumoMensal / 0.8;
+        const valorMensal = Math.max(0, Number(consumoMensal) || 0);
+        consumoAcumulado += valorMensal;
+        const consumoComEcoAir = valorMensal * 0.8;
+        const consumoPrevisto = valorMensal * 0.85;
+        const consumoSemSistema = apiData.consumo_sem_sistema_mensal?.[index] || valorMensal / 0.8;
 
         return {
           month: monthNames[index],
-          consumed: Math.round(consumoMensal),
+          consumed: Math.round(valorMensal),
           ecoAir: Math.round(consumoComEcoAir),
           previsto: Math.round(consumoPrevisto),
           consumoSemSistema: Math.round(consumoSemSistema),
