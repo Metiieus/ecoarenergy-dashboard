@@ -132,6 +132,13 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center flex-shrink-0">
               <span className="text-white font-bold text-sm">EA</span>
             </div>
+            <button
+              onClick={() => { try { const logoutFn = require('../context/AuthContext').useAuth().logout; logoutFn(); } catch(e){ window.location.reload(); } }}
+              className="p-2 rounded hover:bg-gray-100 text-gray-600"
+              title="Sair"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>
