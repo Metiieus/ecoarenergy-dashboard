@@ -505,6 +505,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   <YAxis />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
+                  {/* Meta reference line (not shown in legend) */}
+                  <ReferenceLine y={selectedMonthMeta} stroke="#374151" strokeDasharray="3 3">
+                    <Label value={`Meta: R$ ${formatBRL(selectedMonthMeta)}`} position="right" offset={0} />
+                  </ReferenceLine>
                   <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#dc2626" radius={[8, 8, 0, 0]}>
                     {monthlyCostData.map((entry, index) => (
                       <Cell key={`semSistema-${index}`} fill={entry.isSelected ? '#b91c1c' : '#dc2626'} />
