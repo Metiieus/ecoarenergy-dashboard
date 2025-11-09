@@ -430,10 +430,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </select>
           </div>
           <div className="mb-3 space-y-2">
-            <div>
-              <p className="text-xs text-gray-600 mb-1">Consumo sem Sistema</p>
-              <p className="text-2xl font-bold text-gray-900">R${formatBRL(selectedMonthWithoutSystem)}</p>
-            </div>
             <div className="border-t border-blue-200 pt-2">
               <p className="text-xs text-gray-600 mb-1">Valor Real (com Eco Air)</p>
               <div className="flex items-baseline gap-2">
