@@ -510,10 +510,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <div style={{ width: 260, height: 260, position: 'relative' }}>
                 <Doughnut data={gaugeData} options={gaugeOptions} />
                 {/* Center label */}
-                <div style={{ position: 'absolute', left: 0, top: '42%', width: '100%', textAlign: 'center', pointerEvents: 'none' }}>
+                <div style={{ position: 'absolute', left: 0, top: '38%', width: '100%', textAlign: 'center', pointerEvents: 'none' }}>
                   <div className="text-sm text-gray-500">Economia</div>
-                  <div className="text-2xl font-bold text-gray-900">R$ {isNaN(gaugeData?.meta?.economy) ? ( (monthlyCostData.length>0)?((monthlyCostData.reduce((s,m)=>s+(m.consumoSemSistema||0),0)-monthlyCostData.reduce((s,m)=>s+(m.consumed||0),0)).toFixed(2)):'0.00') : gaugeData.meta.economy.toFixed(2)}</div>
-                  <div className="text-xs text-gray-500">{gaugeData?.datasets?.[0]?.data?.[0] ?? 0}%</div>
+                  <div className="text-3xl font-extrabold text-gray-900">R$ {formatBRL(gaugeData?.meta?.economy ?? (monthlyCostData.length>0 ? monthlyCostData.reduce((s,m)=>s+(m.consumoSemSistema||0),0)-monthlyCostData.reduce((s,m)=>s+(m.consumed||0),0) : 0))}</div>
+                  <div className="text-sm text-gray-500 mt-1">{gaugeData?.meta?.percent ?? 0}%</div>
                 </div>
               </div>
             </div>
