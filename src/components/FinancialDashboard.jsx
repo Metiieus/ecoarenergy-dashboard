@@ -52,6 +52,12 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   // Desvio Meta: (Meta - consumed) = surplus/deficit against target
   // ========================================
 
+  const formatBRL = (v) => {
+    const num = Number(v);
+    if (!isFinite(num) || isNaN(num)) return '0,00';
+    return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
   const monthlyCostDataMemo = useMemo(() => {
     if (apiData && Array.isArray(apiData.consumo_mensal) && apiData.consumo_mensal.length > 0) {
       let consumoAcumulado = 0;
@@ -59,17 +65,17 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         const valorMensal = Math.max(0, Number(consumoMensal) || 0);
         consumoAcumulado += valorMensal;
         const consumoPrevisto = valorMensal * 0.85;
-        const consumoSemSistema = apiData.consumo_sem_sistema_mensal?.[index] && apiData.consumo_sem_sistema_mensal[index] > 0
-          ? apiData.consumo_sem_sistema_mensal[index]
+        const consumoSemSistema = Array.isArray(apiData.consumo_sem_sistema_mensal) && apiData.consumo_sem_sistema_mensal[index] > 0
+          ? Number(apiData.consumo_sem_sistema_mensal[index])
           : valorMensal / 0.8;
 
         return {
           month: monthNames[index],
-          consumed: Math.round(valorMensal),
-          ecoAir: Math.round(valorMensal),
-          previsto: Math.round(consumoPrevisto),
-          consumoSemSistema: Math.round(consumoSemSistema),
-          consumoAcumulado: Math.round(consumoAcumulado),
+          consumed: valorMensal,
+          ecoAir: valorMensal,
+          previsto: consumoPrevisto,
+          consumoSemSistema: consumoSemSistema,
+          consumoAcumulado: consumoAcumulado,
           isSelected: index === selectedMonthIndex
         };
       });
@@ -91,7 +97,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     ];
 
     return mockData;
-  }, [apiData?.consumo_mensal]);
+  }, [apiData?.consumo_mensal, selectedMonthIndex]);
 
   useEffect(() => {
     setMonthlyCostData(monthlyCostDataMemo);
