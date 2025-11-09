@@ -288,8 +288,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const CustomLegend = () => {
     const legendItems = [
-      { key: 'consumoSemSistema', label: 'Consumo Mensal + Sem Sistema (R$)', color: '#fecaca' },
-      { key: 'consumed', label: 'Valor Real (R$)', color: '#bbf7d0' }
+      { key: 'consumoSemSistema', label: 'Consumo Mensal + Sem Sistema (R$)', color: '#fca5a5' },
+      { key: 'consumed', label: 'Valor Real (R$)', color: '#34d399' }
     ];
 
     return (
