@@ -373,14 +373,14 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         </div>
 
         {/* Economia Total do Ano - Gauge */}
-        <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 hover:shadow-lg transition-shadow col-span-2 flex flex-col h-96">
+        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow col-span-2 flex flex-col h-80">
           <div className="mb-4">
             <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Economia Ano</p>
             <p className="text-xs text-gray-500 mt-1">Consumo vs Economia</p>
           </div>
           <div className="flex-1 flex items-center justify-center gap-12 overflow-hidden">
             <div className="flex-shrink-0">
-              <ResponsiveContainer width={320} height={320} debounce={100}>
+              <ResponsiveContainer width={260} height={260} debounce={100}>
                 <PieChart isAnimationActive={false}>
                   <Pie
                     data={economyPieData}
@@ -532,8 +532,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
                   <defs>
                     <linearGradient id="metaGradient" x1="0" x2="1" y1="0" y2="0">
-                      <stop offset="0%" stopColor="#60a5fa" />
-                      <stop offset="100%" stopColor="#2563eb" />
+                      <stop offset="0%" stopColor="#3b82f6" />
+                      <stop offset="100%" stopColor="#1e40af" />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -556,7 +556,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     ))}
                   </Bar>
                   {/* Trend line showing monthly meta values */}
-                  <Line type="monotone" dataKey="meta" stroke="url(#metaGradient)" strokeWidth={3} dot={{ r: 5, stroke: '#fff', strokeWidth: 2, fill: '#2563eb' }} activeDot={{ r: 6 }} strokeLinecap="round" />
+                  <Line type="monotone" dataKey="meta" stroke="url(#metaGradient)" strokeWidth={3.5} dot={{ r: 5, stroke: '#fff', strokeWidth: 2, fill: '#1e40af' }} activeDot={{ r: 6 }} strokeLinecap="round" />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
