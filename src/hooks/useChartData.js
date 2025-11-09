@@ -29,12 +29,19 @@ export const useChartData = (apiData) => {
       return [];
     }
 
-    return apiData.consumo_diario_mes_corrente.map((consumption, index) => ({
-      day: `D${index + 1}`,
-      consumption: consumption,
-      consumoSemSistema: apiData.consumo_sem_sistema_diario?.[index] || consumption / 0.8,
-      target: 4200 / 31
-    }));
+    return apiData.consumo_diario_mes_corrente.map((consumption, index) => {
+      const cons = Math.max(0, Number(consumption) || 0);
+      const sem = (Array.isArray(apiData.consumo_sem_sistema_diario) && apiData.consumo_sem_sistema_diario[index] > 0)
+        ? Math.max(0, Number(apiData.consumo_sem_sistema_diario[index]))
+        : Math.max(0, cons / 0.8);
+
+      return {
+        day: `D${index + 1}`,
+        consumption: cons,
+        consumoSemSistema: sem,
+        target: 4200 / 31
+      };
+    });
   }, [apiData?.consumo_diario_mes_corrente, apiData?.consumo_sem_sistema_diario]);
 
   const peakHoursData = useMemo(() => {
