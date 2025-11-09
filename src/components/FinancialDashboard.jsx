@@ -324,7 +324,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Meta - {monthNames[selectedMonthIndex]}</p>
               <TrendingDown className="w-4 h-4 text-green-600" />
             </div>
-            <p className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-gray-900">
               {isEditingMeta ? (
                 <div className="flex gap-1">
                   <input
@@ -356,7 +356,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   </button>
                 </div>
               )}
-            </p>
+            </div>
           </div>
 
           {/* Valor Acumulado Card */}
