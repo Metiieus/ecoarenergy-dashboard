@@ -282,15 +282,18 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return null;
   };
 
-  const CustomLegend = ({ payload }) => {
-    if (!payload || !Array.isArray(payload)) return null;
-    const items = payload.filter(item => item.dataKey !== 'meta');
+  const CustomLegend = () => {
+    const legendItems = [
+      { key: 'consumoSemSistema', label: 'Consumo Mensal + Sem Sistema (R$)', color: '#dc2626' },
+      { key: 'consumed', label: 'Valor Real (R$)', color: '#10b981' }
+    ];
+
     return (
       <div className="flex gap-4 items-center">
-        {items.map((item) => (
-          <div key={item.value} className="flex items-center gap-2 text-xs text-gray-700">
-            <span style={{ width: 12, height: 8, background: item.color || item.payload?.fill || '#000', display: 'inline-block' }}></span>
-            <span>{item.value}</span>
+        {legendItems.map(item => (
+          <div key={item.key} className="flex items-center gap-2 text-xs text-gray-700">
+            <span style={{ width: 12, height: 8, background: item.color, display: 'inline-block' }}></span>
+            <span>{item.label}</span>
           </div>
         ))}
       </div>
