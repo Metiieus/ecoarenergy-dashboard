@@ -256,19 +256,23 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const ecoAirValue = data.ecoAir || 0;
+      const consumed = Number(data.consumed) || 0;
+      const semSistema = Number(data.consumoSemSistema) || 0;
       const monthIndex = data.month ? monthNames.indexOf(data.month) : selectedMonthIndex;
       const monthMeta = monthlyMetaValues[monthIndex] || 10000;
-      const deviation = monthMeta - ecoAirValue;
+      const deviation = monthMeta - consumed;
       const deviationPercent = monthMeta > 0 ? ((deviation / monthMeta) * 100).toFixed(1) : 0;
 
       return (
         <div className="bg-white p-3 rounded-lg border border-gray-300 shadow-lg">
           <p className="font-semibold text-gray-900 text-sm mb-2">{data.month || 'Dia'} {data.day || ''}</p>
-          <p className="text-xs text-green-600 mb-1">
-            Valor Real: <span className="font-semibold">R$ {formatBRL(ecoAirValue)}</span>
-          </p>
           <p className="text-xs text-red-400 mb-1">
+            Consumo (sem sistema): <span className="font-semibold">R$ {formatBRL(semSistema)}</span>
+          </p>
+          <p className="text-xs text-green-600 mb-1">
+            Valor Real: <span className="font-semibold">R$ {formatBRL(consumed)}</span>
+          </p>
+          <p className="text-xs text-gray-500 mb-1">
             Meta: <span className="font-semibold">R$ {formatBRL(monthMeta)}</span>
           </p>
           <div className="border-t border-gray-200 mt-2 pt-2">
