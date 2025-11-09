@@ -282,6 +282,21 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return null;
   };
 
+  const CustomLegend = ({ payload }) => {
+    if (!payload || !Array.isArray(payload)) return null;
+    const items = payload.filter(item => item.dataKey !== 'meta');
+    return (
+      <div className="flex gap-4 items-center">
+        {items.map((item) => (
+          <div key={item.value} className="flex items-center gap-2 text-xs text-gray-700">
+            <span style={{ width: 12, height: 8, background: item.color || item.payload?.fill || '#000', display: 'inline-block' }}></span>
+            <span>{item.value}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Metrics Row - 4 Cards */}
