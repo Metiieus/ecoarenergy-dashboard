@@ -682,21 +682,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 </div>
               )}
               {dailyCostData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300} debounce={100}>
-                  <BarChart data={dailyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="day" />
-                    <YAxis domain={[0, yAxisMax]} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend content={<CustomLegend />} />
-                    {/* Meta reference line for daily chart (not shown in legend) */}
-                    <ReferenceLine y={selectedMonthMeta} stroke="#94a3b8" strokeDasharray="3 3">
-                      <Label value={`Meta: R$ ${formatBRL(selectedMonthMeta)}`} position="right" offset={0} />
-                    </ReferenceLine>
-                    <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#fecaca" fillOpacity={0.95} radius={[8, 8, 0, 0]} />
-                    <Bar dataKey="consumed" name="Valor Real (R$)" fill="#bbf7d0" fillOpacity={0.95} radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="h-72">
+                  <div className="w-full h-72">
+                    <Bar data={dailyChartData} options={dailyOptions} />
+                  </div>
+                </div>
               ) : (
                 <div className="h-80 flex items-center justify-center">
                   <p className="text-xs text-gray-600">Nenhum dado disponível para este mês</p>
