@@ -288,15 +288,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const CustomLegend = () => {
     const legendItems = [
-      { key: 'consumoSemSistema', label: 'Consumo Mensal + Sem Sistema (R$)', color: '#dc2626' },
-      { key: 'consumed', label: 'Valor Real (R$)', color: '#10b981' }
+      { key: 'consumoSemSistema', label: 'Consumo Mensal + Sem Sistema (R$)', color: '#fecaca' },
+      { key: 'consumed', label: 'Valor Real (R$)', color: '#bbf7d0' }
     ];
 
     return (
       <div className="flex gap-4 items-center">
         {legendItems.map(item => (
           <div key={item.key} className="flex items-center gap-2 text-xs text-gray-700">
-            <span style={{ width: 12, height: 8, background: item.color, display: 'inline-block' }}></span>
+            <span style={{ width: 12, height: 8, background: item.color, display: 'inline-block', borderRadius: 2 }}></span>
             <span>{item.label}</span>
           </div>
         ))}
@@ -530,27 +530,33 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             monthlyCostData.length > 0 ? (
               <ResponsiveContainer width="100%" height={300} debounce={100}>
                 <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
+                  <defs>
+                    <linearGradient id="metaGradient" x1="0" x2="1" y1="0" y2="0">
+                      <stop offset="0%" stopColor="#60a5fa" />
+                      <stop offset="100%" stopColor="#2563eb" />
+                    </linearGradient>
+                  </defs>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis domain={[0, yAxisMax]} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend content={<CustomLegend />} />
                   {/* Meta reference line (not shown in legend) */}
-                  <ReferenceLine y={selectedMonthMeta} stroke="#374151" strokeDasharray="3 3">
+                  <ReferenceLine y={selectedMonthMeta} stroke="#94a3b8" strokeDasharray="3 3">
                     <Label value={`Meta: R$ ${formatBRL(selectedMonthMeta)}`} position="right" offset={0} />
                   </ReferenceLine>
-                  <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#dc2626" radius={[8, 8, 0, 0]}>
+                  <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#fecaca" fillOpacity={0.95} radius={[8, 8, 0, 0]}>
                     {monthlyCostData.map((entry, index) => (
-                      <Cell key={`semSistema-${index}`} fill={entry.isSelected ? '#b91c1c' : '#dc2626'} />
+                      <Cell key={`semSistema-${index}`} fill={entry.isSelected ? '#f87171' : '#fecaca'} />
                     ))}
                   </Bar>
-                  <Bar dataKey="consumed" name="Valor Real (R$)" fill="#10b981" radius={[8, 8, 0, 0]}>
+                  <Bar dataKey="consumed" name="Valor Real (R$)" fill="#bbf7d0" fillOpacity={0.95} radius={[8, 8, 0, 0]}>
                     {monthlyCostData.map((entry, index) => (
-                      <Cell key={`consumed-${index}`} fill={entry.isSelected ? '#059669' : '#10b981'} />
+                      <Cell key={`consumed-${index}`} fill={entry.isSelected ? '#34d399' : '#bbf7d0'} />
                     ))}
                   </Bar>
                   {/* Trend line showing monthly meta values */}
-                  <Line type="monotone" dataKey="meta" stroke="#2563EB" strokeWidth={2} dot={{ r: 4, stroke: '#fff', strokeWidth: 2, fill: '#2563EB' }} activeDot={{ r: 5 }} />
+                  <Line type="monotone" dataKey="meta" stroke="url(#metaGradient)" strokeWidth={3} dot={{ r: 5, stroke: '#fff', strokeWidth: 2, fill: '#2563eb' }} activeDot={{ r: 6 }} strokeLinecap="round" />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -578,11 +584,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     <Tooltip content={<CustomTooltip />} />
                     <Legend content={<CustomLegend />} />
                     {/* Meta reference line for daily chart (not shown in legend) */}
-                    <ReferenceLine y={selectedMonthMeta} stroke="#374151" strokeDasharray="3 3">
+                    <ReferenceLine y={selectedMonthMeta} stroke="#94a3b8" strokeDasharray="3 3">
                       <Label value={`Meta: R$ ${formatBRL(selectedMonthMeta)}`} position="right" offset={0} />
                     </ReferenceLine>
-                    <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#dc2626" radius={[8, 8, 0, 0]} />
-                    <Bar dataKey="consumed" name="Valor Real (R$)" fill="#10b981" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#fecaca" fillOpacity={0.95} radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="consumed" name="Valor Real (R$)" fill="#bbf7d0" fillOpacity={0.95} radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
