@@ -528,8 +528,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     <YAxis />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
-                    <Bar dataKey="consumoSemSistema" name="Sem Eco Air (R$)" fill="#dc2626" radius={[8, 8, 0, 0]} />
-                    <Bar dataKey="consumed" name="Com Eco Air (R$)" fill="#10b981" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#dc2626" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="consumed" name="Valor Real (R$)" fill="#10b981" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
