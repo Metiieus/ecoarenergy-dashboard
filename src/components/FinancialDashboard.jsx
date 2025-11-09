@@ -578,7 +578,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   <BarChart data={dailyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="day" />
-                    <YAxis />
+                    <YAxis domain={[0, yAxisMax]} />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend content={<CustomLegend />} />
                     {/* Meta reference line for daily chart (not shown in legend) */}
