@@ -178,6 +178,74 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
 
   // Gauge (velocimetro) data based on economy achieved vs potential
+  const gaugeRef = useRef(null);
+
+  const gaugePlugin = useMemo(() => ({
+    id: 'gaugeNeedle',
+    afterDraw: (chart) => {
+      if (!chart || !chart.ctx) return;
+      const { ctx, chartArea: area, scales } = chart;
+      const meta = chart.data.meta || {};
+      const percent = meta.percent ?? (chart.data.datasets?.[0]?.data?.[0] ?? 0);
+
+      const cx = area.left + (area.right - area.left) / 2;
+      const cy = area.bottom; // baseline at bottom for semicircle
+      const radius = Math.min((area.right - area.left) / 2, (area.bottom - area.top)) * 0.9;
+
+      // compute angle from percent (rotation -PI to 0)
+      const angle = -Math.PI + (Math.PI * percent / 100);
+
+      ctx.save();
+
+      // draw needle
+      const needleLength = radius * 0.9;
+      const needleX = cx + Math.cos(angle) * needleLength;
+      const needleY = cy + Math.sin(angle) * needleLength;
+
+      ctx.beginPath();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#4c1d95';
+      ctx.moveTo(cx, cy - (radius * 0.12));
+      ctx.lineTo(needleX, needleY - (radius * 0.06));
+      ctx.stroke();
+
+      // draw center circle
+      ctx.beginPath();
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#4c1d95';
+      ctx.lineWidth = 3;
+      ctx.arc(cx, cy - (radius * 0.12), 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // draw labels 0 / mid / max
+      const maxVal = meta.totalWithout || 0;
+      const labels = [0, Math.round(maxVal/2), Math.round(maxVal)];
+      const labelAngles = [-Math.PI, -Math.PI/2, 0];
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '12px sans-serif';
+      labelAngles.forEach((a, i) => {
+        const lx = cx + Math.cos(a) * (radius + 18);
+        const ly = cy + Math.sin(a) * (radius + 18) - (radius * 0.12);
+        ctx.fillText(`${labels[i].toLocaleString()} `, lx - 10, ly + 4);
+      });
+
+      // draw tick at needle end and label
+      const tickX = cx + Math.cos(angle) * (radius + 6);
+      const tickY = cy + Math.sin(angle) * (radius + 6) - (radius * 0.12);
+      ctx.beginPath();
+      ctx.strokeStyle = '#4c1d95';
+      ctx.lineWidth = 2;
+      ctx.moveTo(tickX, tickY);
+      const tickInnerX = cx + Math.cos(angle) * (radius - 6);
+      const tickInnerY = cy + Math.sin(angle) * (radius - 6) - (radius * 0.12);
+      ctx.lineTo(tickInnerX, tickInnerY);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+  }), []);
+
   const gaugeData = useMemo(() => {
     const totalWith = monthlyCostData.length > 0 ? monthlyCostData.reduce((s, m) => s + (m.consumed || 0), 0) : 0;
     const totalWithout = monthlyCostData.length > 0 ? monthlyCostData.reduce((s, m) => s + (m.consumoSemSistema || 0), 0) : 0;
@@ -508,8 +576,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           <div className="flex-1 flex items-center justify-center gap-12 overflow-hidden">
             <div className="flex-shrink-0">
               <div style={{ width: 260, height: 260, position: 'relative' }}>
-                <Doughnut data={gaugeData} options={gaugeOptions} />
-                {/* Center label */}
+                <Doughnut ref={gaugeRef} data={gaugeData} options={gaugeOptions} plugins={[gaugePlugin]} />
+                {/* Center label (fallback) */}
                 <div style={{ position: 'absolute', left: 0, top: '38%', width: '100%', textAlign: 'center', pointerEvents: 'none' }}>
                   <div className="text-sm text-gray-500">Economia</div>
                   <div className="text-3xl font-extrabold text-gray-900">R$ {formatBRL(gaugeData?.meta?.economy ?? (monthlyCostData.length>0 ? monthlyCostData.reduce((s,m)=>s+(m.consumoSemSistema||0),0)-monthlyCostData.reduce((s,m)=>s+(m.consumed||0),0) : 0))}</div>
