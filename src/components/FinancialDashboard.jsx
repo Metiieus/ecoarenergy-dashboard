@@ -176,30 +176,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     }
   }), [yAxisMax, monthlyCostData]);
 
-  const dailyChartData = useMemo(() => ({
-    labels: dailyCostData.map(d => d.day),
-    datasets: [
-      {
-        label: 'Consumo Sem Sistema (R$)',
-        data: dailyCostData.map(d => d.consumoSemSistema || 0),
-        backgroundColor: '#fca5a5',
-        borderRadius: 4
-      },
-      {
-        label: 'Valor Real (R$)',
-        data: dailyCostData.map(d => d.consumed || 0),
-        backgroundColor: '#86efac',
-        borderRadius: 4
-      }
-    ]
-  }), [dailyCostData]);
-
-  const dailyOptions = useMemo(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: { x: { grid: { display: false } }, y: { beginAtZero: true, suggestedMax: yAxisMax } },
-    plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (ctx) => `R$ ${Number(ctx.raw || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` } } }
-  }), [yAxisMax, dailyCostData]);
 
   const pieChartData = useMemo(() => {
     const totalWith = monthlyCostData.length > 0 ? monthlyCostData.reduce((s, m) => s + (m.consumed || 0), 0) : 0;
