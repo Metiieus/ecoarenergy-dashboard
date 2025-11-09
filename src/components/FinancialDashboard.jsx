@@ -265,7 +265,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             Valor Real: <span className="font-semibold">R$ {formatBRL(ecoAirValue)}</span>
           </p>
           <p className="text-xs text-red-400 mb-1">
-            Meta: <span className="font-semibold">R$ {Math.round(monthMeta).toLocaleString('pt-BR')}</span>
+            Meta: <span className="font-semibold">R$ {formatBRL(monthMeta)}</span>
           </p>
           <div className="border-t border-gray-200 mt-2 pt-2">
             <p className={`text-xs font-semibold ${deviation >= 0 ? 'text-green-600' : 'text-red-600'}`}>
