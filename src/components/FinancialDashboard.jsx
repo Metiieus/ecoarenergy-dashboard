@@ -564,7 +564,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     <XAxis dataKey="day" />
                     <YAxis />
                     <Tooltip content={<CustomTooltip />} />
-                    <Legend />
+                    <Legend content={<CustomLegend />} />
                     {/* Meta reference line for daily chart (not shown in legend) */}
                     <ReferenceLine y={selectedMonthMeta} stroke="#374151" strokeDasharray="3 3">
                       <Label value={`Meta: R$ ${formatBRL(selectedMonthMeta)}`} position="right" offset={0} />
