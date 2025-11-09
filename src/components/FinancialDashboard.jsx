@@ -177,19 +177,43 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   }), [yAxisMax, monthlyCostData]);
 
 
-  const pieChartData = useMemo(() => {
+  // Gauge (velocimetro) data based on economy achieved vs potential
+  const gaugeData = useMemo(() => {
     const totalWith = monthlyCostData.length > 0 ? monthlyCostData.reduce((s, m) => s + (m.consumed || 0), 0) : 0;
     const totalWithout = monthlyCostData.length > 0 ? monthlyCostData.reduce((s, m) => s + (m.consumoSemSistema || 0), 0) : 0;
+    const economy = Math.max(0, totalWithout - totalWith);
+    const percent = totalWithout > 0 ? Math.round((economy / totalWithout) * 100) : 0;
+    const displayPercent = Math.min(100, Math.max(0, percent));
+
     return {
-      labels: ['Consumo com Sistema', 'Consumo sem Sistema'],
-      datasets: [{ data: [Math.max(totalWith, 1), Math.max(totalWithout, 1)], backgroundColor: ['#10b981', '#dc2626'] }]
+      labels: ['Economia', 'Restante'],
+      datasets: [
+        {
+          data: [displayPercent, 100 - displayPercent],
+          backgroundColor: ['#10b981', '#e6eef2'],
+          hoverBackgroundColor: ['#10b981', '#e6eef2'],
+          borderWidth: 0
+        }
+      ],
+      meta: {
+        totalWith,
+        totalWithout,
+        economy,
+        percent: displayPercent
+      }
     };
   }, [monthlyCostData]);
 
-  const pieOptions = useMemo(() => ({
+  const gaugeOptions = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom' } }
+    rotation: -Math.PI,
+    circumference: Math.PI,
+    cutout: '70%',
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: false }
+    }
   }), [monthlyCostData]);
 
   const { totalConsumptionYear, totalEconomyYear, economyPieData } = useMemo(() => {
