@@ -262,7 +262,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         <div className="bg-white p-3 rounded-lg border border-gray-300 shadow-lg">
           <p className="font-semibold text-gray-900 text-sm mb-2">{data.month || 'Dia'} {data.day || ''}</p>
           <p className="text-xs text-green-600 mb-1">
-            Valor Real: <span className="font-semibold">R$ {(ecoAirValue || 0).toLocaleString('pt-BR')}</span>
+            Valor Real: <span className="font-semibold">R$ {formatBRL(ecoAirValue)}</span>
           </p>
           <p className="text-xs text-red-400 mb-1">
             Meta: <span className="font-semibold">R$ {Math.round(monthMeta).toLocaleString('pt-BR')}</span>
