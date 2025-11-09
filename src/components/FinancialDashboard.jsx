@@ -206,9 +206,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
             day: `D${index + 1}`,
             consumed: Math.round(consumoDiario),
-            ecoAir: Math.round(consumoDiario * 0.8),
+            ecoAir: Math.round(consumoDiario),
             previsto: Math.round(consumoDiario * 0.85),
-            consumoSemSistema: Math.round(apiData.consumo_sem_sistema_diario?.[index] || consumoDiario / 0.8)
+            consumoSemSistema: Math.round(apiData.consumo_sem_sistema_diario?.[index] && apiData.consumo_sem_sistema_diario[index] > 0 ? apiData.consumo_sem_sistema_diario[index] : consumoDiario / 0.8)
           }))
         : [];
     }
@@ -216,7 +216,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     // If viewing past month, simulate daily data based on monthly consumption
     if (apiData && Array.isArray(apiData.consumo_mensal) && selectedMonthIndex < apiData.consumo_mensal.length) {
       const monthlyConsumption = apiData.consumo_mensal[selectedMonthIndex];
-      const monthlyWithoutSystem = apiData.consumo_sem_sistema_mensal?.[selectedMonthIndex] || monthlyConsumption / 0.8;
+      const monthlyWithoutSystem = apiData.consumo_sem_sistema_mensal?.[selectedMonthIndex] && apiData.consumo_sem_sistema_mensal[selectedMonthIndex] > 0
+        ? apiData.consumo_sem_sistema_mensal[selectedMonthIndex]
+        : monthlyConsumption / 0.8;
       const daysInMonth = new Date(currentYear, selectedMonthIndex + 1, 0).getDate();
 
       // Distribute monthly consumption evenly across days
@@ -228,7 +230,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         dailyData.push({
           day: `D${i + 1}`,
           consumed: Math.round(avgDailyConsumption),
-          ecoAir: Math.round(avgDailyConsumption * 0.8),
+          ecoAir: Math.round(avgDailyConsumption),
           previsto: Math.round(avgDailyConsumption * 0.85),
           consumoSemSistema: Math.round(avgDailyWithoutSystem)
         });
