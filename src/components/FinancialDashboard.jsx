@@ -316,7 +316,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   return (
     <div className="space-y-6">
       {/* Top Metrics Row - 4 Cards */}
-      <div className="grid grid-cols-5 gap-3 items-start">
+      <div className="grid grid-cols-5 gap-2 items-start">
         {/* Meta Card - Mês Selecionado */}
         <div className="space-y-3">
           <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow h-fit">
