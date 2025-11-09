@@ -541,7 +541,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     ))}
                   </Bar>
                   {/* Trend line showing monthly meta values */}
-                  <Line type="monotone" dataKey="meta" stroke="#374151" strokeWidth={2} dot={false} strokeDasharray="4 4" />
+                  <Line type="monotone" dataKey="meta" stroke="#2563EB" strokeWidth={2} dot={{ r: 3 }} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
