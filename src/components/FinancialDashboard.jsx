@@ -190,7 +190,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: { legend: { position: 'bottom' } }
-  }), [economyPieData]);
+  }), [monthlyCostData]);
 
   const { totalConsumptionYear, totalEconomyYear, economyPieData } = useMemo(() => {
     const totalConsumption = monthlyCostData.length > 0
