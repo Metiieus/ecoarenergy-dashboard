@@ -480,24 +480,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
           <div className="flex-1 flex items-center justify-center gap-12 overflow-hidden">
             <div className="flex-shrink-0">
-              <ResponsiveContainer width={260} height={260} debounce={100}>
-                <PieChart isAnimationActive={false}>
-                  <Pie
-                    data={economyPieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={80}
-                    outerRadius={130}
-                    dataKey="value"
-                    startAngle={180}
-                    endAngle={0}
-                  >
-                    {economyPieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+              <div style={{ width: 260, height: 260 }}>
+                <Pie data={pieChartData} options={pieOptions} />
+              </div>
             </div>
             <div className="space-y-6 flex-shrink-0">
               <div>
