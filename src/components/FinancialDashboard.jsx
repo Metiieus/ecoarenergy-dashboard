@@ -431,7 +431,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
           <div className="mb-3 space-y-2">
             <div className="border-t border-blue-200 pt-2">
-              <p className="text-xs text-gray-600 mb-1">Valor Real (com Eco Air)</p>
+              <p className="text-xs text-gray-600 mb-1">Valor Real (com Ecoar)</p>
               <div className="flex items-baseline gap-2">
                 <p className="text-lg font-bold text-blue-600">R${formatBRL(selectedMonthWithSystem)}</p>
               </div>
