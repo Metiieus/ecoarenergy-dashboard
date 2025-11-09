@@ -26,7 +26,7 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-gray-500">Sistema de Gestão de Energia</p>
-          <h1 className="text-2xl font-bold text-gray-900 mt-1">Ecoar Energy</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mt-1">Ecoar</h1>
         </div>
 
         <div className="flex items-center gap-3">
