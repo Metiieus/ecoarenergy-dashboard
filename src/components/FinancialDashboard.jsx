@@ -41,13 +41,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   // ========================================
   // METRIC CALCULATIONS EXPLANATION:
   // ========================================
-  // Meta: User-set monthly budget (default R$10,000)
-  // Consumo Mensal: Monthly consumption from API (difference from previous month)
-  // Consumo com Eco Ar (ecoAir): Monthly × 0.8 (simulated 20% savings with Eco Air equipment)
-  // Consumo Previsto: Monthly × 0.85 (85% of actual consumption)
-  // Economia: Consumo Mensal - Consumo com Eco Ar (savings per month)
-  // Acumulado: Sum of all ecoAir values from start of year to current month
-  // Desvio Meta: (Meta - Accumulated Spending) = surplus/deficit against target
+  // consumo_mensal from API: Monthly consumption WITH Eco Air system applied
+  // consumo_sem_sistema_mensal from API: Monthly consumption WITHOUT Eco Air system
+  // consumed: Direct value from apiData.consumo_mensal (already with Eco Air)
+  // ecoAir: Same as consumed (consumo_mensal already has Eco Air applied)
+  // previsto: Predicted consumption (consumed × 0.85)
+  // consumoSemSistema: Value from apiData.consumo_sem_sistema_mensal or calculated
+  // Economia: consumoSemSistema - consumed (savings per month)
+  // Acumulado: Sum of all consumed values from start of year to current month
+  // Desvio Meta: (Meta - consumed) = surplus/deficit against target
   // ========================================
 
   const monthlyCostDataMemo = useMemo(() => {
@@ -56,14 +58,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       return apiData.consumo_mensal.map((consumoMensal, index) => {
         const valorMensal = Math.max(0, Number(consumoMensal) || 0);
         consumoAcumulado += valorMensal;
-        const consumoComEcoAir = valorMensal * 0.8;
         const consumoPrevisto = valorMensal * 0.85;
-        const consumoSemSistema = apiData.consumo_sem_sistema_mensal?.[index] || valorMensal / 0.8;
+        const consumoSemSistema = apiData.consumo_sem_sistema_mensal?.[index] && apiData.consumo_sem_sistema_mensal[index] > 0
+          ? apiData.consumo_sem_sistema_mensal[index]
+          : valorMensal / 0.8;
 
         return {
           month: monthNames[index],
           consumed: Math.round(valorMensal),
-          ecoAir: Math.round(consumoComEcoAir),
+          ecoAir: Math.round(valorMensal),
           previsto: Math.round(consumoPrevisto),
           consumoSemSistema: Math.round(consumoSemSistema),
           consumoAcumulado: Math.round(consumoAcumulado),
@@ -174,16 +177,16 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const selectedMonthData = monthlyCostData[selectedMonthIndex];
 
   // DADOS DO MÊS SELECIONADO (não acumulado)
-  const selectedMonthOnly = isNaN(selectedMonthData?.ecoAir) ? 0 : Math.max(0, selectedMonthData?.ecoAir || 0);
-  const selectedMonthConsumption = isNaN(selectedMonthData?.consumed) ? 0 : Math.max(0, selectedMonthData?.consumed || 0);
-  const selectedMonthSavings = isNaN(selectedMonthConsumption - selectedMonthOnly) ? 0 : Math.max(0, selectedMonthConsumption - selectedMonthOnly);
+  const selectedMonthWithoutSystem = isNaN(selectedMonthData?.consumoSemSistema) ? 0 : Math.max(0, selectedMonthData?.consumoSemSistema || 0);
+  const selectedMonthWithSystem = isNaN(selectedMonthData?.consumed) ? 0 : Math.max(0, selectedMonthData?.consumed || 0);
+  const selectedMonthSavings = isNaN(selectedMonthWithoutSystem - selectedMonthWithSystem) ? 0 : Math.max(0, selectedMonthWithoutSystem - selectedMonthWithSystem);
 
   // Meta do mês selecionado
   const selectedMonthMeta = monthlyMetaValues[selectedMonthIndex] || 10000;
 
   // DADOS ACUMULADOS ATÉ O MÊS ATUAL (para comparativo histórico)
   const currentMonthAccumulated = monthlyCostData.length > 0
-    ? monthlyCostData.slice(0, actualCurrentMonthIndex + 1).reduce((sum, month) => sum + (month?.ecoAir || 0), 0)
+    ? monthlyCostData.slice(0, actualCurrentMonthIndex + 1).reduce((sum, month) => sum + (month?.consumed || 0), 0)
     : 0;
 
   // Calculate actual monthly activation time from API downtime data
@@ -203,9 +206,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
             day: `D${index + 1}`,
             consumed: Math.round(consumoDiario),
-            ecoAir: Math.round(consumoDiario * 0.8),
+            ecoAir: Math.round(consumoDiario),
             previsto: Math.round(consumoDiario * 0.85),
-            consumoSemSistema: Math.round(apiData.consumo_sem_sistema_diario?.[index] || consumoDiario / 0.8)
+            consumoSemSistema: Math.round(apiData.consumo_sem_sistema_diario?.[index] && apiData.consumo_sem_sistema_diario[index] > 0 ? apiData.consumo_sem_sistema_diario[index] : consumoDiario / 0.8)
           }))
         : [];
     }
@@ -213,7 +216,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     // If viewing past month, simulate daily data based on monthly consumption
     if (apiData && Array.isArray(apiData.consumo_mensal) && selectedMonthIndex < apiData.consumo_mensal.length) {
       const monthlyConsumption = apiData.consumo_mensal[selectedMonthIndex];
-      const monthlyWithoutSystem = apiData.consumo_sem_sistema_mensal?.[selectedMonthIndex] || monthlyConsumption / 0.8;
+      const monthlyWithoutSystem = apiData.consumo_sem_sistema_mensal?.[selectedMonthIndex] && apiData.consumo_sem_sistema_mensal[selectedMonthIndex] > 0
+        ? apiData.consumo_sem_sistema_mensal[selectedMonthIndex]
+        : monthlyConsumption / 0.8;
       const daysInMonth = new Date(currentYear, selectedMonthIndex + 1, 0).getDate();
 
       // Distribute monthly consumption evenly across days
@@ -225,7 +230,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         dailyData.push({
           day: `D${i + 1}`,
           consumed: Math.round(avgDailyConsumption),
-          ecoAir: Math.round(avgDailyConsumption * 0.8),
+          ecoAir: Math.round(avgDailyConsumption),
           previsto: Math.round(avgDailyConsumption * 0.85),
           consumoSemSistema: Math.round(avgDailyWithoutSystem)
         });
@@ -249,7 +254,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         <div className="bg-white p-3 rounded-lg border border-gray-300 shadow-lg">
           <p className="font-semibold text-gray-900 text-sm mb-2">{data.month || 'Dia'} {data.day || ''}</p>
           <p className="text-xs text-green-600 mb-1">
-            Eco Ar: <span className="font-semibold">R$ {(ecoAirValue || 0).toLocaleString('pt-BR')}</span>
+            Valor Real: <span className="font-semibold">R$ {(ecoAirValue || 0).toLocaleString('pt-BR')}</span>
           </p>
           <p className="text-xs text-red-400 mb-1">
             Meta: <span className="font-semibold">R$ {Math.round(monthMeta).toLocaleString('pt-BR')}</span>
@@ -270,44 +275,58 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       {/* Top Metrics Row - 4 Cards */}
       <div className="grid grid-cols-5 gap-3 items-start">
         {/* Meta Card - Mês Selecionado */}
-        <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow h-fit">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Meta - {monthNames[selectedMonthIndex]}</p>
-            <TrendingDown className="w-4 h-4 text-green-600" />
+        <div className="space-y-3">
+          <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow h-fit">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Meta - {monthNames[selectedMonthIndex]}</p>
+              <TrendingDown className="w-4 h-4 text-green-600" />
+            </div>
+            <p className="text-2xl font-bold text-gray-900">
+              {isEditingMeta ? (
+                <div className="flex gap-1">
+                  <input
+                    autoFocus
+                    type="number"
+                    value={costInputValue}
+                    onChange={handleCostInputChange}
+                    onKeyPress={handleCostKeyPress}
+                    className="w-24 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                  <button
+                    onClick={handleSaveCostMeta}
+                    className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors"
+                  >
+                    <Check className="w-3 h-3" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between gap-1">
+                  <span>R${selectedMonthMeta.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                  <button
+                    onClick={() => {
+                      setCostInputValue(selectedMonthMeta.toString());
+                      setIsEditingMeta(true);
+                    }}
+                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+                  >
+                    <Edit2 className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+            </p>
           </div>
-          <p className="text-2xl font-bold text-gray-900">
-            {isEditingMeta ? (
-              <div className="flex gap-1">
-                <input
-                  autoFocus
-                  type="number"
-                  value={costInputValue}
-                  onChange={handleCostInputChange}
-                  onKeyPress={handleCostKeyPress}
-                  className="w-24 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
-                />
-                <button
-                  onClick={handleSaveCostMeta}
-                  className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors"
-                >
-                  <Check className="w-3 h-3" />
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between gap-1">
-                <span>R${selectedMonthMeta.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                <button
-                  onClick={() => {
-                    setCostInputValue(selectedMonthMeta.toString());
-                    setIsEditingMeta(true);
-                  }}
-                  className="p-1 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
-                >
-                  <Edit2 className="w-3 h-3" />
-                </button>
-              </div>
-            )}
-          </p>
+
+          {/* Valor Acumulado Card */}
+          <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Valor Acumulado</p>
+              <Zap className="w-4 h-4 text-blue-600" />
+            </div>
+            <p className="text-2xl font-bold text-gray-900 mb-2">
+              R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}
+            </p>
+            <p className="text-xs text-gray-500">Consumo do mês - {monthNames[selectedMonthIndex]}</p>
+          </div>
         </div>
 
         {/* Economia Total do Ano - Gauge */}
@@ -369,14 +388,13 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
           <div className="mb-3 space-y-2">
             <div>
-              <p className="text-xs text-gray-600 mb-1">Valor Principal</p>
-              <p className="text-2xl font-bold text-gray-900">R${isNaN(selectedMonthConsumption) ? '0' : Math.round(selectedMonthConsumption).toLocaleString('pt-BR')}</p>
+              <p className="text-xs text-gray-600 mb-1">Consumo sem Sistema</p>
+              <p className="text-2xl font-bold text-gray-900">R${isNaN(selectedMonthWithoutSystem) ? '0' : Math.round(selectedMonthWithoutSystem).toLocaleString('pt-BR')}</p>
             </div>
             <div className="border-t border-blue-200 pt-2">
-              <p className="text-xs text-gray-600 mb-1">Com Eco Air</p>
+              <p className="text-xs text-gray-600 mb-1">Valor Real (com Eco Air)</p>
               <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-blue-600">R${isNaN(selectedMonthOnly) ? '0' : Math.round(selectedMonthOnly).toLocaleString('pt-BR')}</p>
-                <span className="text-xs text-green-600 font-semibold">(-20%)</span>
+                <p className="text-lg font-bold text-blue-600">R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}</p>
               </div>
             </div>
           </div>
@@ -478,12 +496,12 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   <YAxis />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
-                  <Bar dataKey="consumoSemSistema" name="Sem Eco Air (R$)" fill="#dc2626" radius={[8, 8, 0, 0]}>
+                  <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#dc2626" radius={[8, 8, 0, 0]}>
                     {monthlyCostData.map((entry, index) => (
                       <Cell key={`semSistema-${index}`} fill={entry.isSelected ? '#b91c1c' : '#dc2626'} />
                     ))}
                   </Bar>
-                  <Bar dataKey="consumed" name="Com Eco Air (R$)" fill="#10b981" radius={[8, 8, 0, 0]}>
+                  <Bar dataKey="consumed" name="Valor Real (R$)" fill="#10b981" radius={[8, 8, 0, 0]}>
                     {monthlyCostData.map((entry, index) => (
                       <Cell key={`consumed-${index}`} fill={entry.isSelected ? '#059669' : '#10b981'} />
                     ))}
@@ -514,8 +532,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     <YAxis />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
-                    <Bar dataKey="consumoSemSistema" name="Sem Eco Air (R$)" fill="#dc2626" radius={[8, 8, 0, 0]} />
-                    <Bar dataKey="consumed" name="Com Eco Air (R$)" fill="#10b981" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#dc2626" radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="consumed" name="Valor Real (R$)" fill="#10b981" radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
@@ -531,34 +549,34 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         <div className="space-y-3 flex flex-col">
           {/* Desvio Meta - M��s Atual */}
           <div className={`bg-gradient-to-br rounded-lg p-4 shadow-md border hover:shadow-lg transition-shadow ${
-            isNaN(selectedMonthOnly) || isNaN(selectedMonthMeta) || selectedMonthOnly <= selectedMonthMeta
+            isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
               ? 'from-green-50 to-white border-green-200'
               : 'from-red-50 to-white border-red-200'
           }`}>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-gray-600 uppercase">Desvio Meta</p>
-              {isNaN(selectedMonthOnly) || isNaN(selectedMonthMeta) || selectedMonthOnly <= selectedMonthMeta ? (
+              {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta ? (
                 <TrendingUp className="w-4 h-4 text-green-600" />
               ) : (
                 <TrendingDown className="w-4 h-4 text-red-600" />
               )}
             </div>
             <p className={`text-3xl font-bold mb-3 ${
-              isNaN(selectedMonthOnly) || isNaN(selectedMonthMeta) || selectedMonthOnly <= selectedMonthMeta
+              isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
                 ? 'text-green-600'
                 : 'text-red-600'
             }`}>
-              R${isNaN(selectedMonthMeta) || isNaN(selectedMonthOnly) ? '0' : Math.round(Math.abs(selectedMonthMeta - selectedMonthOnly)).toLocaleString('pt-BR')}
+              R${isNaN(selectedMonthMeta) || isNaN(selectedMonthWithSystem) ? '0' : Math.round(Math.abs(selectedMonthMeta - selectedMonthWithSystem)).toLocaleString('pt-BR')}
             </p>
             <div className={`text-xs text-gray-600 space-y-0.5 rounded p-2 ${
-              isNaN(selectedMonthOnly) || isNaN(selectedMonthMeta) || selectedMonthOnly <= selectedMonthMeta
+              isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
                 ? 'bg-green-50/50'
                 : 'bg-red-50/50'
             }`}>
               <p>Meta do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthMeta) ? '0' : Math.round(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
-              <p>Gasto do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthOnly) ? '0' : Math.round(selectedMonthOnly).toLocaleString('pt-BR')}</span></p>
+              <p>Gasto do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}</span></p>
               <p className="mt-1 pt-1 border-t border-gray-200">
-                {isNaN(selectedMonthOnly) || isNaN(selectedMonthMeta) || selectedMonthOnly <= selectedMonthMeta
+                {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
                   ? '✓ Dentro da meta'
                   : '✗ Acima da meta'}
               </p>
