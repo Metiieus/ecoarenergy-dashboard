@@ -314,7 +314,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const yAxisMax = Math.ceil(chartMax * 1.15 || 100);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Top Metrics Row - 4 Cards */}
       <div className="grid grid-cols-5 gap-2 items-start">
         {/* Meta Card - Mês Selecionado */}
