@@ -177,9 +177,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const selectedMonthData = monthlyCostData[selectedMonthIndex];
 
   // DADOS DO MÊS SELECIONADO (não acumulado)
-  const selectedMonthOnly = isNaN(selectedMonthData?.ecoAir) ? 0 : Math.max(0, selectedMonthData?.ecoAir || 0);
-  const selectedMonthConsumption = isNaN(selectedMonthData?.consumed) ? 0 : Math.max(0, selectedMonthData?.consumed || 0);
-  const selectedMonthSavings = isNaN(selectedMonthConsumption - selectedMonthOnly) ? 0 : Math.max(0, selectedMonthConsumption - selectedMonthOnly);
+  const selectedMonthWithoutSystem = isNaN(selectedMonthData?.consumoSemSistema) ? 0 : Math.max(0, selectedMonthData?.consumoSemSistema || 0);
+  const selectedMonthWithSystem = isNaN(selectedMonthData?.consumed) ? 0 : Math.max(0, selectedMonthData?.consumed || 0);
+  const selectedMonthSavings = isNaN(selectedMonthWithoutSystem - selectedMonthWithSystem) ? 0 : Math.max(0, selectedMonthWithoutSystem - selectedMonthWithSystem);
 
   // Meta do mês selecionado
   const selectedMonthMeta = monthlyMetaValues[selectedMonthIndex] || 10000;
