@@ -108,6 +108,100 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     setMonthlyCostData(monthlyCostDataMemo);
   }, [monthlyCostDataMemo]);
 
+  // Build Chart.js datasets
+  const monthlyChartData = useMemo(() => {
+    return {
+      labels: monthlyCostData.map(m => m.month),
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Consumo Mensal + Sem Sistema (R$)',
+          data: monthlyCostData.map(m => m.consumoSemSistema || 0),
+          backgroundColor: monthlyCostData.map(m => (m.isSelected ? '#f87171' : '#fca5a5')),
+          borderRadius: 8,
+          yAxisID: 'y'
+        },
+        {
+          type: 'bar',
+          label: 'Valor Real (R$)',
+          data: monthlyCostData.map(m => m.consumed || 0),
+          backgroundColor: monthlyCostData.map(m => (m.isSelected ? '#34d399' : '#86efac')),
+          borderRadius: 8,
+          yAxisID: 'y'
+        },
+        {
+          type: 'line',
+          label: 'Meta',
+          data: monthlyCostData.map(m => m.meta || 0),
+          borderColor: '#1e40af',
+          backgroundColor: '#1e40af',
+          tension: 0.35,
+          fill: false,
+          pointBackgroundColor: '#1e40af',
+          pointBorderColor: '#fff',
+          borderWidth: 3,
+          yAxisID: 'y'
+        }
+      ]
+    };
+  }, [monthlyCostData]);
+
+  const monthlyOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: { stacked: false, grid: { display: false } },
+      y: { beginAtZero: true, suggestedMax: yAxisMax }
+    },
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 12, boxHeight: 6 } },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            const val = ctx.raw || 0;
+            return `${ctx.dataset.label}: R$ ${Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+          }
+        }
+      }
+    }
+  }), [yAxisMax, monthlyCostData]);
+
+  const dailyChartData = useMemo(() => ({
+    labels: dailyCostData.map(d => d.day),
+    datasets: [
+      {
+        label: 'Consumo Sem Sistema (R$)',
+        data: dailyCostData.map(d => d.consumoSemSistema || 0),
+        backgroundColor: '#fca5a5',
+        borderRadius: 4
+      },
+      {
+        label: 'Valor Real (R$)',
+        data: dailyCostData.map(d => d.consumed || 0),
+        backgroundColor: '#86efac',
+        borderRadius: 4
+      }
+    ]
+  }), [dailyCostData]);
+
+  const dailyOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: { x: { grid: { display: false } }, y: { beginAtZero: true, suggestedMax: yAxisMax } },
+    plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (ctx) => `R$ ${Number(ctx.raw || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` } } }
+  }), [yAxisMax, dailyCostData]);
+
+  const pieChartData = useMemo(() => ({
+    labels: economyPieData.map(p => p.name),
+    datasets: [{ data: economyPieData.map(p => p.value), backgroundColor: economyPieData.map(p => p.fill) }]
+  }), [economyPieData]);
+
+  const pieOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom' } }
+  }), [economyPieData]);
+
   const { totalConsumptionYear, totalEconomyYear, economyPieData } = useMemo(() => {
     const totalConsumption = monthlyCostData.length > 0
       ? monthlyCostData[monthlyCostData.length - 1]?.consumoAcumulado || 0
