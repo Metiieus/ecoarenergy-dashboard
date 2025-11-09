@@ -41,10 +41,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   // ========================================
   // METRIC CALCULATIONS EXPLANATION:
   // ========================================
-  // consumo_mensal from API: Monthly consumption WITH Eco Air system applied
-  // consumo_sem_sistema_mensal from API: Monthly consumption WITHOUT Eco Air system
-  // consumed: Direct value from apiData.consumo_mensal (already with Eco Air)
-  // ecoAir: Same as consumed (consumo_mensal already has Eco Air applied)
+  // consumo_mensal from API: Monthly consumption WITH Ecoar system applied
+  // consumo_sem_sistema_mensal from API: Monthly consumption WITHOUT Ecoar system
+  // consumed: Direct value from apiData.consumo_mensal (already with Ecoar)
+  // ecoAir: Same as consumed (consumo_mensal already has Ecoar applied)
   // previsto: Predicted consumption (consumed × 0.85)
   // consumoSemSistema: Value from apiData.consumo_sem_sistema_mensal or calculated
   // Economia: consumoSemSistema - consumed (savings per month)
