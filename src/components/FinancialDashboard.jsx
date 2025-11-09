@@ -323,9 +323,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <Zap className="w-4 h-4 text-blue-600" />
             </div>
             <p className="text-2xl font-bold text-gray-900 mb-2">
-              R${isNaN(totalConsumptionYear) ? '0' : Math.round(totalConsumptionYear).toLocaleString('pt-BR')}
+              R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}
             </p>
-            <p className="text-xs text-gray-500">Consumo total acumulado no ano</p>
+            <p className="text-xs text-gray-500">Consumo do mês - {monthNames[selectedMonthIndex]}</p>
           </div>
         </div>
 
