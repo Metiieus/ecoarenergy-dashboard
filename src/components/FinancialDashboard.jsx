@@ -191,10 +191,14 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (ctx) => `R$ ${Number(ctx.raw || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` } } }
   }), [yAxisMax, dailyCostData]);
 
-  const pieChartData = useMemo(() => ({
-    labels: economyPieData.map(p => p.name),
-    datasets: [{ data: economyPieData.map(p => p.value), backgroundColor: economyPieData.map(p => p.fill) }]
-  }), [economyPieData]);
+  const pieChartData = useMemo(() => {
+    const totalWith = monthlyCostData.length > 0 ? monthlyCostData.reduce((s, m) => s + (m.consumed || 0), 0) : 0;
+    const totalWithout = monthlyCostData.length > 0 ? monthlyCostData.reduce((s, m) => s + (m.consumoSemSistema || 0), 0) : 0;
+    return {
+      labels: ['Consumo com Sistema', 'Consumo sem Sistema'],
+      datasets: [{ data: [Math.max(totalWith, 1), Math.max(totalWithout, 1)], backgroundColor: ['#10b981', '#dc2626'] }]
+    };
+  }, [monthlyCostData]);
 
   const pieOptions = useMemo(() => ({
     responsive: true,
