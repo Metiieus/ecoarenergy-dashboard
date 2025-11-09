@@ -3,6 +3,7 @@ import { Bell, ChevronDown, LogOut } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { establishments } from '../data/establishments';
 import { devices } from '../data/devices';
+import { useAuth } from '../context/AuthContext';
 
 const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId, onDeviceChange }) => {
   const [isEstablishmentDropdownOpen, setIsEstablishmentDropdownOpen] = useState(false);
