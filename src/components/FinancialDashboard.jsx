@@ -69,6 +69,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           ? Math.max(0, Number(apiData.consumo_sem_sistema_mensal[index]))
           : Math.max(0, valorMensal / 0.8);
 
+        const metaValue = monthlyMetaValues[index] ?? monthlyMetaValues[currentMonthIndex] ?? 10000;
+
         return {
           month: monthNames[index],
           consumed: valorMensal,
@@ -76,28 +78,29 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           previsto: consumoPrevisto,
           consumoSemSistema: consumoSemSistema,
           consumoAcumulado: consumoAcumulado,
+          meta: metaValue,
           isSelected: index === selectedMonthIndex
         };
       });
     }
 
     const mockData = [
-      { month: 'Jan', consumed: 257, ecoAir: 206, previsto: 218, consumoAcumulado: 257, consumoSemSistema: 321 },
-      { month: 'Fev', consumed: 825, ecoAir: 660, previsto: 701, consumoAcumulado: 1082, consumoSemSistema: 1031 },
-      { month: 'Mar', consumed: 1959, ecoAir: 1567, previsto: 1666, consumoAcumulado: 3041, consumoSemSistema: 2449 },
-      { month: 'Abr', consumed: 3029, ecoAir: 2423, previsto: 2575, consumoAcumulado: 6070, consumoSemSistema: 3786 },
-      { month: 'Mai', consumed: 2931, ecoAir: 2345, previsto: 2491, consumoAcumulado: 9001, consumoSemSistema: 3664 },
-      { month: 'Jun', consumed: 1811, ecoAir: 1449, previsto: 1539, consumoAcumulado: 10812, consumoSemSistema: 2264 },
-      { month: 'Jul', consumed: 1822, ecoAir: 1458, previsto: 1549, consumoAcumulado: 12634, consumoSemSistema: 2278 },
-      { month: 'Ago', consumed: 1957, ecoAir: 1566, previsto: 1664, consumoAcumulado: 14591, consumoSemSistema: 2446 },
-      { month: 'Set', consumed: 1397, ecoAir: 1118, previsto: 1188, consumoAcumulado: 15988, consumoSemSistema: 1746 },
-      { month: 'Out', consumed: 2603, ecoAir: 2082, previsto: 2212, consumoAcumulado: 18591, consumoSemSistema: 3254 },
-      { month: 'Nov', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591, consumoSemSistema: 0 },
-      { month: 'Dez', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591, consumoSemSistema: 0 }
+      { month: 'Jan', consumed: 257, ecoAir: 206, previsto: 218, consumoAcumulado: 257, consumoSemSistema: 321, meta: monthlyMetaValues[0] || 10000 },
+      { month: 'Fev', consumed: 825, ecoAir: 660, previsto: 701, consumoAcumulado: 1082, consumoSemSistema: 1031, meta: monthlyMetaValues[1] || 10000 },
+      { month: 'Mar', consumed: 1959, ecoAir: 1567, previsto: 1666, consumoAcumulado: 3041, consumoSemSistema: 2449, meta: monthlyMetaValues[2] || 10000 },
+      { month: 'Abr', consumed: 3029, ecoAir: 2423, previsto: 2575, consumoAcumulado: 6070, consumoSemSistema: 3786, meta: monthlyMetaValues[3] || 10000 },
+      { month: 'Mai', consumed: 2931, ecoAir: 2345, previsto: 2491, consumoAcumulado: 9001, consumoSemSistema: 3664, meta: monthlyMetaValues[4] || 10000 },
+      { month: 'Jun', consumed: 1811, ecoAir: 1449, previsto: 1539, consumoAcumulado: 10812, consumoSemSistema: 2264, meta: monthlyMetaValues[5] || 10000 },
+      { month: 'Jul', consumed: 1822, ecoAir: 1458, previsto: 1549, consumoAcumulado: 12634, consumoSemSistema: 2278, meta: monthlyMetaValues[6] || 10000 },
+      { month: 'Ago', consumed: 1957, ecoAir: 1566, previsto: 1664, consumoAcumulado: 14591, consumoSemSistema: 2446, meta: monthlyMetaValues[7] || 10000 },
+      { month: 'Set', consumed: 1397, ecoAir: 1118, previsto: 1188, consumoAcumulado: 15988, consumoSemSistema: 1746, meta: monthlyMetaValues[8] || 10000 },
+      { month: 'Out', consumed: 2603, ecoAir: 2082, previsto: 2212, consumoAcumulado: 18591, consumoSemSistema: 3254, meta: monthlyMetaValues[9] || 10000 },
+      { month: 'Nov', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591, consumoSemSistema: 0, meta: monthlyMetaValues[10] || 10000 },
+      { month: 'Dez', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591, consumoSemSistema: 0, meta: monthlyMetaValues[11] || 10000 }
     ];
 
     return mockData;
-  }, [apiData?.consumo_mensal, selectedMonthIndex]);
+  }, [apiData?.consumo_mensal, selectedMonthIndex, monthlyMetaValues]);
 
   useEffect(() => {
     setMonthlyCostData(monthlyCostDataMemo);
