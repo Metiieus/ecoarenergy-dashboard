@@ -61,11 +61,11 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
         const enrichedData = {
           ...apiData,
           consumo_sem_sistema_mensal: hasApiMonthlyWithout
-            ? apiData.consumo_sem_sistema_mensal.map(v => Number(v))
-            : (apiData.consumo_mensal?.length > 0 ? apiData.consumo_mensal.map(consumo => (Number(consumo) || 0) / 0.8) : []),
+            ? apiData.consumo_sem_sistema_mensal.map(v => Math.max(0, Number(v)))
+            : (apiData.consumo_mensal?.length > 0 ? apiData.consumo_mensal.map(consumo => Math.max(0, (Number(consumo) || 0) / 0.8)) : []),
           consumo_sem_sistema_diario: hasApiDailyWithout
-            ? apiData.consumo_sem_sistema_diario.map(v => Number(v))
-            : (apiData.consumo_diario_mes_corrente?.length > 0 ? apiData.consumo_diario_mes_corrente.map(consumo => (Number(consumo) || 0) / 0.8) : [])
+            ? apiData.consumo_sem_sistema_diario.map(v => Math.max(0, Number(v)))
+            : (apiData.consumo_diario_mes_corrente?.length > 0 ? apiData.consumo_diario_mes_corrente.map(consumo => Math.max(0, (Number(consumo) || 0) / 0.8)) : [])
         };
 
         setData(enrichedData);
