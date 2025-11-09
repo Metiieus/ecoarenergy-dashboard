@@ -441,6 +441,38 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             <p className="text-xs text-gray-600">Meta: <span className="font-semibold text-gray-900">R${formatBRL(selectedMonthMeta)}</span></p>
             <p className="text-xs text-gray-600">Economia: <span className="font-semibold text-green-600">R${formatBRL(selectedMonthSavings)}</span></p>
           </div>
+
+          {/* Insert Desvio Meta details inside Valor Real card */}
+          <div className={`mt-3 rounded-lg p-3 border ${
+            isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
+              ? 'bg-green-50/50 border-green-200'
+              : 'bg-red-50/50 border-red-200'
+          }`}>
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs font-bold text-gray-600 uppercase">Desvio Meta</p>
+              {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta ? (
+                <TrendingUp className="w-4 h-4 text-green-600" />
+              ) : (
+                <TrendingDown className="w-4 h-4 text-red-600" />
+              )}
+            </div>
+            <p className={`text-lg font-bold mb-2 ${
+              isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
+                ? 'text-green-600'
+                : 'text-red-600'
+            }`}>
+              R${formatBRL(Math.abs(selectedMonthMeta - selectedMonthWithSystem))}
+            </p>
+            <div className="text-xs text-gray-600 space-y-1">
+              <p>Meta do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthMeta) ? '0' : Math.round(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
+              <p>Gasto do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}</span></p>
+              <p className="mt-1 pt-1 border-t border-gray-200">
+                {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
+                  ? '✓ Dentro da meta'
+                  : '✗ Acima da meta'}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* % vs Ano Anterior */}
@@ -602,41 +634,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
         {/* Right Panel */}
         <div className="space-y-3 flex flex-col">
-          {/* Desvio Meta - M��s Atual */}
-          <div className={`bg-gradient-to-br rounded-lg p-4 shadow-md border hover:shadow-lg transition-shadow ${
-            isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-              ? 'from-green-50 to-white border-green-200'
-              : 'from-red-50 to-white border-red-200'
-          }`}>
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-gray-600 uppercase">Desvio Meta</p>
-              {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta ? (
-                <TrendingUp className="w-4 h-4 text-green-600" />
-              ) : (
-                <TrendingDown className="w-4 h-4 text-red-600" />
-              )}
-            </div>
-            <p className={`text-3xl font-bold mb-3 ${
-              isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-                ? 'text-green-600'
-                : 'text-red-600'
-            }`}>
-              R${formatBRL(Math.abs(selectedMonthMeta - selectedMonthWithSystem))}
-            </p>
-            <div className={`text-xs text-gray-600 space-y-0.5 rounded p-2 ${
-              isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-                ? 'bg-green-50/50'
-                : 'bg-red-50/50'
-            }`}>
-              <p>Meta do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthMeta) ? '0' : Math.round(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
-              <p>Gasto do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}</span></p>
-              <p className="mt-1 pt-1 border-t border-gray-200">
-                {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-                  ? '✓ Dentro da meta'
-                  : '✗ Acima da meta'}
-              </p>
-            </div>
-          </div>
 
           {/* Update Table */}
           <div className="bg-white rounded-lg p-3 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
