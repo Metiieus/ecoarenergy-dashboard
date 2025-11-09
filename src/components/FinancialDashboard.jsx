@@ -211,10 +211,12 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       return apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
         ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
             day: `D${index + 1}`,
-            consumed: Math.round(consumoDiario),
-            ecoAir: Math.round(consumoDiario),
-            previsto: Math.round(consumoDiario * 0.85),
-            consumoSemSistema: Math.round(apiData.consumo_sem_sistema_diario?.[index] && apiData.consumo_sem_sistema_diario[index] > 0 ? apiData.consumo_sem_sistema_diario[index] : consumoDiario / 0.8)
+            consumed: Number(consumoDiario) || 0,
+            ecoAir: Number(consumoDiario) || 0,
+            previsto: (Number(consumoDiario) || 0) * 0.85,
+            consumoSemSistema: (Array.isArray(apiData.consumo_sem_sistema_diario) && apiData.consumo_sem_sistema_diario[index] > 0)
+              ? Number(apiData.consumo_sem_sistema_diario[index])
+              : (Number(consumoDiario) || 0) / 0.8
           }))
         : [];
     }
