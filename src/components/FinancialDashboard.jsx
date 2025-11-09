@@ -660,37 +660,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
           ) : periodFilter === 'monthly' ? (
             monthlyCostData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300} debounce={100}>
-                <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
-                  <defs>
-                    <linearGradient id="metaGradient" x1="0" x2="1" y1="0" y2="0">
-                      <stop offset="0%" stopColor="#3b82f6" />
-                      <stop offset="100%" stopColor="#1e40af" />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis domain={[0, yAxisMax]} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend content={<CustomLegend />} />
-                  {/* Meta reference line (not shown in legend) */}
-                  <ReferenceLine y={selectedMonthMeta} stroke="#94a3b8" strokeDasharray="3 3">
-                    <Label value={`Meta: R$ ${formatBRL(selectedMonthMeta)}`} position="right" offset={0} />
-                  </ReferenceLine>
-                  <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#fecaca" fillOpacity={0.95} radius={[8, 8, 0, 0]}>
-                    {monthlyCostData.map((entry, index) => (
-                      <Cell key={`semSistema-${index}`} fill={entry.isSelected ? '#f87171' : '#fecaca'} />
-                    ))}
-                  </Bar>
-                  <Bar dataKey="consumed" name="Valor Real (R$)" fill="#bbf7d0" fillOpacity={0.95} radius={[8, 8, 0, 0]}>
-                    {monthlyCostData.map((entry, index) => (
-                      <Cell key={`consumed-${index}`} fill={entry.isSelected ? '#34d399' : '#bbf7d0'} />
-                    ))}
-                  </Bar>
-                  {/* Trend line showing monthly meta values */}
-                  <Line type="monotone" dataKey="meta" stroke="url(#metaGradient)" strokeWidth={3.5} dot={{ r: 5, stroke: '#fff', strokeWidth: 2, fill: '#1e40af' }} activeDot={{ r: 6 }} strokeLinecap="round" />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="h-72">
+                <div className="w-full h-72">
+                  <Bar data={monthlyChartData} options={monthlyOptions} />
+                </div>
+              </div>
             ) : (
               <div className="h-80 flex items-center justify-center">
                 <p className="text-xs text-gray-600">Nenhum dado disponível</p>
