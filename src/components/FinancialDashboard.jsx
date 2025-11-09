@@ -269,7 +269,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </p>
           <div className="border-t border-gray-200 mt-2 pt-2">
             <p className={`text-xs font-semibold ${deviation >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              Desvio: R$ {(isNaN(deviation) ? 0 : deviation).toFixed(0).toLocaleString('pt-BR')} ({deviationPercent}%)
+              Desvio: R$ {formatBRL(isNaN(deviation) ? 0 : deviation)} ({deviationPercent}%)
             </p>
           </div>
         </div>
