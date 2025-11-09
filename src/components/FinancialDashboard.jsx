@@ -66,8 +66,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         consumoAcumulado += valorMensal;
         const consumoPrevisto = valorMensal * 0.85;
         const consumoSemSistema = Array.isArray(apiData.consumo_sem_sistema_mensal) && apiData.consumo_sem_sistema_mensal[index] > 0
-          ? Number(apiData.consumo_sem_sistema_mensal[index])
-          : valorMensal / 0.8;
+          ? Math.max(0, Number(apiData.consumo_sem_sistema_mensal[index]))
+          : Math.max(0, valorMensal / 0.8);
 
         return {
           month: monthNames[index],
@@ -187,7 +187,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const selectedMonthWithSystem = isNaN(selectedMonthData?.consumed) ? 0 : Math.max(0, selectedMonthData?.consumed || 0);
   const selectedMonthSavings = isNaN(selectedMonthWithoutSystem - selectedMonthWithSystem) ? 0 : Math.max(0, selectedMonthWithoutSystem - selectedMonthWithSystem);
 
-  // Meta do mês selecionado
+  // Meta do m��s selecionado
   const selectedMonthMeta = monthlyMetaValues[selectedMonthIndex] || 10000;
 
   // DADOS ACUMULADOS ATÉ O MÊS ATUAL (para comparativo histórico)
@@ -215,23 +215,24 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             ecoAir: Number(consumoDiario) || 0,
             previsto: (Number(consumoDiario) || 0) * 0.85,
             consumoSemSistema: (Array.isArray(apiData.consumo_sem_sistema_diario) && apiData.consumo_sem_sistema_diario[index] > 0)
-              ? Number(apiData.consumo_sem_sistema_diario[index])
-              : (Number(consumoDiario) || 0) / 0.8
+              ? Math.max(0, Number(apiData.consumo_sem_sistema_diario[index]))
+              : Math.max(0, (Number(consumoDiario) || 0) / 0.8)
           }))
         : [];
     }
 
     // If viewing past month, simulate daily data based on monthly consumption
     if (apiData && Array.isArray(apiData.consumo_mensal) && selectedMonthIndex < apiData.consumo_mensal.length) {
-      const monthlyConsumption = apiData.consumo_mensal[selectedMonthIndex];
-      const monthlyWithoutSystem = apiData.consumo_sem_sistema_mensal?.[selectedMonthIndex] && apiData.consumo_sem_sistema_mensal[selectedMonthIndex] > 0
-        ? apiData.consumo_sem_sistema_mensal[selectedMonthIndex]
-        : monthlyConsumption / 0.8;
+      const monthlyConsumptionRaw = apiData.consumo_mensal[selectedMonthIndex];
+      const monthlyConsumption = Math.max(0, Number(monthlyConsumptionRaw) || 0);
+      const monthlyWithoutSystem = (Array.isArray(apiData.consumo_sem_sistema_mensal) && apiData.consumo_sem_sistema_mensal[selectedMonthIndex] > 0)
+        ? Math.max(0, Number(apiData.consumo_sem_sistema_mensal[selectedMonthIndex]))
+        : Math.max(0, monthlyConsumption / 0.8);
       const daysInMonth = new Date(currentYear, selectedMonthIndex + 1, 0).getDate();
 
       // Distribute monthly consumption evenly across days
-      const avgDailyConsumption = monthlyConsumption / daysInMonth;
-      const avgDailyWithoutSystem = monthlyWithoutSystem / daysInMonth;
+      const avgDailyConsumption = daysInMonth > 0 ? monthlyConsumption / daysInMonth : 0;
+      const avgDailyWithoutSystem = daysInMonth > 0 ? monthlyWithoutSystem / daysInMonth : 0;
 
       const dailyData = [];
       for (let i = 0; i < daysInMonth; i++) {
