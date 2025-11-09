@@ -536,7 +536,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
-                  <YAxis />
+                  <YAxis domain={[0, yAxisMax]} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend content={<CustomLegend />} />
                   {/* Meta reference line (not shown in legend) */}
