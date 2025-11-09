@@ -507,8 +507,14 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
           <div className="flex-1 flex items-center justify-center gap-12 overflow-hidden">
             <div className="flex-shrink-0">
-              <div style={{ width: 260, height: 260 }}>
-                <Pie data={pieChartData} options={pieOptions} />
+              <div style={{ width: 260, height: 260, position: 'relative' }}>
+                <Doughnut data={gaugeData} options={gaugeOptions} />
+                {/* Center label */}
+                <div style={{ position: 'absolute', left: 0, top: '42%', width: '100%', textAlign: 'center', pointerEvents: 'none' }}>
+                  <div className="text-sm text-gray-500">Economia</div>
+                  <div className="text-2xl font-bold text-gray-900">R$ {isNaN(gaugeData?.meta?.economy) ? ( (monthlyCostData.length>0)?((monthlyCostData.reduce((s,m)=>s+(m.consumoSemSistema||0),0)-monthlyCostData.reduce((s,m)=>s+(m.consumed||0),0)).toFixed(2)):'0.00') : gaugeData.meta.economy.toFixed(2)}</div>
+                  <div className="text-xs text-gray-500">{gaugeData?.datasets?.[0]?.data?.[0] ?? 0}%</div>
+                </div>
               </div>
             </div>
             <div className="space-y-6 flex-shrink-0">
@@ -590,7 +596,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         {/* % vs Ano Anterior */}
         <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-5 shadow-md border border-teal-700/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
           <p className="text-3xl font-bold mb-1 text-center">{yearOverYearGrowth}%</p>
-          <p className="text-xs font-semibold text-center leading-tight text-teal-50">Em Relação ao Ano Passado</p>
+          <p className="text-xs font-semibold text-center leading-tight text-teal-50">Em Relaç��o ao Ano Passado</p>
         </div>
       </div>
 
