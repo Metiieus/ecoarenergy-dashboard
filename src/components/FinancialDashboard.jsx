@@ -186,7 +186,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   // DADOS ACUMULADOS ATÉ O MÊS ATUAL (para comparativo histórico)
   const currentMonthAccumulated = monthlyCostData.length > 0
-    ? monthlyCostData.slice(0, actualCurrentMonthIndex + 1).reduce((sum, month) => sum + (month?.ecoAir || 0), 0)
+    ? monthlyCostData.slice(0, actualCurrentMonthIndex + 1).reduce((sum, month) => sum + (month?.consumed || 0), 0)
     : 0;
 
   // Calculate actual monthly activation time from API downtime data
@@ -254,7 +254,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         <div className="bg-white p-3 rounded-lg border border-gray-300 shadow-lg">
           <p className="font-semibold text-gray-900 text-sm mb-2">{data.month || 'Dia'} {data.day || ''}</p>
           <p className="text-xs text-green-600 mb-1">
-            Eco Ar: <span className="font-semibold">R$ {(ecoAirValue || 0).toLocaleString('pt-BR')}</span>
+            Valor Real: <span className="font-semibold">R$ {(ecoAirValue || 0).toLocaleString('pt-BR')}</span>
           </p>
           <p className="text-xs text-red-400 mb-1">
             Meta: <span className="font-semibold">R$ {Math.round(monthMeta).toLocaleString('pt-BR')}</span>
@@ -388,14 +388,13 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
           <div className="mb-3 space-y-2">
             <div>
-              <p className="text-xs text-gray-600 mb-1">Valor Principal</p>
-              <p className="text-2xl font-bold text-gray-900">R${isNaN(selectedMonthConsumption) ? '0' : Math.round(selectedMonthConsumption).toLocaleString('pt-BR')}</p>
+              <p className="text-xs text-gray-600 mb-1">Consumo sem Sistema</p>
+              <p className="text-2xl font-bold text-gray-900">R${isNaN(selectedMonthWithoutSystem) ? '0' : Math.round(selectedMonthWithoutSystem).toLocaleString('pt-BR')}</p>
             </div>
             <div className="border-t border-blue-200 pt-2">
-              <p className="text-xs text-gray-600 mb-1">Com Eco Air</p>
+              <p className="text-xs text-gray-600 mb-1">Valor Real (com Eco Air)</p>
               <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-blue-600">R${isNaN(selectedMonthOnly) ? '0' : Math.round(selectedMonthOnly).toLocaleString('pt-BR')}</p>
-                <span className="text-xs text-green-600 font-semibold">(-20%)</span>
+                <p className="text-lg font-bold text-blue-600">R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}</p>
               </div>
             </div>
           </div>
@@ -550,34 +549,34 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         <div className="space-y-3 flex flex-col">
           {/* Desvio Meta - M��s Atual */}
           <div className={`bg-gradient-to-br rounded-lg p-4 shadow-md border hover:shadow-lg transition-shadow ${
-            isNaN(selectedMonthOnly) || isNaN(selectedMonthMeta) || selectedMonthOnly <= selectedMonthMeta
+            isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
               ? 'from-green-50 to-white border-green-200'
               : 'from-red-50 to-white border-red-200'
           }`}>
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-gray-600 uppercase">Desvio Meta</p>
-              {isNaN(selectedMonthOnly) || isNaN(selectedMonthMeta) || selectedMonthOnly <= selectedMonthMeta ? (
+              {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta ? (
                 <TrendingUp className="w-4 h-4 text-green-600" />
               ) : (
                 <TrendingDown className="w-4 h-4 text-red-600" />
               )}
             </div>
             <p className={`text-3xl font-bold mb-3 ${
-              isNaN(selectedMonthOnly) || isNaN(selectedMonthMeta) || selectedMonthOnly <= selectedMonthMeta
+              isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
                 ? 'text-green-600'
                 : 'text-red-600'
             }`}>
-              R${isNaN(selectedMonthMeta) || isNaN(selectedMonthOnly) ? '0' : Math.round(Math.abs(selectedMonthMeta - selectedMonthOnly)).toLocaleString('pt-BR')}
+              R${isNaN(selectedMonthMeta) || isNaN(selectedMonthWithSystem) ? '0' : Math.round(Math.abs(selectedMonthMeta - selectedMonthWithSystem)).toLocaleString('pt-BR')}
             </p>
             <div className={`text-xs text-gray-600 space-y-0.5 rounded p-2 ${
-              isNaN(selectedMonthOnly) || isNaN(selectedMonthMeta) || selectedMonthOnly <= selectedMonthMeta
+              isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
                 ? 'bg-green-50/50'
                 : 'bg-red-50/50'
             }`}>
               <p>Meta do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthMeta) ? '0' : Math.round(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
-              <p>Gasto do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthOnly) ? '0' : Math.round(selectedMonthOnly).toLocaleString('pt-BR')}</span></p>
+              <p>Gasto do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}</span></p>
               <p className="mt-1 pt-1 border-t border-gray-200">
-                {isNaN(selectedMonthOnly) || isNaN(selectedMonthMeta) || selectedMonthOnly <= selectedMonthMeta
+                {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
                   ? '✓ Dentro da meta'
                   : '✗ Acima da meta'}
               </p>
