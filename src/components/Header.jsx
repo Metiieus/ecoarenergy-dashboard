@@ -136,7 +136,7 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
               <span className="text-white font-bold text-sm">EA</span>
             </div>
             <button
-              onClick={() => { try { const logoutFn = require('../context/AuthContext').useAuth().logout; logoutFn(); } catch(e){ window.location.reload(); } }}
+              onClick={() => logout && logout()}
               className="p-2 rounded hover:bg-gray-100 text-gray-600"
               title="Sair"
             >
