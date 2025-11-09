@@ -8,13 +8,20 @@ export const useChartData = (apiData) => {
       return [];
     }
 
-    return apiData.consumo_mensal.map((consumption, index) => ({
-      month: monthLabels[index % 12],
-      cost: consumption * 0.80,
-      consumption: consumption,
-      consumoSemSistema: apiData.consumo_sem_sistema_mensal?.[index] || consumption / 0.8,
-      target: 3000
-    }));
+    return apiData.consumo_mensal.map((consumption, index) => {
+      const cons = Math.max(0, Number(consumption) || 0);
+      const semSistema = (Array.isArray(apiData.consumo_sem_sistema_mensal) && apiData.consumo_sem_sistema_mensal[index] > 0)
+        ? Math.max(0, Number(apiData.consumo_sem_sistema_mensal[index]))
+        : Math.max(0, cons / 0.8);
+
+      return {
+        month: monthLabels[index % 12],
+        cost: cons * 0.80,
+        consumption: cons,
+        consumoSemSistema: semSistema,
+        target: 3000
+      };
+    });
   }, [apiData?.consumo_mensal, apiData?.consumo_sem_sistema_mensal]);
 
   const dailyConsumptionData = useMemo(() => {
