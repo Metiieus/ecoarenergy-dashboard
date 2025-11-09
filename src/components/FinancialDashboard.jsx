@@ -537,6 +537,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                       <Cell key={`consumed-${index}`} fill={entry.isSelected ? '#059669' : '#10b981'} />
                     ))}
                   </Bar>
+                  {/* Trend line showing monthly meta values */}
+                  <Line type="monotone" dataKey="meta" stroke="#374151" strokeWidth={2} dot={false} strokeDasharray="4 4" />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
