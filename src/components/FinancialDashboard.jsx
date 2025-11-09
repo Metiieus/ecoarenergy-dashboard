@@ -339,6 +339,32 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return [];
   }, [apiData?.consumo_diario_mes_corrente, apiData?.consumo_sem_sistema_diario, apiData?.consumo_mensal, apiData?.consumo_sem_sistema_mensal, selectedMonthIndex, currentMonthIndex]);
 
+  // Build daily chart data and options (depends on dailyCostData)
+  const dailyChartData = useMemo(() => ({
+    labels: dailyCostData.map(d => d.day),
+    datasets: [
+      {
+        label: 'Consumo Sem Sistema (R$)',
+        data: dailyCostData.map(d => d.consumoSemSistema || 0),
+        backgroundColor: '#fca5a5',
+        borderRadius: 4
+      },
+      {
+        label: 'Valor Real (R$)',
+        data: dailyCostData.map(d => d.consumed || 0),
+        backgroundColor: '#86efac',
+        borderRadius: 4
+      }
+    ]
+  }), [dailyCostData]);
+
+  const dailyOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: { x: { grid: { display: false } }, y: { beginAtZero: true, suggestedMax: yAxisMax } },
+    plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (ctx) => `R$ ${Number(ctx.raw || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` } } }
+  }), [yAxisMax, dailyCostData]);
+
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
