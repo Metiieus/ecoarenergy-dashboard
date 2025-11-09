@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { Calendar, TrendingDown, Edit2, Check, TrendingUp, Clock, Zap, Leaf } from 'lucide-react';
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, Tooltip as ChartTooltip, Legend as ChartLegend } from 'chart.js';
+import { Bar, Line as LineChartComp, Doughnut } from 'react-chartjs-2';
+ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, ChartTooltip, ChartLegend);
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { deviceRankings } from '../data/mockData';
 import { useApiDataContext } from '../context/ApiDataContext';
@@ -41,16 +43,22 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   // ========================================
   // METRIC CALCULATIONS EXPLANATION:
   // ========================================
-  // consumo_mensal from API: Monthly consumption WITH Eco Air system applied
-  // consumo_sem_sistema_mensal from API: Monthly consumption WITHOUT Eco Air system
-  // consumed: Direct value from apiData.consumo_mensal (already with Eco Air)
-  // ecoAir: Same as consumed (consumo_mensal already has Eco Air applied)
+  // consumo_mensal from API: Monthly consumption WITH Ecoar system applied
+  // consumo_sem_sistema_mensal from API: Monthly consumption WITHOUT Ecoar system
+  // consumed: Direct value from apiData.consumo_mensal (already with Ecoar)
+  // ecoAir: Same as consumed (consumo_mensal already has Ecoar applied)
   // previsto: Predicted consumption (consumed × 0.85)
   // consumoSemSistema: Value from apiData.consumo_sem_sistema_mensal or calculated
   // Economia: consumoSemSistema - consumed (savings per month)
   // Acumulado: Sum of all consumed values from start of year to current month
   // Desvio Meta: (Meta - consumed) = surplus/deficit against target
   // ========================================
+
+  const formatBRL = (v) => {
+    const num = Number(v);
+    if (!isFinite(num) || isNaN(num)) return '0,00';
+    return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
 
   const monthlyCostDataMemo = useMemo(() => {
     if (apiData && Array.isArray(apiData.consumo_mensal) && apiData.consumo_mensal.length > 0) {
@@ -59,43 +67,154 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         const valorMensal = Math.max(0, Number(consumoMensal) || 0);
         consumoAcumulado += valorMensal;
         const consumoPrevisto = valorMensal * 0.85;
-        const consumoSemSistema = apiData.consumo_sem_sistema_mensal?.[index] && apiData.consumo_sem_sistema_mensal[index] > 0
-          ? apiData.consumo_sem_sistema_mensal[index]
-          : valorMensal / 0.8;
+        const consumoSemSistema = Array.isArray(apiData.consumo_sem_sistema_mensal) && apiData.consumo_sem_sistema_mensal[index] > 0
+          ? Math.max(0, Number(apiData.consumo_sem_sistema_mensal[index]))
+          : Math.max(0, valorMensal / 0.8);
+
+        const metaValue = monthlyMetaValues[index] ?? monthlyMetaValues[currentMonthIndex] ?? 10000;
 
         return {
           month: monthNames[index],
-          consumed: Math.round(valorMensal),
-          ecoAir: Math.round(valorMensal),
-          previsto: Math.round(consumoPrevisto),
-          consumoSemSistema: Math.round(consumoSemSistema),
-          consumoAcumulado: Math.round(consumoAcumulado),
+          consumed: valorMensal,
+          ecoAir: valorMensal,
+          previsto: consumoPrevisto,
+          consumoSemSistema: consumoSemSistema,
+          consumoAcumulado: consumoAcumulado,
+          meta: metaValue,
           isSelected: index === selectedMonthIndex
         };
       });
     }
 
     const mockData = [
-      { month: 'Jan', consumed: 257, ecoAir: 206, previsto: 218, consumoAcumulado: 257, consumoSemSistema: 321 },
-      { month: 'Fev', consumed: 825, ecoAir: 660, previsto: 701, consumoAcumulado: 1082, consumoSemSistema: 1031 },
-      { month: 'Mar', consumed: 1959, ecoAir: 1567, previsto: 1666, consumoAcumulado: 3041, consumoSemSistema: 2449 },
-      { month: 'Abr', consumed: 3029, ecoAir: 2423, previsto: 2575, consumoAcumulado: 6070, consumoSemSistema: 3786 },
-      { month: 'Mai', consumed: 2931, ecoAir: 2345, previsto: 2491, consumoAcumulado: 9001, consumoSemSistema: 3664 },
-      { month: 'Jun', consumed: 1811, ecoAir: 1449, previsto: 1539, consumoAcumulado: 10812, consumoSemSistema: 2264 },
-      { month: 'Jul', consumed: 1822, ecoAir: 1458, previsto: 1549, consumoAcumulado: 12634, consumoSemSistema: 2278 },
-      { month: 'Ago', consumed: 1957, ecoAir: 1566, previsto: 1664, consumoAcumulado: 14591, consumoSemSistema: 2446 },
-      { month: 'Set', consumed: 1397, ecoAir: 1118, previsto: 1188, consumoAcumulado: 15988, consumoSemSistema: 1746 },
-      { month: 'Out', consumed: 2603, ecoAir: 2082, previsto: 2212, consumoAcumulado: 18591, consumoSemSistema: 3254 },
-      { month: 'Nov', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591, consumoSemSistema: 0 },
-      { month: 'Dez', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591, consumoSemSistema: 0 }
+      { month: 'Jan', consumed: 257, ecoAir: 206, previsto: 218, consumoAcumulado: 257, consumoSemSistema: 321, meta: monthlyMetaValues[0] || 10000 },
+      { month: 'Fev', consumed: 825, ecoAir: 660, previsto: 701, consumoAcumulado: 1082, consumoSemSistema: 1031, meta: monthlyMetaValues[1] || 10000 },
+      { month: 'Mar', consumed: 1959, ecoAir: 1567, previsto: 1666, consumoAcumulado: 3041, consumoSemSistema: 2449, meta: monthlyMetaValues[2] || 10000 },
+      { month: 'Abr', consumed: 3029, ecoAir: 2423, previsto: 2575, consumoAcumulado: 6070, consumoSemSistema: 3786, meta: monthlyMetaValues[3] || 10000 },
+      { month: 'Mai', consumed: 2931, ecoAir: 2345, previsto: 2491, consumoAcumulado: 9001, consumoSemSistema: 3664, meta: monthlyMetaValues[4] || 10000 },
+      { month: 'Jun', consumed: 1811, ecoAir: 1449, previsto: 1539, consumoAcumulado: 10812, consumoSemSistema: 2264, meta: monthlyMetaValues[5] || 10000 },
+      { month: 'Jul', consumed: 1822, ecoAir: 1458, previsto: 1549, consumoAcumulado: 12634, consumoSemSistema: 2278, meta: monthlyMetaValues[6] || 10000 },
+      { month: 'Ago', consumed: 1957, ecoAir: 1566, previsto: 1664, consumoAcumulado: 14591, consumoSemSistema: 2446, meta: monthlyMetaValues[7] || 10000 },
+      { month: 'Set', consumed: 1397, ecoAir: 1118, previsto: 1188, consumoAcumulado: 15988, consumoSemSistema: 1746, meta: monthlyMetaValues[8] || 10000 },
+      { month: 'Out', consumed: 2603, ecoAir: 2082, previsto: 2212, consumoAcumulado: 18591, consumoSemSistema: 3254, meta: monthlyMetaValues[9] || 10000 },
+      { month: 'Nov', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591, consumoSemSistema: 0, meta: monthlyMetaValues[10] || 10000 },
+      { month: 'Dez', consumed: 0, ecoAir: 0, previsto: 0, consumoAcumulado: 18591, consumoSemSistema: 0, meta: monthlyMetaValues[11] || 10000 }
     ];
 
     return mockData;
-  }, [apiData?.consumo_mensal]);
+  }, [apiData?.consumo_mensal, selectedMonthIndex, monthlyMetaValues]);
 
   useEffect(() => {
     setMonthlyCostData(monthlyCostDataMemo);
   }, [monthlyCostDataMemo]);
+
+  // compute chart scale max
+  const chartMax = useMemo(() => {
+    const values = monthlyCostData.length > 0
+      ? monthlyCostData.flatMap(m => [Number(m.consumed) || 0, Number(m.consumoSemSistema) || 0, Number(m.meta) || 0])
+      : [];
+    return values.length > 0 ? Math.max(...values) : 0;
+  }, [monthlyCostData]);
+
+  const yAxisMax = Math.ceil(chartMax * 1.15 || 100);
+
+  // Build Chart.js datasets
+  const monthlyChartData = useMemo(() => {
+    return {
+      labels: monthlyCostData.map(m => m.month),
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Consumo Mensal + Sem Sistema (R$)',
+          data: monthlyCostData.map(m => m.consumoSemSistema || 0),
+          backgroundColor: monthlyCostData.map(m => (m.isSelected ? '#f87171' : '#fca5a5')),
+          borderRadius: 8,
+          yAxisID: 'y'
+        },
+        {
+          type: 'bar',
+          label: 'Valor Real (R$)',
+          data: monthlyCostData.map(m => m.consumed || 0),
+          backgroundColor: monthlyCostData.map(m => (m.isSelected ? '#34d399' : '#86efac')),
+          borderRadius: 8,
+          yAxisID: 'y'
+        },
+        {
+          type: 'line',
+          label: 'Meta',
+          data: monthlyCostData.map(m => m.meta || 0),
+          borderColor: '#1e40af',
+          backgroundColor: '#1e40af',
+          tension: 0.35,
+          fill: false,
+          pointBackgroundColor: '#1e40af',
+          pointBorderColor: '#fff',
+          borderWidth: 3,
+          yAxisID: 'y'
+        }
+      ]
+    };
+  }, [monthlyCostData]);
+
+  const monthlyOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: { stacked: false, grid: { display: false } },
+      y: { beginAtZero: true, suggestedMax: yAxisMax }
+    },
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 12, boxHeight: 6 } },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            const val = ctx.raw || 0;
+            return `${ctx.dataset.label}: R$ ${Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+          }
+        }
+      }
+    }
+  }), [yAxisMax, monthlyCostData]);
+
+
+  // Gauge (velocimetro) data based on economy achieved vs potential
+  const gaugeData = useMemo(() => {
+    const totalWith = monthlyCostData.length > 0 ? monthlyCostData.reduce((s, m) => s + (m.consumed || 0), 0) : 0;
+    const totalWithout = monthlyCostData.length > 0 ? monthlyCostData.reduce((s, m) => s + (m.consumoSemSistema || 0), 0) : 0;
+    const economy = Math.max(0, totalWithout - totalWith);
+    const percent = totalWithout > 0 ? Math.round((economy / totalWithout) * 100) : 0;
+    const displayPercent = Math.min(100, Math.max(0, percent));
+
+    return {
+      labels: ['Economia', 'Restante'],
+      datasets: [
+        {
+          data: [displayPercent, 100 - displayPercent],
+          backgroundColor: ['#f97316', '#e5e7eb'],
+          hoverBackgroundColor: ['#fb923c', '#e5e7eb'],
+          borderWidth: 0
+        }
+      ],
+      meta: {
+        totalWith,
+        totalWithout,
+        economy,
+        percent: displayPercent
+      }
+    };
+  }, [monthlyCostData]);
+
+  const gaugeOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    rotation: -Math.PI,
+    circumference: Math.PI,
+    cutout: '60%',
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: false }
+    }
+  }), [monthlyCostData]);
 
   const { totalConsumptionYear, totalEconomyYear, economyPieData } = useMemo(() => {
     const totalConsumption = monthlyCostData.length > 0
@@ -205,34 +324,37 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       return apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
         ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
             day: `D${index + 1}`,
-            consumed: Math.round(consumoDiario),
-            ecoAir: Math.round(consumoDiario),
-            previsto: Math.round(consumoDiario * 0.85),
-            consumoSemSistema: Math.round(apiData.consumo_sem_sistema_diario?.[index] && apiData.consumo_sem_sistema_diario[index] > 0 ? apiData.consumo_sem_sistema_diario[index] : consumoDiario / 0.8)
+            consumed: Number(consumoDiario) || 0,
+            ecoAir: Number(consumoDiario) || 0,
+            previsto: (Number(consumoDiario) || 0) * 0.85,
+            consumoSemSistema: (Array.isArray(apiData.consumo_sem_sistema_diario) && apiData.consumo_sem_sistema_diario[index] > 0)
+              ? Math.max(0, Number(apiData.consumo_sem_sistema_diario[index]))
+              : Math.max(0, (Number(consumoDiario) || 0) / 0.8)
           }))
         : [];
     }
 
     // If viewing past month, simulate daily data based on monthly consumption
     if (apiData && Array.isArray(apiData.consumo_mensal) && selectedMonthIndex < apiData.consumo_mensal.length) {
-      const monthlyConsumption = apiData.consumo_mensal[selectedMonthIndex];
-      const monthlyWithoutSystem = apiData.consumo_sem_sistema_mensal?.[selectedMonthIndex] && apiData.consumo_sem_sistema_mensal[selectedMonthIndex] > 0
-        ? apiData.consumo_sem_sistema_mensal[selectedMonthIndex]
-        : monthlyConsumption / 0.8;
+      const monthlyConsumptionRaw = apiData.consumo_mensal[selectedMonthIndex];
+      const monthlyConsumption = Math.max(0, Number(monthlyConsumptionRaw) || 0);
+      const monthlyWithoutSystem = (Array.isArray(apiData.consumo_sem_sistema_mensal) && apiData.consumo_sem_sistema_mensal[selectedMonthIndex] > 0)
+        ? Math.max(0, Number(apiData.consumo_sem_sistema_mensal[selectedMonthIndex]))
+        : Math.max(0, monthlyConsumption / 0.8);
       const daysInMonth = new Date(currentYear, selectedMonthIndex + 1, 0).getDate();
 
       // Distribute monthly consumption evenly across days
-      const avgDailyConsumption = monthlyConsumption / daysInMonth;
-      const avgDailyWithoutSystem = monthlyWithoutSystem / daysInMonth;
+      const avgDailyConsumption = daysInMonth > 0 ? monthlyConsumption / daysInMonth : 0;
+      const avgDailyWithoutSystem = daysInMonth > 0 ? monthlyWithoutSystem / daysInMonth : 0;
 
       const dailyData = [];
       for (let i = 0; i < daysInMonth; i++) {
         dailyData.push({
           day: `D${i + 1}`,
-          consumed: Math.round(avgDailyConsumption),
-          ecoAir: Math.round(avgDailyConsumption),
-          previsto: Math.round(avgDailyConsumption * 0.85),
-          consumoSemSistema: Math.round(avgDailyWithoutSystem)
+          consumed: avgDailyConsumption,
+          ecoAir: avgDailyConsumption,
+          previsto: avgDailyConsumption * 0.85,
+          consumoSemSistema: avgDailyWithoutSystem
         });
       }
       return dailyData;
@@ -241,27 +363,57 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return [];
   }, [apiData?.consumo_diario_mes_corrente, apiData?.consumo_sem_sistema_diario, apiData?.consumo_mensal, apiData?.consumo_sem_sistema_mensal, selectedMonthIndex, currentMonthIndex]);
 
+  // Build daily chart data and options (depends on dailyCostData)
+  const dailyChartData = useMemo(() => ({
+    labels: dailyCostData.map(d => d.day),
+    datasets: [
+      {
+        label: 'Consumo Sem Sistema (R$)',
+        data: dailyCostData.map(d => d.consumoSemSistema || 0),
+        backgroundColor: '#fca5a5',
+        borderRadius: 4
+      },
+      {
+        label: 'Valor Real (R$)',
+        data: dailyCostData.map(d => d.consumed || 0),
+        backgroundColor: '#86efac',
+        borderRadius: 4
+      }
+    ]
+  }), [dailyCostData]);
+
+  const dailyOptions = useMemo(() => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: { x: { grid: { display: false } }, y: { beginAtZero: true, suggestedMax: yAxisMax } },
+    plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (ctx) => `R$ ${Number(ctx.raw || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` } } }
+  }), [yAxisMax, dailyCostData]);
+
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const ecoAirValue = data.ecoAir || 0;
+      const consumed = Number(data.consumed) || 0;
+      const semSistema = Number(data.consumoSemSistema) || 0;
       const monthIndex = data.month ? monthNames.indexOf(data.month) : selectedMonthIndex;
       const monthMeta = monthlyMetaValues[monthIndex] || 10000;
-      const deviation = monthMeta - ecoAirValue;
+      const deviation = monthMeta - consumed;
       const deviationPercent = monthMeta > 0 ? ((deviation / monthMeta) * 100).toFixed(1) : 0;
 
       return (
         <div className="bg-white p-3 rounded-lg border border-gray-300 shadow-lg">
           <p className="font-semibold text-gray-900 text-sm mb-2">{data.month || 'Dia'} {data.day || ''}</p>
-          <p className="text-xs text-green-600 mb-1">
-            Valor Real: <span className="font-semibold">R$ {(ecoAirValue || 0).toLocaleString('pt-BR')}</span>
-          </p>
           <p className="text-xs text-red-400 mb-1">
-            Meta: <span className="font-semibold">R$ {Math.round(monthMeta).toLocaleString('pt-BR')}</span>
+            Consumo (sem sistema): <span className="font-semibold">R$ {formatBRL(semSistema)}</span>
+          </p>
+          <p className="text-xs text-green-600 mb-1">
+            Valor Real: <span className="font-semibold">R$ {formatBRL(consumed)}</span>
+          </p>
+          <p className="text-xs text-gray-500 mb-1">
+            Meta: <span className="font-semibold">R$ {formatBRL(monthMeta)}</span>
           </p>
           <div className="border-t border-gray-200 mt-2 pt-2">
             <p className={`text-xs font-semibold ${deviation >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              Desvio: R$ {(isNaN(deviation) ? 0 : deviation).toFixed(0).toLocaleString('pt-BR')} ({deviationPercent}%)
+              Desvio: R$ {formatBRL(isNaN(deviation) ? 0 : deviation)} ({deviationPercent}%)
             </p>
           </div>
         </div>
@@ -270,10 +422,28 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return null;
   };
 
+  const CustomLegend = () => {
+    const legendItems = [
+      { key: 'consumoSemSistema', label: 'Consumo Mensal + Sem Sistema (R$)', color: '#fca5a5' },
+      { key: 'consumed', label: 'Valor Real (R$)', color: '#34d399' }
+    ];
+
+    return (
+      <div className="flex gap-4 items-center">
+        {legendItems.map(item => (
+          <div key={item.key} className="flex items-center gap-2 text-xs text-gray-700">
+            <span style={{ width: 12, height: 8, background: item.color, display: 'inline-block', borderRadius: 2 }}></span>
+            <span>{item.label}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Top Metrics Row - 4 Cards */}
-      <div className="grid grid-cols-5 gap-3 items-start">
+      <div className="grid grid-cols-5 gap-2 items-start">
         {/* Meta Card - Mês Selecionado */}
         <div className="space-y-3">
           <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow h-fit">
@@ -281,7 +451,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Meta - {monthNames[selectedMonthIndex]}</p>
               <TrendingDown className="w-4 h-4 text-green-600" />
             </div>
-            <p className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-gray-900">
               {isEditingMeta ? (
                 <div className="flex gap-1">
                   <input
@@ -313,7 +483,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   </button>
                 </div>
               )}
-            </p>
+            </div>
           </div>
 
           {/* Valor Acumulado Card */}
@@ -323,38 +493,29 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <Zap className="w-4 h-4 text-blue-600" />
             </div>
             <p className="text-2xl font-bold text-gray-900 mb-2">
-              R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}
+              R${formatBRL(selectedMonthWithSystem)}
             </p>
             <p className="text-xs text-gray-500">Consumo do mês - {monthNames[selectedMonthIndex]}</p>
           </div>
         </div>
 
         {/* Economia Total do Ano - Gauge */}
-        <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 hover:shadow-lg transition-shadow col-span-2 flex flex-col h-96">
+        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow col-span-2 flex flex-col h-80">
           <div className="mb-4">
             <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Economia Ano</p>
             <p className="text-xs text-gray-500 mt-1">Consumo vs Economia</p>
           </div>
           <div className="flex-1 flex items-center justify-center gap-12 overflow-hidden">
             <div className="flex-shrink-0">
-              <ResponsiveContainer width={320} height={320} debounce={100}>
-                <PieChart isAnimationActive={false}>
-                  <Pie
-                    data={economyPieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={80}
-                    outerRadius={130}
-                    dataKey="value"
-                    startAngle={180}
-                    endAngle={0}
-                  >
-                    {economyPieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+              <div style={{ width: 260, height: 260, position: 'relative' }}>
+                <Doughnut data={gaugeData} options={gaugeOptions} />
+                {/* Center label */}
+                <div style={{ position: 'absolute', left: 0, top: '38%', width: '100%', textAlign: 'center', pointerEvents: 'none' }}>
+                  <div className="text-sm text-gray-500">Economia</div>
+                  <div className="text-3xl font-extrabold text-gray-900">R$ {formatBRL(gaugeData?.meta?.economy ?? (monthlyCostData.length>0 ? monthlyCostData.reduce((s,m)=>s+(m.consumoSemSistema||0),0)-monthlyCostData.reduce((s,m)=>s+(m.consumed||0),0) : 0))}</div>
+                  <div className="text-sm text-gray-500 mt-1">{gaugeData?.meta?.percent ?? 0}%</div>
+                </div>
+              </div>
             </div>
             <div className="space-y-6 flex-shrink-0">
               <div>
@@ -387,20 +548,48 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </select>
           </div>
           <div className="mb-3 space-y-2">
-            <div>
-              <p className="text-xs text-gray-600 mb-1">Consumo sem Sistema</p>
-              <p className="text-2xl font-bold text-gray-900">R${isNaN(selectedMonthWithoutSystem) ? '0' : Math.round(selectedMonthWithoutSystem).toLocaleString('pt-BR')}</p>
-            </div>
             <div className="border-t border-blue-200 pt-2">
-              <p className="text-xs text-gray-600 mb-1">Valor Real (com Eco Air)</p>
+              <p className="text-xs text-gray-600 mb-1">Valor Real (com Ecoar)</p>
               <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-blue-600">R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}</p>
+                <p className="text-lg font-bold text-blue-600">R${formatBRL(selectedMonthWithSystem)}</p>
               </div>
             </div>
           </div>
           <div className="bg-blue-50/50 rounded p-2 space-y-1">
-            <p className="text-xs text-gray-600">Meta: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthMeta) ? '0' : Math.round(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
-            <p className="text-xs text-gray-600">Economia: <span className="font-semibold text-green-600">R${isNaN(selectedMonthSavings) ? '0' : Math.round(selectedMonthSavings).toLocaleString('pt-BR')}</span></p>
+            <p className="text-xs text-gray-600">Meta: <span className="font-semibold text-gray-900">R${formatBRL(selectedMonthMeta)}</span></p>
+            <p className="text-xs text-gray-600">Economia: <span className="font-semibold text-green-600">R${formatBRL(selectedMonthSavings)}</span></p>
+          </div>
+
+          {/* Insert Desvio Meta details inside Valor Real card */}
+          <div className={`mt-3 rounded-lg p-3 border ${
+            isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
+              ? 'bg-green-50/50 border-green-200'
+              : 'bg-red-50/50 border-red-200'
+          }`}>
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs font-bold text-gray-600 uppercase">Desvio Meta</p>
+              {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta ? (
+                <TrendingUp className="w-4 h-4 text-green-600" />
+              ) : (
+                <TrendingDown className="w-4 h-4 text-red-600" />
+              )}
+            </div>
+            <p className={`text-lg font-bold mb-2 ${
+              isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
+                ? 'text-green-600'
+                : 'text-red-600'
+            }`}>
+              R${formatBRL(Math.abs(selectedMonthMeta - selectedMonthWithSystem))}
+            </p>
+            <div className="text-xs text-gray-600 space-y-1">
+              <p>Meta do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthMeta) ? '0' : Math.round(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
+              <p>Gasto do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}</span></p>
+              <p className="mt-1 pt-1 border-t border-gray-200">
+                {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
+                  ? '✓ Dentro da meta'
+                  : '✗ Acima da meta'}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -489,25 +678,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
           ) : periodFilter === 'monthly' ? (
             monthlyCostData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300} debounce={100}>
-                <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#dc2626" radius={[8, 8, 0, 0]}>
-                    {monthlyCostData.map((entry, index) => (
-                      <Cell key={`semSistema-${index}`} fill={entry.isSelected ? '#b91c1c' : '#dc2626'} />
-                    ))}
-                  </Bar>
-                  <Bar dataKey="consumed" name="Valor Real (R$)" fill="#10b981" radius={[8, 8, 0, 0]}>
-                    {monthlyCostData.map((entry, index) => (
-                      <Cell key={`consumed-${index}`} fill={entry.isSelected ? '#059669' : '#10b981'} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="h-72">
+                <div className="w-full h-72">
+                  <Bar data={monthlyChartData} options={monthlyOptions} />
+                </div>
+              </div>
             ) : (
               <div className="h-80 flex items-center justify-center">
                 <p className="text-xs text-gray-600">Nenhum dado disponível</p>
@@ -525,17 +700,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 </div>
               )}
               {dailyCostData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300} debounce={100}>
-                  <BarChart data={dailyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="day" />
-                    <YAxis />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                    <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#dc2626" radius={[8, 8, 0, 0]} />
-                    <Bar dataKey="consumed" name="Valor Real (R$)" fill="#10b981" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <div className="h-72">
+                  <div className="w-full h-72">
+                    <Bar data={dailyChartData} options={dailyOptions} />
+                  </div>
+                </div>
               ) : (
                 <div className="h-80 flex items-center justify-center">
                   <p className="text-xs text-gray-600">Nenhum dado disponível para este mês</p>
@@ -547,41 +716,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
         {/* Right Panel */}
         <div className="space-y-3 flex flex-col">
-          {/* Desvio Meta - M��s Atual */}
-          <div className={`bg-gradient-to-br rounded-lg p-4 shadow-md border hover:shadow-lg transition-shadow ${
-            isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-              ? 'from-green-50 to-white border-green-200'
-              : 'from-red-50 to-white border-red-200'
-          }`}>
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-gray-600 uppercase">Desvio Meta</p>
-              {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta ? (
-                <TrendingUp className="w-4 h-4 text-green-600" />
-              ) : (
-                <TrendingDown className="w-4 h-4 text-red-600" />
-              )}
-            </div>
-            <p className={`text-3xl font-bold mb-3 ${
-              isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-                ? 'text-green-600'
-                : 'text-red-600'
-            }`}>
-              R${isNaN(selectedMonthMeta) || isNaN(selectedMonthWithSystem) ? '0' : Math.round(Math.abs(selectedMonthMeta - selectedMonthWithSystem)).toLocaleString('pt-BR')}
-            </p>
-            <div className={`text-xs text-gray-600 space-y-0.5 rounded p-2 ${
-              isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-                ? 'bg-green-50/50'
-                : 'bg-red-50/50'
-            }`}>
-              <p>Meta do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthMeta) ? '0' : Math.round(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
-              <p>Gasto do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}</span></p>
-              <p className="mt-1 pt-1 border-t border-gray-200">
-                {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-                  ? '✓ Dentro da meta'
-                  : '✗ Acima da meta'}
-              </p>
-            </div>
-          </div>
 
           {/* Update Table */}
           <div className="bg-white rounded-lg p-3 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">

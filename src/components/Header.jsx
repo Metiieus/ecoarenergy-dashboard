@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Bell, ChevronDown } from 'lucide-react';
+import { Bell, ChevronDown, LogOut } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { establishments } from '../data/establishments';
 import { devices } from '../data/devices';
+import { useAuth } from '../context/AuthContext';
 
 const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId, onDeviceChange }) => {
   const [isEstablishmentDropdownOpen, setIsEstablishmentDropdownOpen] = useState(false);
@@ -21,12 +22,14 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
     setIsDeviceDropdownOpen(false);
   };
 
+  const { logout } = useAuth();
+
   return (
     <div className="bg-white border-b border-gray-200 px-8 py-5 sticky top-0 z-10 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-gray-500">Sistema de Gestão de Energia</p>
-          <h1 className="text-2xl font-bold text-gray-900 mt-1">Ecoar Energy</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mt-1">Ecoar</h1>
         </div>
 
         <div className="flex items-center gap-3">
@@ -132,6 +135,13 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center flex-shrink-0">
               <span className="text-white font-bold text-sm">EA</span>
             </div>
+            <button
+              onClick={() => logout && logout()}
+              className="p-2 rounded hover:bg-gray-100 text-gray-600"
+              title="Sair"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>
