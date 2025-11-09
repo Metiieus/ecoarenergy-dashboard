@@ -190,8 +190,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       datasets: [
         {
           data: [displayPercent, 100 - displayPercent],
-          backgroundColor: ['#10b981', '#e6eef2'],
-          hoverBackgroundColor: ['#10b981', '#e6eef2'],
+          backgroundColor: ['#f97316', '#e5e7eb'],
+          hoverBackgroundColor: ['#fb923c', '#e5e7eb'],
           borderWidth: 0
         }
       ],
@@ -209,7 +209,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     maintainAspectRatio: false,
     rotation: -Math.PI,
     circumference: Math.PI,
-    cutout: '70%',
+    cutout: '60%',
     plugins: {
       legend: { display: false },
       tooltip: { enabled: false }
@@ -596,7 +596,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         {/* % vs Ano Anterior */}
         <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-5 shadow-md border border-teal-700/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
           <p className="text-3xl font-bold mb-1 text-center">{yearOverYearGrowth}%</p>
-          <p className="text-xs font-semibold text-center leading-tight text-teal-50">Em Relaç��o ao Ano Passado</p>
+          <p className="text-xs font-semibold text-center leading-tight text-teal-50">Em Relação ao Ano Passado</p>
         </div>
       </div>
 
