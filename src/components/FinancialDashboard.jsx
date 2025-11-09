@@ -237,10 +237,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       for (let i = 0; i < daysInMonth; i++) {
         dailyData.push({
           day: `D${i + 1}`,
-          consumed: Math.round(avgDailyConsumption),
-          ecoAir: Math.round(avgDailyConsumption),
-          previsto: Math.round(avgDailyConsumption * 0.85),
-          consumoSemSistema: Math.round(avgDailyWithoutSystem)
+          consumed: avgDailyConsumption,
+          ecoAir: avgDailyConsumption,
+          previsto: avgDailyConsumption * 0.85,
+          consumoSemSistema: avgDailyWithoutSystem
         });
       }
       return dailyData;
