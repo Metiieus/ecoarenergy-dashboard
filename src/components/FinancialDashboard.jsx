@@ -41,13 +41,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   // ========================================
   // METRIC CALCULATIONS EXPLANATION:
   // ========================================
-  // Meta: User-set monthly budget (default R$10,000)
-  // Consumo Mensal: Monthly consumption from API (difference from previous month)
-  // Consumo com Eco Ar (ecoAir): Monthly × 0.8 (simulated 20% savings with Eco Air equipment)
-  // Consumo Previsto: Monthly × 0.85 (85% of actual consumption)
-  // Economia: Consumo Mensal - Consumo com Eco Ar (savings per month)
-  // Acumulado: Sum of all ecoAir values from start of year to current month
-  // Desvio Meta: (Meta - Accumulated Spending) = surplus/deficit against target
+  // consumo_mensal from API: Monthly consumption WITH Eco Air system applied
+  // consumo_sem_sistema_mensal from API: Monthly consumption WITHOUT Eco Air system
+  // consumed: Direct value from apiData.consumo_mensal (already with Eco Air)
+  // ecoAir: Same as consumed (consumo_mensal already has Eco Air applied)
+  // previsto: Predicted consumption (consumed × 0.85)
+  // consumoSemSistema: Value from apiData.consumo_sem_sistema_mensal or calculated
+  // Economia: consumoSemSistema - consumed (savings per month)
+  // Acumulado: Sum of all consumed values from start of year to current month
+  // Desvio Meta: (Meta - consumed) = surplus/deficit against target
   // ========================================
 
   const monthlyCostDataMemo = useMemo(() => {
@@ -56,14 +58,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       return apiData.consumo_mensal.map((consumoMensal, index) => {
         const valorMensal = Math.max(0, Number(consumoMensal) || 0);
         consumoAcumulado += valorMensal;
-        const consumoComEcoAir = valorMensal * 0.8;
         const consumoPrevisto = valorMensal * 0.85;
-        const consumoSemSistema = apiData.consumo_sem_sistema_mensal?.[index] || valorMensal / 0.8;
+        const consumoSemSistema = apiData.consumo_sem_sistema_mensal?.[index] && apiData.consumo_sem_sistema_mensal[index] > 0
+          ? apiData.consumo_sem_sistema_mensal[index]
+          : valorMensal / 0.8;
 
         return {
           month: monthNames[index],
           consumed: Math.round(valorMensal),
-          ecoAir: Math.round(consumoComEcoAir),
+          ecoAir: Math.round(valorMensal),
           previsto: Math.round(consumoPrevisto),
           consumoSemSistema: Math.round(consumoSemSistema),
           consumoAcumulado: Math.round(consumoAcumulado),
