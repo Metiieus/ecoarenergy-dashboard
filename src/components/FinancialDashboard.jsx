@@ -414,15 +414,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     );
   };
 
-  const chartMax = useMemo(() => {
-    const values = monthlyCostData.length > 0
-      ? monthlyCostData.flatMap(m => [Number(m.consumed) || 0, Number(m.consumoSemSistema) || 0, Number(m.meta) || 0])
-      : [];
-    return values.length > 0 ? Math.max(...values) : 0;
-  }, [monthlyCostData]);
-
-  const yAxisMax = Math.ceil(chartMax * 1.15 || 100);
-
   return (
     <div className="space-y-4">
       {/* Top Metrics Row - 4 Cards */}
