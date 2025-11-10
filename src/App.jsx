@@ -6,9 +6,14 @@ import FinancialDashboard from './components/FinancialDashboard';
 import DeviceDetailView from './components/DeviceDetailView';
 import ControlCenter from './components/ControlCenter';
 import ConsumptionTab from './components/ConsumptionTab';
+import Login from './components/Login';
 import { ApiDataProvider, useApiDataContext } from './context/ApiDataContext';
 
 function AppContent() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // Verificar se há autenticação no localStorage
+    return localStorage.getItem('isAuthenticated') === 'true';
+  });
   const [activeSidebarTab, setActiveSidebarTab] = useState('dashboard');
   const [selectedEstablishment, setSelectedEstablishment] = useState(1);
   const [selectedApiDeviceId, setSelectedApiDeviceId] = useState(33);
@@ -19,16 +24,34 @@ function AppContent() {
 
   const { handleDeviceChange } = useApiDataContext();
 
+  const handleLogin = (credentials) => {
+    // Aqui você pode adicionar a lógica de autenticação real
+    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('userEmail', credentials.email);
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userEmail');
+    setIsAuthenticated(false);
+  };
+
   useEffect(() => {
     handleDeviceChange(selectedApiDeviceId);
   }, [selectedApiDeviceId, handleDeviceChange]);
 
   const shouldShowDetailView = selectedDeviceId !== null;
 
+  // Se não estiver autenticado, mostrar tela de login
+  if (!isAuthenticated) {
+    return <Login onLogin={handleLogin} />;
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar activeTab={activeSidebarTab} setActiveTab={setActiveSidebarTab} />
+      <Sidebar activeTab={activeSidebarTab} setActiveTab={setActiveSidebarTab} onLogout={handleLogout} />
 
       {/* Main Content */}
       <div className="flex-1 ml-64">
@@ -37,6 +60,7 @@ function AppContent() {
           onEstablishmentChange={setSelectedEstablishment}
           selectedDeviceId={selectedApiDeviceId}
           onDeviceChange={setSelectedApiDeviceId}
+          onLogout={handleLogout}
         />
 
         {/* Dashboard Content */}
