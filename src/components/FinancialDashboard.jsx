@@ -172,40 +172,34 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const gaugeEChartsOption = useMemo(() => {
     const { percent, economy, totalWithout } = gaugeMeta;
-    const maxVal = Math.max(totalWithout, 1);
+    const displayPercent = Math.min(100, Math.max(0, Number(percent) || 0));
+    // Half doughnut (semi-circle) using pie with startAngle 180
     return {
+      tooltip: { trigger: 'item', formatter: '{b}: {d}%' },
+      legend: { show: false },
       series: [
         {
           name: 'Economia',
-          type: 'gauge',
+          type: 'pie',
           startAngle: 180,
-          endAngle: 0,
-          min: 0,
-          max: 100,
-          radius: '100%',
-          center: ['50%', '75%'],
-          progress: { show: true, width: 18, itemStyle: { color: '#f97316' } },
-          axisLine: { lineStyle: { width: 18, color: [[percent / 100, '#f97316'], [1, '#e5e7eb']] } },
-          pointer: { show: true, length: '60%', width: 6 },
-          axisTick: { show: false },
-          splitLine: { length: 18, lineStyle: { color: '#ffffff' } },
-          axisLabel: {
-            distance: -40,
-            color: '#6b7280',
-            fontSize: 11,
-            formatter: (v) => {
-              const val = Math.round((v / 100) * maxVal);
-              return val.toLocaleString();
-            }
+          radius: ['50%', '80%'],
+          center: ['50%', '65%'],
+          avoidLabelOverlap: false,
+          label: {
+            show: true,
+            position: 'outside',
+            formatter: '{b}',
+            color: '#374151'
           },
-          title: { show: false },
-          detail: {
-            valueAnimation: true,
-            formatter: `R$ ${formatBRL(economy)}\n${percent}%`,
-            fontSize: 14,
-            color: '#111827'
+          labelLine: {
+            length: 20,
+            length2: 8,
+            smooth: true
           },
-          data: [{ value: percent }]
+          data: [
+            { value: displayPercent, name: 'Economia', itemStyle: { color: '#3b82f6' } },
+            { value: 100 - displayPercent, name: 'Restante', itemStyle: { color: '#e5e7eb' } }
+          ]
         }
       ]
     };
