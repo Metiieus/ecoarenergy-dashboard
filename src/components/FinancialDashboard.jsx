@@ -89,7 +89,17 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   }, [apiData?.consumo_mensal, selectedMonthIndex, monthlyMetaValues]);
 
   useEffect(() => {
-    setMonthlyCostData(monthlyCostDataMemo);
+    const sanitize = (arr) => (arr || []).map(item => ({
+      ...item,
+      consumed: Math.max(0, Number(item.consumed) || 0),
+      ecoAir: Math.max(0, Number(item.ecoAir) || 0),
+      previsto: Math.max(0, Number(item.previsto) || 0),
+      consumoSemSistema: Math.max(0, Number(item.consumoSemSistema) || 0),
+      consumoAcumulado: Math.max(0, Number(item.consumoAcumulado) || 0),
+      meta: Math.max(0, Number(item.meta) || 0)
+    }));
+
+    setMonthlyCostData(sanitize(monthlyCostDataMemo));
   }, [monthlyCostDataMemo]);
 
   const chartMax = useMemo(() => {
