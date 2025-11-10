@@ -1,8 +1,7 @@
-import { useState, useEffect, useMemo, useCallback, memo, useRef } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
+import ReactECharts from 'echarts-for-react';
+import * as echarts from 'echarts';
 import { Calendar, TrendingDown, Edit2, Check, TrendingUp, Clock, Zap, Leaf } from 'lucide-react';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, Tooltip as ChartTooltip, Legend as ChartLegend } from 'chart.js';
-import { Bar, Line as LineChartComp, Doughnut } from 'react-chartjs-2';
-ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, ChartTooltip, ChartLegend);
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { deviceRankings } from '../data/mockData';
 import { useApiDataContext } from '../context/ApiDataContext';
@@ -11,7 +10,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const [periodFilter, setPeriodFilter] = useState('monthly');
   const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
-  // Metas por mês - permite diferentes metas para cada mês
   const [monthlyMetaValues, setMonthlyMetaValues] = useState({
     0: 10000, 1: 10000, 2: 10000, 3: 10000, 4: 10000, 5: 10000,
     6: 10000, 7: 10000, 8: 10000, 9: 10000, 10: 10000, 11: 10000
@@ -24,11 +22,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const handleMonthChange = (monthIndex) => {
     setSelectedMonthIndex(monthIndex);
     setCostInputValue(monthlyMetaValues[monthIndex].toString());
-    // Switch to daily view only if selecting current month, otherwise stay on monthly
     if (monthIndex !== currentMonthIndex) {
       setPeriodFilter('monthly');
     }
   };
+
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [costInputValue, setCostInputValue] = useState(monthlyMetaValues[currentMonthIndex].toString());
 
@@ -39,20 +37,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const [monthlyCostData, setMonthlyCostData] = useState([]);
 
   const { apiData, loading, error } = useApiDataContext();
-
-  // ========================================
-  // METRIC CALCULATIONS EXPLANATION:
-  // ========================================
-  // consumo_mensal from API: Monthly consumption WITH Ecoar system applied
-  // consumo_sem_sistema_mensal from API: Monthly consumption WITHOUT Ecoar system
-  // consumed: Direct value from apiData.consumo_mensal (already with Ecoar)
-  // ecoAir: Same as consumed (consumo_mensal already has Ecoar applied)
-  // previsto: Predicted consumption (consumed × 0.85)
-  // consumoSemSistema: Value from apiData.consumo_sem_sistema_mensal or calculated
-  // Economia: consumoSemSistema - consumed (savings per month)
-  // Acumulado: Sum of all consumed values from start of year to current month
-  // Desvio Meta: (Meta - consumed) = surplus/deficit against target
-  // ========================================
 
   const formatBRL = (v) => {
     const num = Number(v);
@@ -108,7 +92,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     setMonthlyCostData(monthlyCostDataMemo);
   }, [monthlyCostDataMemo]);
 
-  // compute chart scale max
   const chartMax = useMemo(() => {
     const values = monthlyCostData.length > 0
       ? monthlyCostData.flatMap(m => [Number(m.consumed) || 0, Number(m.consumoSemSistema) || 0, Number(m.meta) || 0])
@@ -118,171 +101,105 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const yAxisMax = Math.ceil(chartMax * 1.15 || 100);
 
-  // Build Chart.js datasets
-  const monthlyChartData = useMemo(() => {
+  const monthlyEChartsOption = useMemo(() => {
     return {
-      labels: monthlyCostData.map(m => m.month),
-      datasets: [
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter: (params) => {
+          if (!params || !params.length) return '';
+          return params.map(p => `${p.seriesName}: R$ ${Number(p.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`).join('<br/>');
+        }
+      },
+      legend: { bottom: 0, data: ['Consumo Mensal + Sem Sistema (R$)', 'Valor Real (R$)', 'Meta'] },
+      grid: { left: '3%', right: '4%', top: '10%', bottom: '18%' },
+      xAxis: { type: 'category', data: monthlyCostData.map(m => m.month), axisTick: { alignWithLabel: true }, axisLine: { show: true } },
+      yAxis: { type: 'value', min: 0, max: yAxisMax },
+      series: [
         {
+          name: 'Consumo Mensal + Sem Sistema (R$)',
           type: 'bar',
-          label: 'Consumo Mensal + Sem Sistema (R$)',
           data: monthlyCostData.map(m => m.consumoSemSistema || 0),
-          backgroundColor: monthlyCostData.map(m => (m.isSelected ? '#f87171' : '#fca5a5')),
-          borderRadius: 8,
-          yAxisID: 'y'
+          itemStyle: {
+            color: (params) => monthlyCostData[params.dataIndex]?.isSelected ? '#f87171' : '#fca5a5'
+          },
+          barGap: 0,
+          barWidth: '36%',
+          emphasis: { focus: 'series' }
         },
         {
+          name: 'Valor Real (R$)',
           type: 'bar',
-          label: 'Valor Real (R$)',
           data: monthlyCostData.map(m => m.consumed || 0),
-          backgroundColor: monthlyCostData.map(m => (m.isSelected ? '#34d399' : '#86efac')),
-          borderRadius: 8,
-          yAxisID: 'y'
+          itemStyle: {
+            color: (params) => monthlyCostData[params.dataIndex]?.isSelected ? '#34d399' : '#86efac'
+          },
+          barWidth: '36%'
         },
         {
+          name: 'Meta',
           type: 'line',
-          label: 'Meta',
           data: monthlyCostData.map(m => m.meta || 0),
-          borderColor: '#1e40af',
-          backgroundColor: '#1e40af',
-          tension: 0.35,
-          fill: false,
-          pointBackgroundColor: '#1e40af',
-          pointBorderColor: '#fff',
-          borderWidth: 3,
-          yAxisID: 'y'
+          smooth: true,
+          lineStyle: { color: '#1e40af', width: 3 },
+          symbol: 'circle',
+          symbolSize: 6,
+          itemStyle: { color: '#1e40af' }
         }
       ]
     };
-  }, [monthlyCostData]);
+  }, [monthlyCostData, yAxisMax]);
 
-  const monthlyOptions = useMemo(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: { stacked: false, grid: { display: false } },
-      y: { beginAtZero: true, suggestedMax: yAxisMax }
-    },
-    plugins: {
-      legend: { position: 'bottom', labels: { boxWidth: 12, boxHeight: 6 } },
-      tooltip: {
-        callbacks: {
-          label: (ctx) => {
-            const val = ctx.raw || 0;
-            return `${ctx.dataset.label}: R$ ${Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-          }
-        }
-      }
-    }
-  }), [yAxisMax, monthlyCostData]);
-
-
-  // Gauge (velocimetro) data based on economy achieved vs potential
-  const gaugeRef = useRef(null);
-
-  const gaugePlugin = useMemo(() => ({
-    id: 'gaugeNeedle',
-    afterDraw: (chart) => {
-      if (!chart || !chart.ctx) return;
-      const { ctx, chartArea: area, scales } = chart;
-      const meta = chart.data.meta || {};
-      const percent = meta.percent ?? (chart.data.datasets?.[0]?.data?.[0] ?? 0);
-
-      const cx = area.left + (area.right - area.left) / 2;
-      const cy = area.bottom; // baseline at bottom for semicircle
-      const radius = Math.min((area.right - area.left) / 2, (area.bottom - area.top)) * 0.9;
-
-      // compute angle from percent (rotation -PI to 0)
-      const angle = -Math.PI + (Math.PI * percent / 100);
-
-      ctx.save();
-
-      // draw needle
-      const needleLength = radius * 0.9;
-      const needleX = cx + Math.cos(angle) * needleLength;
-      const needleY = cy + Math.sin(angle) * needleLength;
-
-      ctx.beginPath();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = '#4c1d95';
-      ctx.moveTo(cx, cy - (radius * 0.12));
-      ctx.lineTo(needleX, needleY - (radius * 0.06));
-      ctx.stroke();
-
-      // draw center circle
-      ctx.beginPath();
-      ctx.fillStyle = '#ffffff';
-      ctx.strokeStyle = '#4c1d95';
-      ctx.lineWidth = 3;
-      ctx.arc(cx, cy - (radius * 0.12), 12, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      // draw labels 0 / mid / max
-      const maxVal = meta.totalWithout || 0;
-      const labels = [0, Math.round(maxVal/2), Math.round(maxVal)];
-      const labelAngles = [-Math.PI, -Math.PI/2, 0];
-      ctx.fillStyle = '#6b7280';
-      ctx.font = '12px sans-serif';
-      labelAngles.forEach((a, i) => {
-        const lx = cx + Math.cos(a) * (radius + 18);
-        const ly = cy + Math.sin(a) * (radius + 18) - (radius * 0.12);
-        ctx.fillText(`${labels[i].toLocaleString()} `, lx - 10, ly + 4);
-      });
-
-      // draw tick at needle end and label
-      const tickX = cx + Math.cos(angle) * (radius + 6);
-      const tickY = cy + Math.sin(angle) * (radius + 6) - (radius * 0.12);
-      ctx.beginPath();
-      ctx.strokeStyle = '#4c1d95';
-      ctx.lineWidth = 2;
-      ctx.moveTo(tickX, tickY);
-      const tickInnerX = cx + Math.cos(angle) * (radius - 6);
-      const tickInnerY = cy + Math.sin(angle) * (radius - 6) - (radius * 0.12);
-      ctx.lineTo(tickInnerX, tickInnerY);
-      ctx.stroke();
-
-      ctx.restore();
-    }
-  }), []);
-
-  const gaugeData = useMemo(() => {
+  // Gauge data computed from monthlyCostData
+  const gaugeMeta = useMemo(() => {
     const totalWith = monthlyCostData.length > 0 ? monthlyCostData.reduce((s, m) => s + (m.consumed || 0), 0) : 0;
     const totalWithout = monthlyCostData.length > 0 ? monthlyCostData.reduce((s, m) => s + (m.consumoSemSistema || 0), 0) : 0;
     const economy = Math.max(0, totalWithout - totalWith);
     const percent = totalWithout > 0 ? Math.round((economy / totalWithout) * 100) : 0;
     const displayPercent = Math.min(100, Math.max(0, percent));
-
-    return {
-      labels: ['Economia', 'Restante'],
-      datasets: [
-        {
-          data: [displayPercent, 100 - displayPercent],
-          backgroundColor: ['#f97316', '#e5e7eb'],
-          hoverBackgroundColor: ['#fb923c', '#e5e7eb'],
-          borderWidth: 0
-        }
-      ],
-      meta: {
-        totalWith,
-        totalWithout,
-        economy,
-        percent: displayPercent
-      }
-    };
+    return { totalWith, totalWithout, economy, percent: displayPercent };
   }, [monthlyCostData]);
 
-  const gaugeOptions = useMemo(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    rotation: -Math.PI,
-    circumference: Math.PI,
-    cutout: '60%',
-    plugins: {
-      legend: { display: false },
-      tooltip: { enabled: false }
-    }
-  }), [monthlyCostData]);
+  const gaugeEChartsOption = useMemo(() => {
+    const { percent, economy, totalWithout } = gaugeMeta;
+    const maxVal = Math.max(totalWithout, 1);
+    return {
+      series: [
+        {
+          name: 'Economia',
+          type: 'gauge',
+          startAngle: 180,
+          endAngle: 0,
+          min: 0,
+          max: 100,
+          radius: '100%',
+          center: ['50%', '75%'],
+          progress: { show: true, width: 18, itemStyle: { color: '#f97316' } },
+          axisLine: { lineStyle: { width: 18, color: [[percent / 100, '#f97316'], [1, '#e5e7eb']] } },
+          pointer: { show: true, length: '60%', width: 6 },
+          axisTick: { show: false },
+          splitLine: { length: 18, lineStyle: { color: '#ffffff' } },
+          axisLabel: {
+            distance: -40,
+            color: '#6b7280',
+            fontSize: 11,
+            formatter: (v) => {
+              const val = Math.round((v / 100) * maxVal);
+              return val.toLocaleString();
+            }
+          },
+          title: { show: false },
+          detail: {
+            valueAnimation: true,
+            formatter: `R$ ${formatBRL(economy)}\n${percent}%`,
+            fontSize: 14,
+            color: '#111827'
+          },
+          data: [{ value: percent }]
+        }
+      ]
+    };
+  }, [gaugeMeta]);
 
   const { totalConsumptionYear, totalEconomyYear, economyPieData } = useMemo(() => {
     const totalConsumption = monthlyCostData.length > 0
@@ -318,37 +235,18 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     { month: 'ABR', value: '49 h', atualização: '32 H' }
   ];
 
-  const handleCostInputChange = (e) => {
-    setCostInputValue(e.target.value);
-  };
-
-  const handleCostKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSaveCostMeta();
-    }
-  };
-
+  const handleCostInputChange = (e) => setCostInputValue(e.target.value);
+  const handleCostKeyPress = (e) => { if (e.key === 'Enter') handleSaveCostMeta(); };
   const handleSaveCostMeta = () => {
     const newValue = parseFloat(costInputValue);
     if (!isNaN(newValue) && newValue > 0) {
-      setMonthlyMetaValues({
-        ...monthlyMetaValues,
-        [selectedMonthIndex]: newValue
-      });
+      setMonthlyMetaValues({ ...monthlyMetaValues, [selectedMonthIndex]: newValue });
       setIsEditingMeta(false);
     }
   };
 
-  const handleActivationTimeInputChange = (e) => {
-    setActivationTimeInputValue(e.target.value);
-  };
-
-  const handleActivationTimeKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSaveActivationTimeMeta();
-    }
-  };
-
+  const handleActivationTimeInputChange = (e) => setActivationTimeInputValue(e.target.value);
+  const handleActivationTimeKeyPress = (e) => { if (e.key === 'Enter') handleSaveActivationTimeMeta(); };
   const handleSaveActivationTimeMeta = () => {
     const newValue = parseFloat(activationTimeInputValue);
     if (!isNaN(newValue) && newValue > 0) {
@@ -357,37 +255,23 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     }
   };
 
-  // Get data for the ACTUAL current month (for history and comparisons)
   const actualCurrentMonthIndex = new Date().getMonth();
-
-  // Get data for the SELECTED month (what user is viewing)
   const selectedMonthData = monthlyCostData[selectedMonthIndex];
-
-  // DADOS DO MÊS SELECIONADO (não acumulado)
   const selectedMonthWithoutSystem = isNaN(selectedMonthData?.consumoSemSistema) ? 0 : Math.max(0, selectedMonthData?.consumoSemSistema || 0);
   const selectedMonthWithSystem = isNaN(selectedMonthData?.consumed) ? 0 : Math.max(0, selectedMonthData?.consumed || 0);
   const selectedMonthSavings = isNaN(selectedMonthWithoutSystem - selectedMonthWithSystem) ? 0 : Math.max(0, selectedMonthWithoutSystem - selectedMonthWithSystem);
-
-  // Meta do mês selecionado
   const selectedMonthMeta = monthlyMetaValues[selectedMonthIndex] || 10000;
-
-  // DADOS ACUMULADOS ATÉ O MÊS ATUAL (para comparativo histórico)
   const currentMonthAccumulated = monthlyCostData.length > 0
     ? monthlyCostData.slice(0, actualCurrentMonthIndex + 1).reduce((sum, month) => sum + (month?.consumed || 0), 0)
     : 0;
 
-  // Calculate actual monthly activation time from API downtime data
   const calculatedMonthlyActivationTime = apiData && apiData.minutos_desligado_mensal && apiData.minutos_desligado_mensal.length > 0
     ? Math.max(0, 720 - (apiData.minutos_desligado_mensal[selectedMonthIndex] || 0) / 60)
     : monthlyActivationTime;
 
-  // Year-over-year growth: Compare current accumulated consumption with same period last year
-  // Currently hardcoded to 12% because API doesn't provide historical year-over-year data
-  // TODO: Implement logic to fetch and calculate actual year-over-year growth when API provides historical data
   const yearOverYearGrowth = 12;
 
   const dailyCostData = useMemo(() => {
-    // If viewing current month, show actual daily consumption
     if (selectedMonthIndex === currentMonthIndex) {
       return apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
         ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
@@ -402,7 +286,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         : [];
     }
 
-    // If viewing past month, simulate daily data based on monthly consumption
     if (apiData && Array.isArray(apiData.consumo_mensal) && selectedMonthIndex < apiData.consumo_mensal.length) {
       const monthlyConsumptionRaw = apiData.consumo_mensal[selectedMonthIndex];
       const monthlyConsumption = Math.max(0, Number(monthlyConsumptionRaw) || 0);
@@ -411,7 +294,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         : Math.max(0, monthlyConsumption / 0.8);
       const daysInMonth = new Date(currentYear, selectedMonthIndex + 1, 0).getDate();
 
-      // Distribute monthly consumption evenly across days
       const avgDailyConsumption = daysInMonth > 0 ? monthlyConsumption / daysInMonth : 0;
       const avgDailyWithoutSystem = daysInMonth > 0 ? monthlyWithoutSystem / daysInMonth : 0;
 
@@ -431,31 +313,17 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return [];
   }, [apiData?.consumo_diario_mes_corrente, apiData?.consumo_sem_sistema_diario, apiData?.consumo_mensal, apiData?.consumo_sem_sistema_mensal, selectedMonthIndex, currentMonthIndex]);
 
-  // Build daily chart data and options (depends on dailyCostData)
-  const dailyChartData = useMemo(() => ({
-    labels: dailyCostData.map(d => d.day),
-    datasets: [
-      {
-        label: 'Consumo Sem Sistema (R$)',
-        data: dailyCostData.map(d => d.consumoSemSistema || 0),
-        backgroundColor: '#fca5a5',
-        borderRadius: 4
-      },
-      {
-        label: 'Valor Real (R$)',
-        data: dailyCostData.map(d => d.consumed || 0),
-        backgroundColor: '#86efac',
-        borderRadius: 4
-      }
+  const dailyEChartsOption = useMemo(() => ({
+    tooltip: { trigger: 'axis', formatter: (params) => params.map(p => `${p.seriesName}: R$ ${Number(p.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`).join('<br/>') },
+    legend: { bottom: 0 },
+    grid: { left: '3%', right: '4%', top: '10%', bottom: '18%' },
+    xAxis: { type: 'category', data: dailyCostData.map(d => d.day), axisTick: { alignWithLabel: true } },
+    yAxis: { type: 'value', min: 0, max: yAxisMax },
+    series: [
+      { name: 'Consumo Sem Sistema (R$)', type: 'bar', data: dailyCostData.map(d => d.consumoSemSistema || 0), itemStyle: { color: '#fca5a5' }, barWidth: '40%' },
+      { name: 'Valor Real (R$)', type: 'bar', data: dailyCostData.map(d => d.consumed || 0), itemStyle: { color: '#86efac' }, barWidth: '40%' }
     ]
-  }), [dailyCostData]);
-
-  const dailyOptions = useMemo(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: { x: { grid: { display: false } }, y: { beginAtZero: true, suggestedMax: yAxisMax } },
-    plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (ctx) => `R$ ${Number(ctx.raw || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` } } }
-  }), [yAxisMax, dailyCostData]);
+  }), [dailyCostData, yAxisMax]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -468,21 +336,13 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       const deviationPercent = monthMeta > 0 ? ((deviation / monthMeta) * 100).toFixed(1) : 0;
 
       return (
-        <div className="bg-white p-3 rounded-lg border border-gray-300 shadow-lg">
-          <p className="font-semibold text-gray-900 text-sm mb-2">{data.month || 'Dia'} {data.day || ''}</p>
-          <p className="text-xs text-red-400 mb-1">
-            Consumo (sem sistema): <span className="font-semibold">R$ {formatBRL(semSistema)}</span>
-          </p>
-          <p className="text-xs text-green-600 mb-1">
-            Valor Real: <span className="font-semibold">R$ {formatBRL(consumed)}</span>
-          </p>
-          <p className="text-xs text-gray-500 mb-1">
-            Meta: <span className="font-semibold">R$ {formatBRL(monthMeta)}</span>
-          </p>
-          <div className="border-t border-gray-200 mt-2 pt-2">
-            <p className={`text-xs font-semibold ${deviation >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              Desvio: R$ {formatBRL(isNaN(deviation) ? 0 : deviation)} ({deviationPercent}%)
-            </p>
+        <div className="tooltip-card">
+          <p className="tooltip-title">{data.month || 'Dia'} {data.day || ''}</p>
+          <p className="tooltip-line">Consumo (sem sistema): <span className="tooltip-strong">R$ {formatBRL(semSistema)}</span></p>
+          <p className="tooltip-line">Valor Real: <span className="tooltip-strong">R$ {formatBRL(consumed)}</span></p>
+          <p className="tooltip-line">Meta: <span className="tooltip-strong">R$ {formatBRL(monthMeta)}</span></p>
+          <div className="tooltip-divider">
+            <p className={`tooltip-deviation ${deviation >= 0 ? 'positive' : 'negative'}`}>Desvio: R$ {formatBRL(isNaN(deviation) ? 0 : deviation)} ({deviationPercent}%)</p>
           </div>
         </div>
       );
@@ -497,10 +357,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     ];
 
     return (
-      <div className="flex gap-4 items-center">
+      <div className="legend-row">
         {legendItems.map(item => (
-          <div key={item.key} className="flex items-center gap-2 text-xs text-gray-700">
-            <span style={{ width: 12, height: 8, background: item.color, display: 'inline-block', borderRadius: 2 }}></span>
+          <div key={item.key} className="legend-item">
+            <span className="legend-color" style={{ background: item.color }}></span>
             <span>{item.label}</span>
           </div>
         ))}
@@ -510,43 +370,32 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   return (
     <div className="space-y-4">
-      {/* Top Metrics Row - 4 Cards */}
       <div className="grid grid-cols-5 gap-2 items-start">
-        {/* Meta Card - Mês Selecionado */}
         <div className="space-y-3">
-          <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow h-fit">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Meta - {monthNames[selectedMonthIndex]}</p>
+          <div className="card">
+            <div className="card-header">
+              <p className="card-subtitle">Meta - {monthNames[selectedMonthIndex]}</p>
               <TrendingDown className="w-4 h-4 text-green-600" />
             </div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="card-value">
               {isEditingMeta ? (
-                <div className="flex gap-1">
+                <div className="meta-edit">
                   <input
                     autoFocus
                     type="number"
                     value={costInputValue}
                     onChange={handleCostInputChange}
                     onKeyPress={handleCostKeyPress}
-                    className="w-24 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    className="meta-input"
                   />
-                  <button
-                    onClick={handleSaveCostMeta}
-                    className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors"
-                  >
+                  <button onClick={handleSaveCostMeta} className="meta-save">
                     <Check className="w-3 h-3" />
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center justify-between gap-1">
+                <div className="meta-display">
                   <span>R${selectedMonthMeta.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                  <button
-                    onClick={() => {
-                      setCostInputValue(selectedMonthMeta.toString());
-                      setIsEditingMeta(true);
-                    }}
-                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
-                  >
+                  <button onClick={() => { setCostInputValue(selectedMonthMeta.toString()); setIsEditingMeta(true); }} className="meta-edit-btn">
                     <Edit2 className="w-3 h-3" />
                   </button>
                 </div>
@@ -554,145 +403,105 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
           </div>
 
-          {/* Valor Acumulado Card */}
-          <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Valor Acumulado</p>
+          <div className="card">
+            <div className="card-header">
+              <p className="card-subtitle">Valor Acumulado</p>
               <Zap className="w-4 h-4 text-blue-600" />
             </div>
-            <p className="text-2xl font-bold text-gray-900 mb-2">
-              R${formatBRL(selectedMonthWithSystem)}
-            </p>
-            <p className="text-xs text-gray-500">Consumo do mês - {monthNames[selectedMonthIndex]}</p>
+            <p className="card-large">R${formatBRL(selectedMonthWithSystem)}</p>
+            <p className="card-note">Consumo do mês - {monthNames[selectedMonthIndex]}</p>
           </div>
         </div>
 
-        {/* Economia Total do Ano - Gauge */}
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 hover:shadow-md transition-shadow col-span-2 flex flex-col h-80">
-          <div className="mb-4">
-            <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Economia Ano</p>
-            <p className="text-xs text-gray-500 mt-1">Consumo vs Economia</p>
+        <div className="gauge-card col-span-2">
+          <div>
+            <p className="card-title">Economia Ano</p>
+            <p className="card-note">Consumo vs Economia</p>
           </div>
-          <div className="flex-1 flex items-center justify-center gap-12 overflow-hidden">
-            <div className="flex-shrink-0">
-              <div style={{ width: 260, height: 260, position: 'relative' }}>
-                <Doughnut ref={gaugeRef} data={gaugeData} options={gaugeOptions} plugins={[gaugePlugin]} />
-                {/* Center label (fallback) */}
-                <div style={{ position: 'absolute', left: 0, top: '38%', width: '100%', textAlign: 'center', pointerEvents: 'none' }}>
-                  <div className="text-sm text-gray-500">Economia</div>
-                  <div className="text-3xl font-extrabold text-gray-900">R$ {formatBRL(gaugeData?.meta?.economy ?? (monthlyCostData.length>0 ? monthlyCostData.reduce((s,m)=>s+(m.consumoSemSistema||0),0)-monthlyCostData.reduce((s,m)=>s+(m.consumed||0),0) : 0))}</div>
-                  <div className="text-sm text-gray-500 mt-1">{gaugeData?.meta?.percent ?? 0}%</div>
-                </div>
+          <div className="gauge-content">
+            <div className="gauge-widget">
+              <ReactECharts option={gaugeEChartsOption} echarts={echarts} className="echarts-widget echarts-gauge" />
+              <div className="gauge-center">
+                <div className="gauge-label">Economia</div>
+                <div className="gauge-value">R$ {formatBRL(gaugeMeta?.economy ?? 0)}</div>
+                <div className="gauge-percent">{gaugeMeta?.percent ?? 0}%</div>
               </div>
             </div>
-            <div className="space-y-6 flex-shrink-0">
+            <div className="gauge-stats">
               <div>
-                <p className="text-xs text-gray-600 font-semibold mb-2">Consumo Total</p>
-                <p className="text-3xl font-bold text-gray-900">R$ {isNaN(totalConsumptionYear) ? '0' : (totalConsumptionYear / 1000).toFixed(1)}k</p>
+                <p className="stat-sub">Consumo Total</p>
+                <p className="stat-value">R$ {isNaN(totalConsumptionYear) ? '0' : (totalConsumptionYear / 1000).toFixed(1)}k</p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcançada</p>
-                <p className="text-3xl font-bold text-green-600">R$ {isNaN(totalEconomyYear) ? '0' : (totalEconomyYear / 1000).toFixed(1)}k</p>
+                <p className="stat-sub">Economia Alcançada</p>
+                <p className="stat-value stat-positive">R$ {isNaN(totalEconomyYear) ? '0' : (totalEconomyYear / 1000).toFixed(1)}k</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Mês Selecionado Card - DADOS PRINCIPAIS */}
-        <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-4 shadow-md border border-blue-200 hover:shadow-lg transition-shadow h-fit">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-bold text-blue-700 uppercase tracking-wide">{monthNames[selectedMonthIndex]}</p>
-            <select
-              value={selectedMonthIndex}
-              onChange={(e) => {
-                const newIndex = parseInt(e.target.value);
-                handleMonthChange(newIndex);
-              }}
-              className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-gray-700 hover:border-blue-500 transition-colors appearance-none cursor-pointer"
-            >
+        <div className="card gradient-card">
+          <div className="card-header">
+            <p className="card-subtitle">{monthNames[selectedMonthIndex]}</p>
+            <select value={selectedMonthIndex} onChange={(e) => { const newIndex = parseInt(e.target.value); handleMonthChange(newIndex); }} className="month-select">
               {monthNames.map((name, index) => (
                 <option key={index} value={String(index)}>{name}</option>
               ))}
             </select>
           </div>
-          <div className="mb-3 space-y-2">
-            <div className="border-t border-blue-200 pt-2">
-              <p className="text-xs text-gray-600 mb-1">Valor Real (com Ecoar)</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-blue-600">R${formatBRL(selectedMonthWithSystem)}</p>
-              </div>
+          <div className="card-note mt-3">
+            <p className="text-xs text-gray-600 mb-1">Valor Real (com Ecoar)</p>
+            <div className="flex items-baseline gap-2">
+              <p className="card-large text-blue">R${formatBRL(selectedMonthWithSystem)}</p>
             </div>
           </div>
-          <div className="bg-blue-50/50 rounded p-2 space-y-1">
-            <p className="text-xs text-gray-600">Meta: <span className="font-semibold text-gray-900">R${formatBRL(selectedMonthMeta)}</span></p>
-            <p className="text-xs text-gray-600">Economia: <span className="font-semibold text-green-600">R${formatBRL(selectedMonthSavings)}</span></p>
+
+          <div className="meta-box">
+            <p className="meta-box-line">Meta: <span className="meta-box-strong">R${formatBRL(selectedMonthMeta)}</span></p>
+            <p className="meta-box-line">Economia: <span className="meta-box-strong">R${formatBRL(selectedMonthSavings)}</span></p>
           </div>
 
-          {/* Insert Desvio Meta details inside Valor Real card */}
-          <div className={`mt-3 rounded-lg p-3 border ${
-            isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-              ? 'bg-green-50/50 border-green-200'
-              : 'bg-red-50/50 border-red-200'
-          }`}>
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-bold text-gray-600 uppercase">Desvio Meta</p>
+          <div className={`meta-deviation mt-3 ${isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta ? 'deviation-positive' : 'deviation-negative'}`}>
+            <div className="meta-deviation-header">
+              <p className="meta-deviation-title">Desvio Meta</p>
               {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta ? (
                 <TrendingUp className="w-4 h-4 text-green-600" />
               ) : (
                 <TrendingDown className="w-4 h-4 text-red-600" />
               )}
             </div>
-            <p className={`text-lg font-bold mb-2 ${
-              isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-                ? 'text-green-600'
-                : 'text-red-600'
-            }`}>
+            <p className={`meta-deviation-value ${isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta ? 'text-green-600' : 'text-red-600'}`}>
               R${formatBRL(Math.abs(selectedMonthMeta - selectedMonthWithSystem))}
             </p>
-            <div className="text-xs text-gray-600 space-y-1">
-              <p>Meta do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthMeta) ? '0' : Math.round(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
-              <p>Gasto do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}</span></p>
-              <p className="mt-1 pt-1 border-t border-gray-200">
-                {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-                  ? '✓ Dentro da meta'
-                  : '✗ Acima da meta'}
-              </p>
+            <div className="meta-deviation-details">
+              <p>Meta do mês: <span className="meta-strong">R${isNaN(selectedMonthMeta) ? '0' : Math.round(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
+              <p>Gasto do mês: <span className="meta-strong">R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}</span></p>
+              <p className="mt-1 pt-1 border-top">{isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta ? '✓ Dentro da meta' : '✗ Acima da meta'}</p>
             </div>
           </div>
         </div>
 
-        {/* % vs Ano Anterior */}
-        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-5 shadow-md border border-teal-700/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
-          <p className="text-3xl font-bold mb-1 text-center">{yearOverYearGrowth}%</p>
-          <p className="text-xs font-semibold text-center leading-tight text-teal-50">Em Relação ao Ano Passado</p>
+        <div className="card small-stats">
+          <p className="large-number">{yearOverYearGrowth}%</p>
+          <p className="small-note">Em Relação ao Ano Passado</p>
         </div>
       </div>
 
-      {/* Info and Filter Bar */}
-      <div className="flex items-center justify-between bg-white rounded-lg p-3 shadow-md border border-gray-200">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center">
-            <span className="text-sm font-bold text-gray-600">E</span>
-          </div>
+      <div className="info-bar">
+        <div className="info-left">
+          <div className="unit-badge">E</div>
           <div>
-            <p className="text-xs font-semibold text-gray-700">Unidade {selectedEstablishment}</p>
-            <p className="text-xs text-gray-500">Reais (R$)</p>
+            <p className="info-title">Unidade {selectedEstablishment}</p>
+            <p className="info-sub">Reais (R$)</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500 font-medium">Período:</span>
-          <div className="flex items-center gap-1">
+        <div className="info-right">
+          <span className="info-period">Período:</span>
+          <div className="period-buttons">
             <UITooltip>
               <TooltipTrigger asChild>
-                <button
-                  onClick={() => setPeriodFilter('monthly')}
-                  className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium text-xs transition-all ${
-                    periodFilter === 'monthly'
-                      ? 'bg-teal-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
+                <button onClick={() => setPeriodFilter('monthly')} className={`period-btn ${periodFilter === 'monthly' ? 'active' : ''}`}>
                   <Calendar className="w-3 h-3" />
                   <span>Mensal</span>
                 </button>
@@ -701,14 +510,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </UITooltip>
             <UITooltip>
               <TooltipTrigger asChild>
-                <button
-                  onClick={() => setPeriodFilter('daily')}
-                  className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium text-xs transition-all ${
-                    periodFilter === 'daily'
-                      ? 'bg-teal-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
+                <button onClick={() => setPeriodFilter('daily')} className={`period-btn ${periodFilter === 'daily' ? 'active' : ''}`}>
                   <Calendar className="w-3 h-3" />
                   <span>Diário</span>
                 </button>
@@ -719,154 +521,98 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         </div>
       </div>
 
-      {/* Main Content - Graph and Right Panel */}
       <div className="grid grid-cols-3 gap-3">
-        {/* Large Graph Section */}
-        <div className="col-span-2 bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
-          <h3 className="text-sm font-bold text-gray-900 mb-1">
-            Gráfico {periodFilter === 'monthly' ? 'Mensal' : 'Diário'}
-          </h3>
-          <p className="text-xs text-gray-500 mb-3">
-            {periodFilter === 'monthly' ? 'Consumo para o Ano Atual' : 'Consumo para o Mês Atual'}
-          </p>
+        <div className="col-span-2 card">
+          <h3 className="chart-title">Gráfico {periodFilter === 'monthly' ? 'Mensal' : 'Diário'}</h3>
+          <p className="chart-sub">{periodFilter === 'monthly' ? 'Consumo para o Ano Atual' : 'Consumo para o Mês Atual'}</p>
 
           {loading ? (
-            <div className="h-80 flex items-center justify-center">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600 mx-auto mb-3"></div>
-                <p className="text-xs text-gray-600">Carregando dados da API...</p>
-              </div>
+            <div className="loading-placeholder">
+              <div className="spinner" />
+              <p className="loading-text">Carregando dados da API...</p>
             </div>
           ) : error ? (
-            <div className="h-80 flex items-center justify-center">
-              <div className="text-center">
-                <p className="text-xs text-red-600 mb-2">Erro ao carregar dados</p>
-                <p className="text-xs text-gray-500">{error}</p>
-              </div>
+            <div className="loading-placeholder">
+              <p className="text-xs text-red-600 mb-2">Erro ao carregar dados</p>
+              <p className="text-xs text-gray-500">{error}</p>
             </div>
           ) : periodFilter === 'monthly' ? (
             monthlyCostData.length > 0 ? (
-              <div className="h-72">
-                <div className="w-full h-72">
-                  <Bar data={monthlyChartData} options={monthlyOptions} />
-                </div>
+              <div className="chart-area">
+                <ReactECharts option={monthlyEChartsOption} echarts={echarts} className="echarts-widget" />
               </div>
             ) : (
-              <div className="h-80 flex items-center justify-center">
-                <p className="text-xs text-gray-600">Nenhum dado disponível</p>
-              </div>
+              <div className="empty-placeholder">Nenhum dado disponível</div>
             )
           ) : (
-            <div className="space-y-2">
+            <div>
               {selectedMonthIndex !== currentMonthIndex && (
-                <div className="bg-blue-50 border border-blue-200 rounded p-2 flex items-start gap-2">
-                  <span className="text-blue-600 text-xs mt-0.5">ℹ️</span>
-                  <p className="text-xs text-blue-700">
-                    Exibindo dados simulados para <strong>{monthNames[selectedMonthIndex]}</strong>.
-                    Dados reais disponíveis apenas para o mês atual.
-                  </p>
-                </div>
+                <div className="info-simulated">Exibindo dados simulados para <strong>{monthNames[selectedMonthIndex]}</strong>. Dados reais disponíveis apenas para o mês atual.</div>
               )}
               {dailyCostData.length > 0 ? (
-                <div className="h-72">
-                  <div className="w-full h-72">
-                    <Bar data={dailyChartData} options={dailyOptions} />
-                  </div>
+                <div className="chart-area">
+                  <ReactECharts option={dailyEChartsOption} echarts={echarts} className="echarts-widget" />
                 </div>
               ) : (
-                <div className="h-80 flex items-center justify-center">
-                  <p className="text-xs text-gray-600">Nenhum dado disponível para este mês</p>
-                </div>
+                <div className="empty-placeholder">Nenhum dado disponível para este mês</div>
               )}
             </div>
           )}
         </div>
 
-        {/* Right Panel */}
-        <div className="space-y-3 flex flex-col">
-
-          {/* Update Table */}
-          <div className="bg-white rounded-lg p-3 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
-            <p className="text-xs font-bold text-gray-700 uppercase mb-2 text-center">Mês / Metas / Atualiz.</p>
-            <div className="space-y-1">
+        <div className="space-y-3">
+          <div className="card small-card">
+            <p className="small-card-title">Mês / Metas / Atualiz.</p>
+            <div>
               {updateTable.map((item, index) => (
-                <div key={index} className="flex justify-between items-center text-xs border-b border-gray-100 pb-1 last:border-b-0 hover:bg-gray-50 px-1 py-0.5 rounded transition-colors">
-                  <span className="font-bold text-gray-700 min-w-10">{item.month}</span>
-                  <span className="text-teal-600 flex-1 text-center font-medium text-xs">{item.value}</span>
-                  <span className="font-bold text-gray-900 text-right w-10 text-xs">{item.atualização}</span>
+                <div key={index} className="update-row">
+                  <span className="update-month">{item.month}</span>
+                  <span className="update-value">{item.value}</span>
+                  <span className="update-update">{item.atualização}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Activation Time with Meta and Device Details */}
-          <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow space-y-4">
-            {/* Header with Icon */}
-            <div className="flex items-center justify-between">
+          <div className="card">
+            <div className="card-header">
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-teal-600" />
-                <p className="text-xs font-bold text-gray-700 uppercase">Tempo de Atuação</p>
+                <p className="card-subtitle">Tempo de Atuação</p>
               </div>
             </div>
 
-            {/* Activation Time Meta */}
             <div className="space-y-2">
               <p className="text-xs text-gray-600 font-semibold">Meta Mensal (h)</p>
               <div className="flex items-center gap-2">
                 {isEditingActivationMeta ? (
                   <>
-                    <input
-                      autoFocus
-                      type="number"
-                      value={activationTimeInputValue}
-                      onChange={handleActivationTimeInputChange}
-                      onKeyPress={handleActivationTimeKeyPress}
-                      className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    />
-                    <button
-                      onClick={handleSaveActivationTimeMeta}
-                      className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors"
-                    >
-                      <Check className="w-3 h-3" />
-                    </button>
+                    <input autoFocus type="number" value={activationTimeInputValue} onChange={handleActivationTimeInputChange} onKeyPress={handleActivationTimeKeyPress} className="meta-input" />
+                    <button onClick={handleSaveActivationTimeMeta} className="meta-save"><Check className="w-3 h-3" /></button>
                   </>
                 ) : (
                   <>
-                    <p className="text-lg font-bold text-teal-600">{activationTimeMeta}h</p>
-                    <button
-                      onClick={() => {
-                        setActivationTimeInputValue(activationTimeMeta.toString());
-                        setIsEditingActivationMeta(true);
-                      }}
-                      className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      <Edit2 className="w-3 h-3" />
-                    </button>
+                    <p className="card-large">{activationTimeMeta}h</p>
+                    <button onClick={() => { setActivationTimeInputValue(activationTimeMeta.toString()); setIsEditingActivationMeta(true); }} className="meta-edit-btn"><Edit2 className="w-3 h-3" /></button>
                   </>
                 )}
               </div>
             </div>
 
-            {/* Current Month Activation Time */}
-            <div className="space-y-2 border-t border-gray-200 pt-3">
+            <div className="space-y-2 border-top pt-3">
               <p className="text-xs text-gray-600 font-semibold">Atuação do Mês</p>
-              <p className="text-lg font-bold text-gray-900">{Math.round(calculatedMonthlyActivationTime)}h</p>
+              <p className="card-large">{Math.round(calculatedMonthlyActivationTime)}h</p>
             </div>
 
-            {/* Device Details */}
-            <div className="space-y-2 border-t border-gray-200 pt-3">
+            <div className="space-y-2 border-top pt-3">
               <p className="text-xs text-gray-600 font-semibold mb-2">Dispositivos Ativos</p>
-              <div className="space-y-1 max-h-28 overflow-y-auto">
+              <div className="devices-list">
                 {deviceRankings.slice(0, 3).map((device) => (
-                  <div
-                    key={device.id}
-                    onClick={() => onSelectDevice && onSelectDevice(device.id)}
-                    className="flex items-center gap-2 text-xs bg-gray-50 p-2 rounded hover:bg-teal-50 cursor-pointer transition-colors"
-                  >
-                    <span className="text-base">{device.icon}</span>
-                    <div className="flex-1">
-                      <p className="font-semibold text-gray-700">{device.name}</p>
-                      <p className="text-gray-500">{device.activeTime}h - Score: {device.score}</p>
+                  <div key={device.id} onClick={() => onSelectDevice && onSelectDevice(device.id)} className="device-row">
+                    <span className="device-icon">{device.icon}</span>
+                    <div className="device-info">
+                      <p className="device-name">{device.name}</p>
+                      <p className="device-sub">{device.activeTime}h - Score: {device.score}</p>
                     </div>
                   </div>
                 ))}
