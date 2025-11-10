@@ -222,15 +222,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const { totalConsumptionYear, totalEconomyYear, economyPieData } = useMemo(() => {
     const totalConsumption = monthlyCostData.length > 0
-      ? monthlyCostData[monthlyCostData.length - 1]?.consumoAcumulado || 0
+      ? Math.max(0, monthlyCostData[monthlyCostData.length - 1]?.consumoAcumulado || 0)
       : 0;
 
     const totalConsumptionWithSystem = monthlyCostData.length > 0
-      ? monthlyCostData.reduce((sum, month) => sum + (month?.consumed || 0), 0)
+      ? Math.max(0, monthlyCostData.reduce((sum, month) => sum + Math.max(0, (month?.consumed || 0)), 0))
       : 0;
 
     const totalConsumptionWithoutSystem = monthlyCostData.length > 0
-      ? monthlyCostData.reduce((sum, month) => sum + (month?.consumoSemSistema || 0), 0)
+      ? Math.max(0, monthlyCostData.reduce((sum, month) => sum + Math.max(0, (month?.consumoSemSistema || 0)), 0))
       : 0;
 
     const totalEconomy = Math.max(0, totalConsumptionWithoutSystem - totalConsumptionWithSystem);
