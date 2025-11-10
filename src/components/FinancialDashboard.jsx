@@ -1,9 +1,12 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { Calendar, TrendingDown, Edit2, Check, TrendingUp, Clock, Zap, Leaf } from 'lucide-react';
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
+import ReactECharts from 'echarts-for-react';
 import { Tooltip as UITooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { deviceRankings } from '../data/mockData';
 import { useApiDataContext } from '../context/ApiDataContext';
+
+// Utility function to ensure no negative values
+const ensureNonNegative = (value) => Math.max(0, Number(value) || 0);
 
 const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const [periodFilter, setPeriodFilter] = useState('monthly');
@@ -22,11 +25,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const handleMonthChange = (monthIndex) => {
     setSelectedMonthIndex(monthIndex);
     setCostInputValue(monthlyMetaValues[monthIndex].toString());
-    // Switch to daily view only if selecting current month, otherwise stay on monthly
     if (monthIndex !== currentMonthIndex) {
       setPeriodFilter('monthly');
     }
   };
+
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [costInputValue, setCostInputValue] = useState(monthlyMetaValues[currentMonthIndex].toString());
 
@@ -38,38 +41,24 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const { apiData, loading, error } = useApiDataContext();
 
-  // ========================================
-  // METRIC CALCULATIONS EXPLANATION:
-  // ========================================
-  // consumo_mensal from API: Monthly consumption WITH Eco Air system applied
-  // consumo_sem_sistema_mensal from API: Monthly consumption WITHOUT Eco Air system
-  // consumed: Direct value from apiData.consumo_mensal (already with Eco Air)
-  // ecoAir: Same as consumed (consumo_mensal already has Eco Air applied)
-  // previsto: Predicted consumption (consumed × 0.85)
-  // consumoSemSistema: Value from apiData.consumo_sem_sistema_mensal or calculated
-  // Economia: consumoSemSistema - consumed (savings per month)
-  // Acumulado: Sum of all consumed values from start of year to current month
-  // Desvio Meta: (Meta - consumed) = surplus/deficit against target
-  // ========================================
-
   const monthlyCostDataMemo = useMemo(() => {
     if (apiData && Array.isArray(apiData.consumo_mensal) && apiData.consumo_mensal.length > 0) {
       let consumoAcumulado = 0;
       return apiData.consumo_mensal.map((consumoMensal, index) => {
-        const valorMensal = Math.max(0, Number(consumoMensal) || 0);
+        const valorMensal = ensureNonNegative(consumoMensal);
         consumoAcumulado += valorMensal;
         const consumoPrevisto = valorMensal * 0.85;
         const consumoSemSistema = apiData.consumo_sem_sistema_mensal?.[index] && apiData.consumo_sem_sistema_mensal[index] > 0
-          ? apiData.consumo_sem_sistema_mensal[index]
+          ? ensureNonNegative(apiData.consumo_sem_sistema_mensal[index])
           : valorMensal / 0.8;
 
         return {
           month: monthNames[index],
-          consumed: Math.round(valorMensal),
-          ecoAir: Math.round(valorMensal),
-          previsto: Math.round(consumoPrevisto),
-          consumoSemSistema: Math.round(consumoSemSistema),
-          consumoAcumulado: Math.round(consumoAcumulado),
+          consumed: Math.round(ensureNonNegative(valorMensal)),
+          ecoAir: Math.round(ensureNonNegative(valorMensal)),
+          previsto: Math.round(ensureNonNegative(consumoPrevisto)),
+          consumoSemSistema: Math.round(ensureNonNegative(consumoSemSistema)),
+          consumoAcumulado: Math.round(ensureNonNegative(consumoAcumulado)),
           isSelected: index === selectedMonthIndex
         };
       });
@@ -103,14 +92,14 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       : 0;
 
     const totalConsumptionWithSystem = monthlyCostData.length > 0
-      ? monthlyCostData.reduce((sum, month) => sum + (month?.consumed || 0), 0)
+      ? monthlyCostData.reduce((sum, month) => sum + ensureNonNegative(month?.consumed || 0), 0)
       : 0;
 
     const totalConsumptionWithoutSystem = monthlyCostData.length > 0
-      ? monthlyCostData.reduce((sum, month) => sum + (month?.consumoSemSistema || 0), 0)
+      ? monthlyCostData.reduce((sum, month) => sum + ensureNonNegative(month?.consumoSemSistema || 0), 0)
       : 0;
 
-    const totalEconomy = totalConsumptionWithoutSystem - totalConsumptionWithSystem;
+    const totalEconomy = ensureNonNegative(totalConsumptionWithoutSystem - totalConsumptionWithSystem);
 
     const pieData = [
       { name: 'Consumo com Sistema', value: Math.max(totalConsumptionWithSystem, 1), fill: '#10b981' },
@@ -170,58 +159,44 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     }
   };
 
-  // Get data for the ACTUAL current month (for history and comparisons)
   const actualCurrentMonthIndex = new Date().getMonth();
-
-  // Get data for the SELECTED month (what user is viewing)
   const selectedMonthData = monthlyCostData[selectedMonthIndex];
 
-  // DADOS DO MÊS SELECIONADO (não acumulado)
-  const selectedMonthWithoutSystem = isNaN(selectedMonthData?.consumoSemSistema) ? 0 : Math.max(0, selectedMonthData?.consumoSemSistema || 0);
-  const selectedMonthWithSystem = isNaN(selectedMonthData?.consumed) ? 0 : Math.max(0, selectedMonthData?.consumed || 0);
-  const selectedMonthSavings = isNaN(selectedMonthWithoutSystem - selectedMonthWithSystem) ? 0 : Math.max(0, selectedMonthWithoutSystem - selectedMonthWithSystem);
-
-  // Meta do mês selecionado
+  const selectedMonthWithoutSystem = ensureNonNegative(selectedMonthData?.consumoSemSistema || 0);
+  const selectedMonthWithSystem = ensureNonNegative(selectedMonthData?.consumed || 0);
+  const selectedMonthSavings = ensureNonNegative(selectedMonthWithoutSystem - selectedMonthWithSystem);
   const selectedMonthMeta = monthlyMetaValues[selectedMonthIndex] || 10000;
 
-  // DADOS ACUMULADOS ATÉ O MÊS ATUAL (para comparativo histórico)
   const currentMonthAccumulated = monthlyCostData.length > 0
-    ? monthlyCostData.slice(0, actualCurrentMonthIndex + 1).reduce((sum, month) => sum + (month?.consumed || 0), 0)
+    ? monthlyCostData.slice(0, actualCurrentMonthIndex + 1).reduce((sum, month) => sum + ensureNonNegative(month?.consumed || 0), 0)
     : 0;
 
-  // Calculate actual monthly activation time from API downtime data
   const calculatedMonthlyActivationTime = apiData && apiData.minutos_desligado_mensal && apiData.minutos_desligado_mensal.length > 0
     ? Math.max(0, 720 - (apiData.minutos_desligado_mensal[selectedMonthIndex] || 0) / 60)
     : monthlyActivationTime;
 
-  // Year-over-year growth: Compare current accumulated consumption with same period last year
-  // Currently hardcoded to 12% because API doesn't provide historical year-over-year data
-  // TODO: Implement logic to fetch and calculate actual year-over-year growth when API provides historical data
   const yearOverYearGrowth = 12;
 
   const dailyCostData = useMemo(() => {
-    // If viewing current month, show actual daily consumption
     if (selectedMonthIndex === currentMonthIndex) {
       return apiData && Array.isArray(apiData.consumo_diario_mes_corrente)
         ? apiData.consumo_diario_mes_corrente.map((consumoDiario, index) => ({
             day: `D${index + 1}`,
-            consumed: Math.round(consumoDiario),
-            ecoAir: Math.round(consumoDiario),
-            previsto: Math.round(consumoDiario * 0.85),
-            consumoSemSistema: Math.round(apiData.consumo_sem_sistema_diario?.[index] && apiData.consumo_sem_sistema_diario[index] > 0 ? apiData.consumo_sem_sistema_diario[index] : consumoDiario / 0.8)
+            consumed: Math.round(ensureNonNegative(consumoDiario)),
+            ecoAir: Math.round(ensureNonNegative(consumoDiario)),
+            previsto: Math.round(ensureNonNegative(consumoDiario * 0.85)),
+            consumoSemSistema: Math.round(ensureNonNegative(apiData.consumo_sem_sistema_diario?.[index] && apiData.consumo_sem_sistema_diario[index] > 0 ? apiData.consumo_sem_sistema_diario[index] : consumoDiario / 0.8))
           }))
         : [];
     }
 
-    // If viewing past month, simulate daily data based on monthly consumption
     if (apiData && Array.isArray(apiData.consumo_mensal) && selectedMonthIndex < apiData.consumo_mensal.length) {
-      const monthlyConsumption = apiData.consumo_mensal[selectedMonthIndex];
+      const monthlyConsumption = ensureNonNegative(apiData.consumo_mensal[selectedMonthIndex]);
       const monthlyWithoutSystem = apiData.consumo_sem_sistema_mensal?.[selectedMonthIndex] && apiData.consumo_sem_sistema_mensal[selectedMonthIndex] > 0
-        ? apiData.consumo_sem_sistema_mensal[selectedMonthIndex]
+        ? ensureNonNegative(apiData.consumo_sem_sistema_mensal[selectedMonthIndex])
         : monthlyConsumption / 0.8;
       const daysInMonth = new Date(currentYear, selectedMonthIndex + 1, 0).getDate();
 
-      // Distribute monthly consumption evenly across days
       const avgDailyConsumption = monthlyConsumption / daysInMonth;
       const avgDailyWithoutSystem = monthlyWithoutSystem / daysInMonth;
 
@@ -229,10 +204,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       for (let i = 0; i < daysInMonth; i++) {
         dailyData.push({
           day: `D${i + 1}`,
-          consumed: Math.round(avgDailyConsumption),
-          ecoAir: Math.round(avgDailyConsumption),
-          previsto: Math.round(avgDailyConsumption * 0.85),
-          consumoSemSistema: Math.round(avgDailyWithoutSystem)
+          consumed: Math.round(ensureNonNegative(avgDailyConsumption)),
+          ecoAir: Math.round(ensureNonNegative(avgDailyConsumption)),
+          previsto: Math.round(ensureNonNegative(avgDailyConsumption * 0.85)),
+          consumoSemSistema: Math.round(ensureNonNegative(avgDailyWithoutSystem))
         });
       }
       return dailyData;
@@ -241,40 +216,166 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return [];
   }, [apiData?.consumo_diario_mes_corrente, apiData?.consumo_sem_sistema_diario, apiData?.consumo_mensal, apiData?.consumo_sem_sistema_mensal, selectedMonthIndex, currentMonthIndex]);
 
-  const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      const ecoAirValue = data.ecoAir || 0;
-      const monthIndex = data.month ? monthNames.indexOf(data.month) : selectedMonthIndex;
-      const monthMeta = monthlyMetaValues[monthIndex] || 10000;
-      const deviation = monthMeta - ecoAirValue;
-      const deviationPercent = monthMeta > 0 ? ((deviation / monthMeta) * 100).toFixed(1) : 0;
+  // ECharts options
+  const getMonthlyChartOption = () => {
+    return {
+      backgroundColor: 'transparent',
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderColor: '#e5e7eb',
+        textStyle: { color: '#1f2937' },
+        formatter: (params) => {
+          if (!params || params.length === 0) return '';
+          const data = params[0].data;
+          let html = `<div style="padding: 8px; font-weight: 600; color: #1f2937;">${params[0].name}</div>`;
+          params.forEach((param) => {
+            const color = param.color;
+            html += `<div style="color: #4b5563; font-size: 12px; margin-top: 4px;">
+              <span style="display: inline-block; width: 8px; height: 8px; background: ${color}; border-radius: 50%; margin-right: 6px;"></span>
+              ${param.seriesName}: <span style="font-weight: 600;">R$ ${param.value.toLocaleString('pt-BR')}</span>
+            </div>`;
+          });
+          return html;
+        }
+      },
+      grid: {
+        left: '3%',
+        right: '3%',
+        top: '15%',
+        bottom: '10%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: monthlyCostData.map(d => d.month),
+        axisLine: { lineStyle: { color: '#d1d5db' } },
+        axisLabel: { color: '#6b7280', fontSize: 11 },
+        splitLine: { show: false }
+      },
+      yAxis: {
+        type: 'value',
+        axisLine: { lineStyle: { color: '#d1d5db' } },
+        axisLabel: { color: '#6b7280', fontSize: 11 },
+        splitLine: { lineStyle: { color: '#f3f4f6' } }
+      },
+      series: [
+        {
+          name: 'Consumo com Sistema',
+          data: monthlyCostData.map(d => ensureNonNegative(d.consumed)),
+          type: 'bar',
+          itemStyle: { color: '#10b981', borderRadius: [8, 8, 0, 0] },
+          emphasis: { itemStyle: { color: '#059669' } }
+        },
+        {
+          name: 'Consumo sem Sistema',
+          data: monthlyCostData.map(d => ensureNonNegative(d.consumoSemSistema)),
+          type: 'bar',
+          itemStyle: { color: '#ef4444', borderRadius: [8, 8, 0, 0] },
+          emphasis: { itemStyle: { color: '#dc2626' } }
+        }
+      ]
+    };
+  };
 
-      return (
-        <div className="bg-white p-3 rounded-lg border border-gray-300 shadow-lg">
-          <p className="font-semibold text-gray-900 text-sm mb-2">{data.month || 'Dia'} {data.day || ''}</p>
-          <p className="text-xs text-green-600 mb-1">
-            Valor Real: <span className="font-semibold">R$ {(ecoAirValue || 0).toLocaleString('pt-BR')}</span>
-          </p>
-          <p className="text-xs text-red-400 mb-1">
-            Meta: <span className="font-semibold">R$ {Math.round(monthMeta).toLocaleString('pt-BR')}</span>
-          </p>
-          <div className="border-t border-gray-200 mt-2 pt-2">
-            <p className={`text-xs font-semibold ${deviation >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              Desvio: R$ {(isNaN(deviation) ? 0 : deviation).toFixed(0).toLocaleString('pt-BR')} ({deviationPercent}%)
-            </p>
-          </div>
-        </div>
-      );
-    }
-    return null;
+  const getDailyChartOption = () => {
+    return {
+      backgroundColor: 'transparent',
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderColor: '#e5e7eb',
+        textStyle: { color: '#1f2937' }
+      },
+      grid: {
+        left: '3%',
+        right: '3%',
+        top: '15%',
+        bottom: '10%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        data: dailyCostData.map(d => d.day),
+        axisLine: { lineStyle: { color: '#d1d5db' } },
+        axisLabel: { color: '#6b7280', fontSize: 10 },
+        splitLine: { show: false }
+      },
+      yAxis: {
+        type: 'value',
+        axisLine: { lineStyle: { color: '#d1d5db' } },
+        axisLabel: { color: '#6b7280', fontSize: 11 },
+        splitLine: { lineStyle: { color: '#f3f4f6' } }
+      },
+      series: [
+        {
+          name: 'Consumo com Sistema',
+          data: dailyCostData.map(d => ensureNonNegative(d.consumed)),
+          type: 'line',
+          smooth: true,
+          itemStyle: { color: '#10b981' },
+          lineStyle: { width: 2, color: '#10b981' },
+          areaStyle: { color: 'rgba(16, 185, 129, 0.1)' },
+          emphasis: { itemStyle: { borderWidth: 2 } }
+        },
+        {
+          name: 'Consumo sem Sistema',
+          data: dailyCostData.map(d => ensureNonNegative(d.consumoSemSistema)),
+          type: 'line',
+          smooth: true,
+          itemStyle: { color: '#ef4444' },
+          lineStyle: { width: 2, color: '#ef4444' },
+          areaStyle: { color: 'rgba(239, 68, 68, 0.1)' },
+          emphasis: { itemStyle: { borderWidth: 2 } }
+        }
+      ]
+    };
+  };
+
+  const getPieChartOption = () => {
+    return {
+      backgroundColor: 'transparent',
+      tooltip: {
+        trigger: 'item',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderColor: '#e5e7eb',
+        textStyle: { color: '#1f2937' },
+        formatter: '{b}: R$ {c}'
+      },
+      series: [
+        {
+          name: 'Economia',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          center: ['50%', '50%'],
+          data: economyPieData,
+          itemStyle: {
+            borderColor: '#fff',
+            borderWidth: 2
+          },
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          },
+          label: {
+            show: true,
+            formatter: '{b}\nR$ {c}',
+            color: '#1f2937',
+            fontSize: 11
+          }
+        }
+      ]
+    };
   };
 
   return (
     <div className="space-y-6">
-      {/* Top Metrics Row - 4 Cards */}
+      {/* Top Metrics Row */}
       <div className="grid grid-cols-5 gap-3 items-start">
-        {/* Meta Card - Mês Selecionado */}
+        {/* Meta Card */}
         <div className="space-y-3">
           <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow h-fit">
             <div className="flex items-center justify-between mb-2">
@@ -323,53 +424,36 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <Zap className="w-4 h-4 text-blue-600" />
             </div>
             <p className="text-2xl font-bold text-gray-900 mb-2">
-              R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}
+              R${ensureNonNegative(selectedMonthWithSystem).toLocaleString('pt-BR')}
             </p>
             <p className="text-xs text-gray-500">Consumo do mês - {monthNames[selectedMonthIndex]}</p>
           </div>
         </div>
 
-        {/* Economia Total do Ano - Gauge */}
+        {/* Economia Total do Ano - Pie Chart */}
         <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 hover:shadow-lg transition-shadow col-span-2 flex flex-col h-96">
           <div className="mb-4">
             <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">Economia Ano</p>
             <p className="text-xs text-gray-500 mt-1">Consumo vs Economia</p>
           </div>
           <div className="flex-1 flex items-center justify-center gap-12 overflow-hidden">
-            <div className="flex-shrink-0">
-              <ResponsiveContainer width={320} height={320} debounce={100}>
-                <PieChart isAnimationActive={false}>
-                  <Pie
-                    data={economyPieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={80}
-                    outerRadius={130}
-                    dataKey="value"
-                    startAngle={180}
-                    endAngle={0}
-                  >
-                    {economyPieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
+            <div className="flex-shrink-0 w-64 h-64">
+              <ReactECharts option={getPieChartOption()} style={{ width: '100%', height: '100%' }} />
             </div>
             <div className="space-y-6 flex-shrink-0">
               <div>
                 <p className="text-xs text-gray-600 font-semibold mb-2">Consumo Total</p>
-                <p className="text-3xl font-bold text-gray-900">R$ {isNaN(totalConsumptionYear) ? '0' : (totalConsumptionYear / 1000).toFixed(1)}k</p>
+                <p className="text-3xl font-bold text-gray-900">R$ {ensureNonNegative(totalConsumptionYear / 1000).toFixed(1)}k</p>
               </div>
               <div>
                 <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcançada</p>
-                <p className="text-3xl font-bold text-green-600">R$ {isNaN(totalEconomyYear) ? '0' : (totalEconomyYear / 1000).toFixed(1)}k</p>
+                <p className="text-3xl font-bold text-green-600">R$ {ensureNonNegative(totalEconomyYear / 1000).toFixed(1)}k</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Mês Selecionado Card - DADOS PRINCIPAIS */}
+        {/* Mês Selecionado Card */}
         <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-4 shadow-md border border-blue-200 hover:shadow-lg transition-shadow h-fit">
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs font-bold text-blue-700 uppercase tracking-wide">{monthNames[selectedMonthIndex]}</p>
@@ -389,18 +473,18 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           <div className="mb-3 space-y-2">
             <div>
               <p className="text-xs text-gray-600 mb-1">Consumo sem Sistema</p>
-              <p className="text-2xl font-bold text-gray-900">R${isNaN(selectedMonthWithoutSystem) ? '0' : Math.round(selectedMonthWithoutSystem).toLocaleString('pt-BR')}</p>
+              <p className="text-2xl font-bold text-gray-900">R${ensureNonNegative(selectedMonthWithoutSystem).toLocaleString('pt-BR')}</p>
             </div>
             <div className="border-t border-blue-200 pt-2">
               <p className="text-xs text-gray-600 mb-1">Valor Real (com Eco Air)</p>
               <div className="flex items-baseline gap-2">
-                <p className="text-lg font-bold text-blue-600">R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}</p>
+                <p className="text-lg font-bold text-blue-600">R${ensureNonNegative(selectedMonthWithSystem).toLocaleString('pt-BR')}</p>
               </div>
             </div>
           </div>
           <div className="bg-blue-50/50 rounded p-2 space-y-1">
-            <p className="text-xs text-gray-600">Meta: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthMeta) ? '0' : Math.round(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
-            <p className="text-xs text-gray-600">Economia: <span className="font-semibold text-green-600">R${isNaN(selectedMonthSavings) ? '0' : Math.round(selectedMonthSavings).toLocaleString('pt-BR')}</span></p>
+            <p className="text-xs text-gray-600">Meta: <span className="font-semibold text-gray-900">R${ensureNonNegative(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
+            <p className="text-xs text-gray-600">Economia: <span className="font-semibold text-green-600">R${ensureNonNegative(selectedMonthSavings).toLocaleString('pt-BR')}</span></p>
           </div>
         </div>
 
@@ -489,97 +573,40 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
           ) : periodFilter === 'monthly' ? (
             monthlyCostData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300} debounce={100}>
-                <BarChart data={monthlyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#dc2626" radius={[8, 8, 0, 0]}>
-                    {monthlyCostData.map((entry, index) => (
-                      <Cell key={`semSistema-${index}`} fill={entry.isSelected ? '#b91c1c' : '#dc2626'} />
-                    ))}
-                  </Bar>
-                  <Bar dataKey="consumed" name="Valor Real (R$)" fill="#10b981" radius={[8, 8, 0, 0]}>
-                    {monthlyCostData.map((entry, index) => (
-                      <Cell key={`consumed-${index}`} fill={entry.isSelected ? '#059669' : '#10b981'} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <div style={{ width: '100%', height: '300px' }}>
+                <ReactECharts option={getMonthlyChartOption()} style={{ width: '100%', height: '100%' }} />
+              </div>
             ) : (
-              <div className="h-80 flex items-center justify-center">
-                <p className="text-xs text-gray-600">Nenhum dado disponível</p>
+              <div className="h-80 flex items-center justify-center text-gray-500">
+                <p>Nenhum dado disponível</p>
               </div>
             )
+          ) : dailyCostData.length > 0 ? (
+            <div style={{ width: '100%', height: '300px' }}>
+              <ReactECharts option={getDailyChartOption()} style={{ width: '100%', height: '100%' }} />
+            </div>
           ) : (
-            <div className="space-y-2">
-              {selectedMonthIndex !== currentMonthIndex && (
-                <div className="bg-blue-50 border border-blue-200 rounded p-2 flex items-start gap-2">
-                  <span className="text-blue-600 text-xs mt-0.5">ℹ️</span>
-                  <p className="text-xs text-blue-700">
-                    Exibindo dados simulados para <strong>{monthNames[selectedMonthIndex]}</strong>.
-                    Dados reais disponíveis apenas para o mês atual.
-                  </p>
-                </div>
-              )}
-              {dailyCostData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300} debounce={100}>
-                  <BarChart data={dailyCostData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }} isAnimationActive={false}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="day" />
-                    <YAxis />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                    <Bar dataKey="consumoSemSistema" name="Consumo Mensal + Sem Sistema (R$)" fill="#dc2626" radius={[8, 8, 0, 0]} />
-                    <Bar dataKey="consumed" name="Valor Real (R$)" fill="#10b981" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="h-80 flex items-center justify-center">
-                  <p className="text-xs text-gray-600">Nenhum dado disponível para este mês</p>
-                </div>
-              )}
+            <div className="h-80 flex items-center justify-center text-gray-500">
+              <p>Nenhum dado disponível</p>
             </div>
           )}
         </div>
 
         {/* Right Panel */}
-        <div className="space-y-3 flex flex-col">
-          {/* Desvio Meta - M��s Atual */}
-          <div className={`bg-gradient-to-br rounded-lg p-4 shadow-md border hover:shadow-lg transition-shadow ${
-            isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-              ? 'from-green-50 to-white border-green-200'
-              : 'from-red-50 to-white border-red-200'
-          }`}>
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-gray-600 uppercase">Desvio Meta</p>
-              {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta ? (
-                <TrendingUp className="w-4 h-4 text-green-600" />
-              ) : (
-                <TrendingDown className="w-4 h-4 text-red-600" />
-              )}
+        <div className="space-y-3">
+          {/* Status Card */}
+          <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs font-bold text-gray-700 uppercase">Status</p>
+              <Leaf className="w-4 h-4 text-green-600" />
             </div>
-            <p className={`text-3xl font-bold mb-3 ${
-              isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-                ? 'text-green-600'
-                : 'text-red-600'
-            }`}>
-              R${isNaN(selectedMonthMeta) || isNaN(selectedMonthWithSystem) ? '0' : Math.round(Math.abs(selectedMonthMeta - selectedMonthWithSystem)).toLocaleString('pt-BR')}
-            </p>
-            <div className={`text-xs text-gray-600 space-y-0.5 rounded p-2 ${
-              isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-                ? 'bg-green-50/50'
-                : 'bg-red-50/50'
-            }`}>
-              <p>Meta do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthMeta) ? '0' : Math.round(selectedMonthMeta).toLocaleString('pt-BR')}</span></p>
-              <p>Gasto do mês: <span className="font-semibold text-gray-900">R${isNaN(selectedMonthWithSystem) ? '0' : Math.round(selectedMonthWithSystem).toLocaleString('pt-BR')}</span></p>
-              <p className="mt-1 pt-1 border-t border-gray-200">
-                {isNaN(selectedMonthWithSystem) || isNaN(selectedMonthMeta) || selectedMonthWithSystem <= selectedMonthMeta
-                  ? '✓ Dentro da meta'
-                  : '✗ Acima da meta'}
-              </p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${selectedMonthWithSystem <= selectedMonthMeta ? 'bg-green-600' : 'bg-red-600'}`}></div>
+                <p className={`text-xs font-semibold ${selectedMonthWithSystem <= selectedMonthMeta ? 'text-green-600' : 'text-red-600'}`}>
+                  {selectedMonthWithSystem <= selectedMonthMeta ? '✓ Dentro da meta' : '✗ Acima da meta'}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -597,17 +624,14 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
           </div>
 
-          {/* Activation Time with Meta and Device Details */}
+          {/* Activation Time */}
           <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow space-y-4">
-            {/* Header with Icon */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-teal-600" />
                 <p className="text-xs font-bold text-gray-700 uppercase">Tempo de Atuação</p>
               </div>
             </div>
-
-            {/* Activation Time Meta */}
             <div className="space-y-2">
               <p className="text-xs text-gray-600 font-semibold">Meta Mensal (h)</p>
               <div className="flex items-center gap-2">
@@ -644,14 +668,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 )}
               </div>
             </div>
-
-            {/* Current Month Activation Time */}
             <div className="space-y-2 border-t border-gray-200 pt-3">
               <p className="text-xs text-gray-600 font-semibold">Atuação do Mês</p>
-              <p className="text-lg font-bold text-gray-900">{Math.round(calculatedMonthlyActivationTime)}h</p>
+              <p className="text-lg font-bold text-gray-900">{Math.round(ensureNonNegative(calculatedMonthlyActivationTime))}h</p>
             </div>
-
-            {/* Device Details */}
             <div className="space-y-2 border-t border-gray-200 pt-3">
               <p className="text-xs text-gray-600 font-semibold mb-2">Dispositivos Ativos</p>
               <div className="space-y-1 max-h-28 overflow-y-auto">
