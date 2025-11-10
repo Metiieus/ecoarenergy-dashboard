@@ -173,32 +173,47 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   const gaugeEChartsOption = useMemo(() => {
     const { percent, economy, totalWithout } = gaugeMeta;
     const displayPercent = Math.min(100, Math.max(0, Number(percent) || 0));
-    // Half doughnut (semi-circle) using pie with startAngle 180
+
     return {
-      tooltip: { trigger: 'item', formatter: '{b}: {d}%' },
-      legend: { show: false },
+      tooltip: {
+        trigger: 'item',
+        formatter: (params) => `${params.name}: ${params.percent}%`
+      },
+      legend: {
+        show: true,
+        top: 8,
+        itemGap: 16,
+        data: ['Economia', 'Restante']
+      },
       series: [
         {
           name: 'Economia',
           type: 'pie',
           startAngle: 180,
-          radius: ['50%', '80%'],
-          center: ['50%', '65%'],
+          radius: ['48%', '76%'],
+          center: ['50%', '68%'],
           avoidLabelOverlap: false,
+          clockwise: false,
+          hoverAnimation: false,
           label: {
             show: true,
             position: 'outside',
+            color: '#374151',
             formatter: '{b}',
-            color: '#374151'
+            fontSize: 12
           },
           labelLine: {
-            length: 20,
+            length: 18,
             length2: 8,
             smooth: true
           },
+          itemStyle: {
+            borderColor: '#fff',
+            borderWidth: 2
+          },
           data: [
-            { value: displayPercent, name: 'Economia', itemStyle: { color: '#3b82f6' } },
-            { value: 100 - displayPercent, name: 'Restante', itemStyle: { color: '#e5e7eb' } }
+            { value: displayPercent, name: 'Economia', itemStyle: { color: '#10b981' } },
+            { value: 100 - displayPercent, name: 'Restante', itemStyle: { color: '#ef4444' } }
           ]
         }
       ]
