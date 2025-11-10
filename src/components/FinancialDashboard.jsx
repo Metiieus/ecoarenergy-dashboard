@@ -218,7 +218,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       ? monthlyCostData.reduce((sum, month) => sum + (month?.consumoSemSistema || 0), 0)
       : 0;
 
-    const totalEconomy = totalConsumptionWithoutSystem - totalConsumptionWithSystem;
+    const totalEconomy = Math.max(0, totalConsumptionWithoutSystem - totalConsumptionWithSystem);
 
     const pieData = [
       { name: 'Consumo com Sistema', value: Math.max(totalConsumptionWithSystem, 1), fill: '#10b981' },
