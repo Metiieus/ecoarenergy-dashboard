@@ -8,8 +8,6 @@ import ControlCenter from './components/ControlCenter';
 import ConsumptionTab from './components/ConsumptionTab';
 import Login from './components/Login';
 import { ApiDataProvider, useApiDataContext } from './context/ApiDataContext';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import Login from './components/Login';
 
 function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -66,7 +64,7 @@ function AppContent() {
         />
 
         {/* Dashboard Content */}
-        <div className="p-6">
+        <div className="p-8">
           {activeSidebarTab === 'dashboard' && (
             <>
               {shouldShowDetailView ? (
@@ -96,23 +94,11 @@ function AppContent() {
   );
 }
 
-function AuthGate() {
-  const { isAuthenticated } = useAuth();
-
-  if (!isAuthenticated) return <Login />;
-
+function App() {
   return (
     <ApiDataProvider>
       <AppContent />
     </ApiDataProvider>
-  );
-}
-
-function App() {
-  return (
-    <AuthProvider>
-      <AuthGate />
-    </AuthProvider>
   );
 }
 
