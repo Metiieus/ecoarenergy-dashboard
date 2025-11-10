@@ -1,7 +1,7 @@
-import { LayoutDashboard, BarChart3, Settings } from 'lucide-react';
+import { LayoutDashboard, BarChart3, Settings, LogOut } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 
-const Sidebar = ({ activeTab = 'dashboard', setActiveTab }) => {
+const Sidebar = ({ activeTab = 'dashboard', setActiveTab, onLogout }) => {
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', tooltip: 'Visualize métricas e gráficos de energia' },
     { id: 'consumption', icon: BarChart3, label: 'Consumo', tooltip: 'Analise o consumo detalhado dos dispositivos' },
@@ -47,7 +47,7 @@ const Sidebar = ({ activeTab = 'dashboard', setActiveTab }) => {
       </nav>
 
       {/* Footer */}
-      <div className="p-6 border-t border-teal-400/40">
+      <div className="p-6 border-t border-teal-400/40 space-y-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-white/25 flex items-center justify-center flex-shrink-0">
             <span className="text-sm font-bold">EA</span>
@@ -57,6 +57,15 @@ const Sidebar = ({ activeTab = 'dashboard', setActiveTab }) => {
             <p className="text-xs text-teal-100">Sistema v2.0</p>
           </div>
         </div>
+        {onLogout && (
+          <button
+            onClick={onLogout}
+            className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-teal-100 hover:bg-white/15 transition-all duration-200"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium text-sm">Sair</span>
+          </button>
+        )}
       </div>
     </div>
   );

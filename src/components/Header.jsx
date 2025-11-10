@@ -1,16 +1,18 @@
 import { useState } from 'react';
-import { Bell, ChevronDown, LogOut } from 'lucide-react';
+import { Bell, ChevronDown, LogOut, User } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { establishments } from '../data/establishments';
 import { devices } from '../data/devices';
 import { useAuth } from '../context/AuthContext';
 
-const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId, onDeviceChange }) => {
+const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId, onDeviceChange, onLogout }) => {
   const [isEstablishmentDropdownOpen, setIsEstablishmentDropdownOpen] = useState(false);
   const [isDeviceDropdownOpen, setIsDeviceDropdownOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const currentEstablishment = establishments.find(est => est.id === selectedEstablishment) || establishments[0];
   const currentDevice = devices.find(dev => dev.id === selectedDeviceId) || devices[0];
+  const userEmail = localStorage.getItem('userEmail') || 'usuario@example.com';
 
   const handleSelectEstablishment = (establishmentId) => {
     onEstablishmentChange(establishmentId);
@@ -22,7 +24,12 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
     setIsDeviceDropdownOpen(false);
   };
 
-  const { logout } = useAuth();
+  const handleLogout = () => {
+    setIsUserMenuOpen(false);
+    if (onLogout) {
+      onLogout();
+    }
+  };
 
   return (
     <div className="bg-white border-b border-gray-200 px-8 py-5 sticky top-0 z-10 shadow-sm">
@@ -130,18 +137,46 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
             </TooltipContent>
           </Tooltip>
 
-          {/* User Profile */}
-          <div className="flex items-center gap-3 ml-4 pl-4 border-l border-gray-200">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-sm">EA</span>
-            </div>
-            <button
-              onClick={() => logout && logout()}
-              className="p-2 rounded hover:bg-gray-100 text-gray-600"
-              title="Sair"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+          {/* User Profile Dropdown */}
+          <div className="relative ml-4 pl-4 border-l border-gray-200">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center gap-3 hover:bg-gray-100 px-2 py-1 rounded-lg transition-colors"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center flex-shrink-0">
+                    <span className="text-white font-bold text-sm">EA</span>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-gray-600" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Menu do usuário
+              </TooltipContent>
+            </Tooltip>
+
+            {isUserMenuOpen && (
+              <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                <div className="px-4 py-3 border-b border-gray-100">
+                  <p className="text-sm font-medium text-gray-900">Minha Conta</p>
+                  <p className="text-xs text-gray-500 truncate">{userEmail}</p>
+                </div>
+                <button
+                  className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-2 text-gray-700"
+                >
+                  <User className="w-4 h-4" />
+                  <span className="text-sm font-medium">Perfil</span>
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-3 hover:bg-red-50 transition-colors flex items-center gap-2 text-red-600 border-t border-gray-100"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="text-sm font-medium">Sair</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
