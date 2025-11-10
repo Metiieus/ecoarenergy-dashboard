@@ -3,6 +3,7 @@ import { Bell, ChevronDown, LogOut, User } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { establishments } from '../data/establishments';
 import { devices } from '../data/devices';
+import { useAuth } from '../context/AuthContext';
 
 const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId, onDeviceChange, onLogout }) => {
   const [isEstablishmentDropdownOpen, setIsEstablishmentDropdownOpen] = useState(false);
@@ -35,7 +36,7 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-gray-500">Sistema de Gestão de Energia</p>
-          <h1 className="text-2xl font-bold text-gray-900 mt-1">Ecoar Energy</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mt-1">Ecoar</h1>
         </div>
 
         <div className="flex items-center gap-3">

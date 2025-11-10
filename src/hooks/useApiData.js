@@ -53,16 +53,19 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
         const apiData = await response.json();
 
         // Enrich API data with calculated fields for consumption without system
+        // Prefer API-provided "consumo_sem_sistema" arrays when they contain meaningful values.
+        // Otherwise, derive them from consumo_mensal / consumo_diario_mes_corrente without rounding
+        const hasApiMonthlyWithout = Array.isArray(apiData.consumo_sem_sistema_mensal) && apiData.consumo_sem_sistema_mensal.some(v => v && Number(v) > 0);
+        const hasApiDailyWithout = Array.isArray(apiData.consumo_sem_sistema_diario) && apiData.consumo_sem_sistema_diario.some(v => v && Number(v) > 0);
+
         const enrichedData = {
           ...apiData,
-          // Calculate consumption without system (assuming system reduces consumption to 80%)
-          // This represents what consumption would be without the EcoAir system
-          consumo_sem_sistema_mensal: apiData.consumo_mensal?.length > 0
-            ? apiData.consumo_mensal.map(consumo => Math.round(consumo / 0.8))
-            : [],
-          consumo_sem_sistema_diario: apiData.consumo_diario_mes_corrente?.length > 0
-            ? apiData.consumo_diario_mes_corrente.map(consumo => Math.round(consumo / 0.8))
-            : []
+          consumo_sem_sistema_mensal: hasApiMonthlyWithout
+            ? apiData.consumo_sem_sistema_mensal.map(v => Math.max(0, Number(v)))
+            : (apiData.consumo_mensal?.length > 0 ? apiData.consumo_mensal.map(consumo => Math.max(0, (Number(consumo) || 0) / 0.8)) : []),
+          consumo_sem_sistema_diario: hasApiDailyWithout
+            ? apiData.consumo_sem_sistema_diario.map(v => Math.max(0, Number(v)))
+            : (apiData.consumo_diario_mes_corrente?.length > 0 ? apiData.consumo_diario_mes_corrente.map(consumo => Math.max(0, (Number(consumo) || 0) / 0.8)) : [])
         };
 
         setData(enrichedData);

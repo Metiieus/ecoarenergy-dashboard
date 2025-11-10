@@ -18,7 +18,6 @@ const Sidebar = ({ activeTab = 'dashboard', setActiveTab, onLogout }) => {
           </div>
           <div>
             <h1 className="text-lg font-bold tracking-tight">Ecoar</h1>
-            <p className="text-xs text-teal-100">Energy</p>
           </div>
         </div>
       </div>
@@ -54,7 +53,7 @@ const Sidebar = ({ activeTab = 'dashboard', setActiveTab, onLogout }) => {
             <span className="text-sm font-bold">EA</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold truncate">Ecoar Energy</p>
+            <p className="text-sm font-semibold truncate">Ecoar</p>
             <p className="text-xs text-teal-100">Sistema v2.0</p>
           </div>
         </div>
