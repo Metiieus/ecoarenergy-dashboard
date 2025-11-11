@@ -17,7 +17,7 @@ export default defineConfig({
   },
   server: {
     middlewareMode: false,
-    allowedHosts: ['*', '5173-i5q9lqnl8hoa36oxeexg1-416ab1ef.manusvm.computer', '5174-i5q9lqnl8hoa36oxeexg1-416ab1ef.manusvm.computer', '5175-i5q9lqnl8hoa36oxeexg1-416ab1ef.manusvm.computer', '5176-i5q9lqnl8hoa36oxeexg1-416ab1ef.manusvm.computer'],
+    allowedHosts: ['*'],
     proxy: {
       '/api': {
         target: 'https://tb8calt97j.execute-api.sa-east-1.amazonaws.com',
