@@ -2,42 +2,42 @@ export const devices = [
   {
     id: 33,
     name: 'Bomba CAG',
-    location: 'Setor A'
+    location: 'Bomba CAG'
   },
   {
     id: 36,
     name: 'Chiller',
-    location: 'Setor B'
+    location: 'Chiller'
   },
   {
     id: 37,
     name: 'Fancoil Auditório',
-    location: 'Setor C'
+    location: 'Fancoil Auditório'
   },
   {
     id: 38,
     name: 'Aquecimento de Água',
-    location: 'Setor D'
+    location: 'Aquecimento de Água'
   },
   {
     id: 39,
     name: 'Bomba de Recalque',
-    location: 'Setor E'
+    location: 'Bomba de Recalque'
   },
   {
     id: 40,
     name: 'Bomba de Esgoto',
-    location: 'Setor F'
+    location: 'Bomba de Esgoto'
   },
   {
     id: 41,
     name: 'Dispositivo 41',
-    location: 'Setor G'
+    location: 'Dispositivo 41'
   },
   {
     id: 42,
     name: 'Dispositivo 42',
-    location: 'Setor H'
+    location: 'Dispositivo 42'
   }
 ];
 
