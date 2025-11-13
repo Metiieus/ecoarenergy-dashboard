@@ -5,13 +5,13 @@ const API_BASE_URL = import.meta.env.PROD
   : '/api/dados';
 
 const defaultApiData = {
-  consumo_mensal: [],
-  consumo_diario_mes_corrente: [],
-  consumo_sem_sistema_mensal: [],
-  consumo_sem_sistema_diario: [],
+  consumo_mensal: [257, 825, 1959, 3029, 2931, 1811, 1822, 1957, 1397, 2603, 0, 0],
+  consumo_diario_mes_corrente: [100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 380, 390],
+  consumo_sem_sistema_mensal: [321, 1031, 2449, 3786, 3664, 2264, 2278, 2446, 1746, 3254, 0, 0],
+  consumo_sem_sistema_diario: [125, 137, 150, 162, 175, 187, 200, 212, 225, 237, 250, 262, 275, 287, 300, 312, 325, 337, 350, 362, 375, 387, 400, 412, 425, 437, 450, 462, 475, 487],
   potencias: [],
-  minutos_desligado_diario: [],
-  minutos_desligado_mensal: []
+  minutos_desligado_diario: Array(30).fill(120),
+  minutos_desligado_mensal: [1800, 1800, 1800, 1800, 1800, 1800, 1800, 1800, 1800, 1800, 1800, 1800]
 };
 
 export const useApiData = (deviceId = 33, includeHistory = true) => {
@@ -26,17 +26,22 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
         setError(null);
 
         let urlString;
-        if (import.meta.env.PROD) {
-          const url = new URL(API_BASE_URL);
-          url.searchParams.append('device_id', deviceId);
-          url.searchParams.append('historico', includeHistory);
-          urlString = url.toString();
-        } else {
-          const baseUrl = `${window.location.origin}${API_BASE_URL}`;
-          const url = new URL(baseUrl);
-          url.searchParams.append('device_id', deviceId);
-          url.searchParams.append('historico', includeHistory);
-          urlString = url.toString();
+        try {
+          if (import.meta.env.PROD) {
+            const url = new URL(API_BASE_URL);
+            url.searchParams.append('device_id', deviceId);
+            url.searchParams.append('historico', includeHistory);
+            urlString = url.toString();
+          } else {
+            const baseUrl = `${window.location.origin}${API_BASE_URL}`;
+            const url = new URL(baseUrl);
+            url.searchParams.append('device_id', deviceId);
+            url.searchParams.append('historico', includeHistory);
+            urlString = url.toString();
+          }
+        } catch (urlErr) {
+          console.warn('Erro ao construir URL:', urlErr.message);
+          throw new Error(`URL inválida: ${urlErr.message}`);
         }
 
         const response = await fetch(urlString, {
@@ -71,8 +76,10 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
         setData(enrichedData);
         console.log('📊 Enriched API Data:', enrichedData);
       } catch (err) {
-        console.warn('Erro ao buscar dados da API, usando mock data:', err.message);
-        setError(err.message);
+        console.warn('Erro ao buscar dados da API:', err.message);
+        console.warn('URL tentada:', urlString);
+        setError(`Erro ao conectar com a API: ${err.message}`);
+        // Use mock data como fallback
         setData(defaultApiData);
       } finally {
         setLoading(false);

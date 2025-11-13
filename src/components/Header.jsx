@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Bell, ChevronDown, LogOut, User } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { establishments } from '../data/establishments';
-import { devices } from '../data/devices';
+import { devices, DEVICE_ID_ALL, getDeviceById } from '../data/devices';
 import { useAuth } from '../context/AuthContext';
 
 const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId, onDeviceChange, onLogout }) => {
@@ -11,7 +11,7 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const currentEstablishment = establishments.find(est => est.id === selectedEstablishment) || establishments[0];
-  const currentDevice = devices.find(dev => dev.id === selectedDeviceId) || devices[0];
+  const currentDevice = getDeviceById(selectedDeviceId) || devices[0];
   const userEmail = localStorage.getItem('userEmail') || 'usuario@example.com';
 
   const handleSelectEstablishment = (establishmentId) => {
@@ -101,6 +101,22 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
 
             {isDeviceDropdownOpen && (
               <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                <button
+                  onClick={() => handleSelectDevice(DEVICE_ID_ALL)}
+                  className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 ${
+                    selectedDeviceId === DEVICE_ID_ALL ? 'bg-teal-50' : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Todos os Equipamentos</p>
+                      <p className="text-xs text-gray-500">Agregado</p>
+                    </div>
+                    {selectedDeviceId === DEVICE_ID_ALL && (
+                      <div className="w-2 h-2 rounded-full bg-teal-600"></div>
+                    )}
+                  </div>
+                </button>
                 {devices.map((dev) => (
                   <button
                     key={dev.id}
