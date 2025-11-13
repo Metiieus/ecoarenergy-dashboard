@@ -688,39 +688,37 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
             <div className="space-y-2">
               <p className="text-xs text-gray-600 font-semibold">Meta Mensal (h)</p>
-              <div className="flex items-center gap-2">
-                {isEditingActivationMeta ? (
-                  <>
-                    <input
-                      autoFocus
-                      type="number"
-                      value={activationTimeInputValue}
-                      onChange={handleActivationTimeInputChange}
-                      onKeyPress={handleActivationTimeKeyPress}
-                      className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-                    />
-                    <button
-                      onClick={handleSaveActivationTimeMeta}
-                      className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors"
-                    >
-                      <Check className="w-3 h-3" />
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-lg font-bold text-teal-600">{activationTimeMeta}h</p>
-                    <button
-                      onClick={() => {
-                        setActivationTimeInputValue(activationTimeMeta.toString());
-                        setIsEditingActivationMeta(true);
-                      }}
-                      className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      <Edit2 className="w-3 h-3" />
-                    </button>
-                  </>
-                )}
-              </div>
+              {isEditingActivationMeta ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    autoFocus
+                    type="number"
+                    value={activationTimeInputValue}
+                    onChange={handleActivationTimeInputChange}
+                    onKeyPress={handleActivationTimeKeyPress}
+                    className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  />
+                  <button
+                    onClick={handleSaveActivationTimeMeta}
+                    className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors"
+                  >
+                    <Check className="w-3 h-3" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <p className="text-lg font-bold text-teal-600">{activationTimeMeta}h</p>
+                  <button
+                    onClick={() => {
+                      setActivationTimeInputValue(activationTimeMeta.toString());
+                      setIsEditingActivationMeta(true);
+                    }}
+                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <Edit2 className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
             </div>
             <div className="space-y-2 border-t border-gray-200 pt-3">
               <p className="text-xs text-gray-600 font-semibold">Atuação do Mês</p>
