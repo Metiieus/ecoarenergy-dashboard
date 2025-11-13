@@ -1,32 +1,32 @@
 export const devices = [
   {
     id: 33,
-    name: 'Dispositivo 33',
+    name: 'Bomba CAG',
     location: 'Setor A'
   },
   {
     id: 36,
-    name: 'Dispositivo 36',
+    name: 'Chiller',
     location: 'Setor B'
   },
   {
     id: 37,
-    name: 'Dispositivo 37',
+    name: 'Fancoil Auditório',
     location: 'Setor C'
   },
   {
     id: 38,
-    name: 'Dispositivo 38',
+    name: 'Aquecimento de Água',
     location: 'Setor D'
   },
   {
     id: 39,
-    name: 'Dispositivo 39',
+    name: 'Bomba de Recalque',
     location: 'Setor E'
   },
   {
     id: 40,
-    name: 'Dispositivo 40',
+    name: 'Bomba de Esgoto',
     location: 'Setor F'
   },
   {
@@ -41,6 +41,13 @@ export const devices = [
   }
 ];
 
+export const DEVICE_ID_ALL = 'all';
+
 export const getDeviceById = (id) => {
+  if (id === DEVICE_ID_ALL) {
+    return { id: DEVICE_ID_ALL, name: 'Todos os Equipamentos', location: 'Todos' };
+  }
   return devices.find(dev => dev.id === id);
 };
+
+export const getAllDeviceIds = () => devices.map(dev => dev.id);
