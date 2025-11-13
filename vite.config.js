@@ -5,18 +5,28 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // 🔧 Define variáveis de ambiente (usadas no build)
   define: {
-    'process.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || 'http://localhost:5175'),
+    'process.env.VITE_API_URL': JSON.stringify(
+      process.env.VITE_API_URL || 'http://localhost:5175'
+    ),
   },
+
+  // 🧩 Plugins do projeto
   plugins: [react(), tailwindcss()],
+
+  // 📦 Caminho base para deploy no GitHub Pages
   base: '/ecoarenergy-dashboard/',
+
+  // 🧭 Alias para imports
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
   },
+
+  // 🌐 Configuração do servidor de desenvolvimento local
   server: {
-    middlewareMode: false,
     allowedHosts: ['*'],
     proxy: {
       '/api': {
@@ -25,5 +35,11 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, '/dev'),
       },
     },
+  },
+
+  // ⚙️ Build otimizado para produção
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
   },
 })
