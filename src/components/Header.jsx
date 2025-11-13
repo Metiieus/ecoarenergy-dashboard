@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Bell, ChevronDown, LogOut, User } from 'lucide-react';
 import { Tooltip, TooltipTrigger, TooltipContent } from './ui/tooltip';
 import { establishments } from '../data/establishments';
-import { devices } from '../data/devices';
+import { devices, DEVICE_ID_ALL, getDeviceById } from '../data/devices';
 import { useAuth } from '../context/AuthContext';
 
 const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId, onDeviceChange, onLogout }) => {
