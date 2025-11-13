@@ -409,39 +409,37 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Meta - {monthNames[selectedMonthIndex]}</p>
               <TrendingDown className="w-4 h-4 text-green-600" />
             </div>
-            <p className="text-2xl font-bold text-gray-900">
-              {isEditingMeta ? (
-                <div className="flex gap-1">
-                  <input
-                    autoFocus
-                    type="number"
-                    value={costInputValue}
-                    onChange={handleCostInputChange}
-                    onKeyPress={handleCostKeyPress}
-                    className="w-24 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                  <button
-                    onClick={handleSaveCostMeta}
-                    className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors"
-                  >
-                    <Check className="w-3 h-3" />
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center justify-between gap-1">
-                  <span>R${selectedMonthMeta.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                  <button
-                    onClick={() => {
-                      setCostInputValue(selectedMonthMeta.toString());
-                      setIsEditingMeta(true);
-                    }}
-                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
-                  >
-                    <Edit2 className="w-3 h-3" />
-                  </button>
-                </div>
-              )}
-            </p>
+            {isEditingMeta ? (
+              <div className="flex gap-1">
+                <input
+                  autoFocus
+                  type="number"
+                  value={costInputValue}
+                  onChange={handleCostInputChange}
+                  onKeyPress={handleCostKeyPress}
+                  className="w-24 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+                <button
+                  onClick={handleSaveCostMeta}
+                  className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors"
+                >
+                  <Check className="w-3 h-3" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-1">
+                <p className="text-2xl font-bold text-gray-900">R${selectedMonthMeta.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                <button
+                  onClick={() => {
+                    setCostInputValue(selectedMonthMeta.toString());
+                    setIsEditingMeta(true);
+                  }}
+                  className="p-1 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+                >
+                  <Edit2 className="w-3 h-3" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Valor Acumulado Card */}
