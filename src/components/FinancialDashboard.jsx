@@ -170,21 +170,21 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         splitLine: { lineStyle: { color: '#f3f4f6' } }
       },
       legend: {
-        data: ['Consumo com Sistema', 'Consumo sem Sistema', 'Meta'],
+        data: ['Consumo Mensal', 'Mensal + sem Sistema', 'Meta'],
         top: 0,
         textStyle: { color: '#6b7280', fontSize: 12 }
       },
       series: [
         {
-          name: 'Consumo com Sistema',
+          name: 'Consumo Mensal',
           data: chartData.map(d => ensureNonNegative(d.consumo)),
           type: 'bar',
           itemStyle: { color: '#10b981', borderRadius: [8, 8, 0, 0], shadowColor: 'rgba(16, 185, 129, 0.3)', shadowBlur: 4, shadowOffsetY: 2 },
           emphasis: { itemStyle: { color: '#059669', shadowBlur: 8 } }
         },
         {
-          name: 'Consumo sem Sistema',
-          data: chartData.map(d => ensureNonNegative(d.consumoSemSistema)),
+          name: 'Mensal + sem Sistema',
+          data: chartData.map(d => ensureNonNegative(d.consumo + d.consumoSemSistema)),
           type: 'bar',
           itemStyle: { color: '#ef4444', borderRadius: [8, 8, 0, 0], shadowColor: 'rgba(239, 68, 68, 0.3)', shadowBlur: 4, shadowOffsetY: 2 },
           emphasis: { itemStyle: { color: '#dc2626', shadowBlur: 8 } }
