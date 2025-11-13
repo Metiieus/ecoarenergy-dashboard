@@ -232,17 +232,22 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         axisLabel: { color: '#6b7280', fontSize: 11 },
         splitLine: { lineStyle: { color: '#f3f4f6' } }
       },
+      legend: {
+        data: ['Consumo Diário', 'Diário + sem Sistema'],
+        top: 0,
+        textStyle: { color: '#6b7280', fontSize: 12 }
+      },
       series: [
         {
-          name: 'Consumo com Sistema',
+          name: 'Consumo Diário',
           data: chartData.map(d => ensureNonNegative(d.consumo)),
           type: 'bar',
           itemStyle: { color: '#10b981' },
           emphasis: { itemStyle: { borderWidth: 2 } }
         },
         {
-          name: 'Consumo sem Sistema',
-          data: chartData.map(d => ensureNonNegative(d.consumoSemSistema)),
+          name: 'Diário + sem Sistema',
+          data: chartData.map(d => ensureNonNegative(d.consumo + d.consumoSemSistema)),
           type: 'bar',
           itemStyle: { color: '#ef4444' },
           emphasis: { itemStyle: { borderWidth: 2 } }
