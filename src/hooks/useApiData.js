@@ -71,8 +71,10 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
         setData(enrichedData);
         console.log('📊 Enriched API Data:', enrichedData);
       } catch (err) {
-        console.warn('Erro ao buscar dados da API, usando mock data:', err.message);
-        setError(err.message);
+        console.warn('Erro ao buscar dados da API:', err.message);
+        console.warn('URL tentada:', urlString);
+        setError(`Erro ao conectar com a API: ${err.message}`);
+        // Use mock data como fallback
         setData(defaultApiData);
       } finally {
         setLoading(false);
