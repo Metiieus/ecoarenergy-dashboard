@@ -32,19 +32,29 @@ export const ApiDataProvider = ({ children }) => {
       // Fetch data for each device and aggregate
       for (const deviceId of allDeviceIds) {
         try {
-          const response = await fetch(
-            `${import.meta.env.PROD
-              ? 'https://tb8calt97j.execute-api.sa-east-1.amazonaws.com/dev/dados'
-              : '/api/dados'
-            }?device_id=${deviceId}&historico=true`
-          );
+          const baseUrl = import.meta.env.PROD
+            ? 'https://tb8calt97j.execute-api.sa-east-1.amazonaws.com/dev/dados'
+            : '/api/dados';
+
+          const url = new URL(baseUrl, window.location.origin);
+          url.searchParams.append('device_id', deviceId);
+          url.searchParams.append('historico', 'true');
+
+          const response = await fetch(url.toString(), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
 
           if (response.ok) {
             const data = await response.json();
             aggregatedData[deviceId] = data;
+          } else {
+            console.warn(`API returned status ${response.status} for device ${deviceId}`);
           }
         } catch (err) {
-          console.warn(`Error loading device ${deviceId}:`, err);
+          console.warn(`Error loading device ${deviceId}:`, err.message);
         }
       }
 
