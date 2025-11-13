@@ -11,7 +11,7 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const currentEstablishment = establishments.find(est => est.id === selectedEstablishment) || establishments[0];
-  const currentDevice = devices.find(dev => dev.id === selectedDeviceId) || devices[0];
+  const currentDevice = getDeviceById(selectedDeviceId) || devices[0];
   const userEmail = localStorage.getItem('userEmail') || 'usuario@example.com';
 
   const handleSelectEstablishment = (establishmentId) => {
