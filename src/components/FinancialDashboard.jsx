@@ -332,41 +332,60 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
         {/* Meta Card */}
         <div className="space-y-3">
-          <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow h-fit">
-            <div className="flex items-center justify-between mb-2">
+          <div className={`rounded-lg p-4 shadow-md border transition-all h-fit ${
+            isEditingMeta
+              ? 'bg-teal-50 border-teal-300 border-2'
+              : 'bg-white border-gray-200 hover:shadow-lg'
+          }`}>
+            <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">
                 Meta - {periodFilter === 'daily' ? `D${selectedPeriodIndex + 1}` : monthNames[selectedPeriodIndex]}
               </p>
               <TrendingDown className="w-4 h-4 text-green-600" />
             </div>
             {isEditingMeta ? (
-              <div className="flex gap-1">
+              <div className="space-y-2">
                 <input
                   autoFocus
                   type="number"
                   value={costInputValue}
                   onChange={handleCostInputChange}
                   onKeyPress={handleCostKeyPress}
-                  className="w-24 px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="0"
+                  className="w-full px-3 py-2 border-2 border-teal-400 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
-                <button
-                  onClick={handleSaveCostMeta}
-                  className="px-2 py-1 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors"
-                >
-                  <Check className="w-3 h-3" />
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleSaveCostMeta}
+                    className="flex-1 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors flex items-center justify-center gap-1"
+                  >
+                    <Check className="w-4 h-4" />
+                    Salvar
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsEditingMeta(false);
+                      setCostInputValue(currentMeta.toString());
+                    }}
+                    className="flex-1 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded text-xs font-medium transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </div>
               </div>
             ) : (
-              <div className="flex items-center justify-between gap-1">
-                <p className="text-2xl font-bold text-gray-900">R${ensureNonNegative(currentMeta).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+              <div className="space-y-2">
+                <p className="text-3xl font-bold text-gray-900">R${ensureNonNegative(currentMeta).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
                 <button
                   onClick={() => {
+                    console.log('📝 Iniciando edição de meta, valor atual:', currentMeta);
                     setCostInputValue(currentMeta.toString());
                     setIsEditingMeta(true);
                   }}
-                  className="p-1 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+                  className="w-full px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-xs font-medium transition-colors flex items-center justify-center gap-2"
                 >
-                  <Edit2 className="w-3 h-3" />
+                  <Edit2 className="w-4 h-4" />
+                  Editar Meta
                 </button>
               </div>
             )}
