@@ -198,8 +198,9 @@ export const loadMetaFromStorage = (deviceId, filterType, periodIndex) => {
  * @param {Number} value - Meta value to save
  */
 export const saveMetaToStorage = (deviceId, filterType, periodIndex, value) => {
-  const key = `meta_${deviceId}_${filterType}_${periodIndex}`;
+  const key = `meta_device_${deviceId}_${filterType}_${periodIndex}`;
   localStorage.setItem(key, String(value));
+  console.log(`📊 Meta salva para dispositivo ${deviceId}:`, key, '=', value);
 };
 
 /**
