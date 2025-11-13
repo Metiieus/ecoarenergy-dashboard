@@ -178,9 +178,16 @@ export const getActivationHours = (apiData, filterType, periodIndex) => {
  * @returns {Number} Saved meta or default value
  */
 export const loadMetaFromStorage = (deviceId, filterType, periodIndex) => {
-  const key = `meta_${deviceId}_${filterType}_${periodIndex}`;
+  // Use a combined key that includes device to ensure different devices can have different metas
+  const key = `meta_device_${deviceId}_${filterType}_${periodIndex}`;
   const stored = localStorage.getItem(key);
-  return stored ? parseFloat(stored) : 10000;
+
+  if (stored) {
+    return parseFloat(stored);
+  }
+
+  // Return default value (can be different per device if needed)
+  return 10000;
 };
 
 /**
