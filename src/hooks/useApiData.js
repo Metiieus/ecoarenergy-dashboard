@@ -26,17 +26,22 @@ export const useApiData = (deviceId = 33, includeHistory = true) => {
         setError(null);
 
         let urlString;
-        if (import.meta.env.PROD) {
-          const url = new URL(API_BASE_URL);
-          url.searchParams.append('device_id', deviceId);
-          url.searchParams.append('historico', includeHistory);
-          urlString = url.toString();
-        } else {
-          const baseUrl = `${window.location.origin}${API_BASE_URL}`;
-          const url = new URL(baseUrl);
-          url.searchParams.append('device_id', deviceId);
-          url.searchParams.append('historico', includeHistory);
-          urlString = url.toString();
+        try {
+          if (import.meta.env.PROD) {
+            const url = new URL(API_BASE_URL);
+            url.searchParams.append('device_id', deviceId);
+            url.searchParams.append('historico', includeHistory);
+            urlString = url.toString();
+          } else {
+            const baseUrl = `${window.location.origin}${API_BASE_URL}`;
+            const url = new URL(baseUrl);
+            url.searchParams.append('device_id', deviceId);
+            url.searchParams.append('historico', includeHistory);
+            urlString = url.toString();
+          }
+        } catch (urlErr) {
+          console.warn('Erro ao construir URL:', urlErr.message);
+          throw new Error(`URL inválida: ${urlErr.message}`);
         }
 
         const response = await fetch(urlString, {
