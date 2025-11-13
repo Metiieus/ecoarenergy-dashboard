@@ -2,32 +2,32 @@ export const devices = [
   {
     id: 33,
     name: 'Bomba CAG',
-    location: 'Bomba CAG'
+    location: 'Dispositivo 33'
   },
   {
     id: 36,
     name: 'Chiller',
-    location: 'Chiller'
+    location: 'Dispositivo 36'
   },
   {
     id: 37,
     name: 'Fancoil Auditório',
-    location: 'Fancoil Auditório'
+    location: 'Dispositivo 37'
   },
   {
     id: 38,
     name: 'Aquecimento de Água',
-    location: 'Aquecimento de Água'
+    location: 'Dispositivo 38'
   },
   {
     id: 39,
     name: 'Bomba de Recalque',
-    location: 'Bomba de Recalque'
+    location: 'Dispositivo 39'
   },
   {
     id: 40,
     name: 'Bomba de Esgoto',
-    location: 'Bomba de Esgoto'
+    location: 'Dispositivo 40'
   },
   {
     id: 41,
