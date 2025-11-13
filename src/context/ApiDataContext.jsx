@@ -32,15 +32,21 @@ export const ApiDataProvider = ({ children }) => {
       // Fetch data for each device and aggregate
       for (const deviceId of allDeviceIds) {
         try {
-          const baseUrl = import.meta.env.PROD
-            ? 'https://tb8calt97j.execute-api.sa-east-1.amazonaws.com/dev/dados'
-            : '/api/dados';
+          let urlString;
+          if (import.meta.env.PROD) {
+            const url = new URL('https://tb8calt97j.execute-api.sa-east-1.amazonaws.com/dev/dados');
+            url.searchParams.append('device_id', deviceId);
+            url.searchParams.append('historico', 'true');
+            urlString = url.toString();
+          } else {
+            const baseUrl = `${window.location.origin}/api/dados`;
+            const url = new URL(baseUrl);
+            url.searchParams.append('device_id', deviceId);
+            url.searchParams.append('historico', 'true');
+            urlString = url.toString();
+          }
 
-          const url = new URL(baseUrl, window.location.origin);
-          url.searchParams.append('device_id', deviceId);
-          url.searchParams.append('historico', 'true');
-
-          const response = await fetch(url.toString(), {
+          const response = await fetch(urlString, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json'
