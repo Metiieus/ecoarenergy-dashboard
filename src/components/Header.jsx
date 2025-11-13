@@ -101,6 +101,22 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
 
             {isDeviceDropdownOpen && (
               <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                <button
+                  onClick={() => handleSelectDevice(DEVICE_ID_ALL)}
+                  className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 ${
+                    selectedDeviceId === DEVICE_ID_ALL ? 'bg-teal-50' : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Todos os Equipamentos</p>
+                      <p className="text-xs text-gray-500">Agregado</p>
+                    </div>
+                    {selectedDeviceId === DEVICE_ID_ALL && (
+                      <div className="w-2 h-2 rounded-full bg-teal-600"></div>
+                    )}
+                  </div>
+                </button>
                 {devices.map((dev) => (
                   <button
                     key={dev.id}
