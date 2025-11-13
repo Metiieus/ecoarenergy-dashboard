@@ -54,7 +54,7 @@ export const ApiDataProvider = ({ children }) => {
     } finally {
       setLoadingAllDevices(false);
     }
-  }, [selectedDeviceId, allDeviceIds]);
+  }, [selectedDeviceId]);
 
   // Aggregate data from multiple devices
   const aggregateDevicesData = useCallback((devicesDataMap) => {
