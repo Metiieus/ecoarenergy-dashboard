@@ -110,7 +110,7 @@ export const ApiDataProvider = ({ children }) => {
 
       if (deviceData.consumo_sem_sistema_diario) {
         deviceData.consumo_sem_sistema_diario.forEach((val, idx) => {
-          aggregated.consumo_diario_mes_corrente[idx] = (aggregated.consumo_sem_sistema_diario[idx] || 0) + (Number(val) || 0);
+          aggregated.consumo_sem_sistema_diario[idx] = (aggregated.consumo_sem_sistema_diario[idx] || 0) + (Number(val) || 0);
         });
       }
 
