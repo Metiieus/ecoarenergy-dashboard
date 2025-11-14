@@ -6,37 +6,37 @@ export const devices = [
   },
   {
     id: 36,
-    name: 'Chiller',
+    name: 'Bomba de Esgoto',
     location: 'Dispositivo 36'
   },
   {
     id: 37,
-    name: 'Fancoil Auditório',
+    name: 'Bomba de Recalque',
     location: 'Dispositivo 37'
   },
   {
     id: 38,
-    name: 'Aquecimento de Água',
+    name: 'Bomba de Águas Pluviais',
     location: 'Dispositivo 38'
   },
   {
     id: 39,
-    name: 'Bomba de Recalque',
+    name: 'Aquecimento de Água',
     location: 'Dispositivo 39'
   },
   {
     id: 40,
-    name: 'Bomba de Esgoto',
+    name: 'Fancoil Auditório',
     location: 'Dispositivo 40'
   },
   {
     id: 41,
-    name: 'Dispositivo 41',
+    name: 'Chiller',
     location: 'Dispositivo 41'
   },
   {
     id: 42,
-    name: 'Dispositivo 42',
+    name: 'Bomba de Gordura',
     location: 'Dispositivo 42'
   }
 ];
