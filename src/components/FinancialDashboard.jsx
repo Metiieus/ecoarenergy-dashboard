@@ -670,15 +670,34 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
           {/* Update Table */}
           <div className="bg-white rounded-lg p-3 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
-            <p className="text-xs font-bold text-gray-700 uppercase mb-2 text-center">Mês / Metas / Atualiz.</p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-bold text-gray-700 uppercase">Mês / Metas / Atualiz.</p>
+              <span className="text-xs text-gray-500">{monthMetaTablePageIndex + 1} / {totalPages}</span>
+            </div>
             <div className="space-y-1">
-              {updateTable.map((item, index) => (
+              {paginatedMonthsData.map((item, index) => (
                 <div key={index} className="flex justify-between items-center text-xs border-b border-gray-100 pb-1 last:border-b-0 hover:bg-gray-50 px-1 py-0.5 rounded transition-colors">
                   <span className="font-bold text-gray-700 min-w-10">{item.month}</span>
                   <span className="text-teal-600 flex-1 text-center font-medium text-xs">{item.value}</span>
                   <span className="font-bold text-gray-900 text-right w-10 text-xs">{item.atualização}</span>
                 </div>
               ))}
+            </div>
+            <div className="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-gray-200">
+              <button
+                onClick={() => setMonthMetaTablePageIndex(Math.max(0, monthMetaTablePageIndex - 1))}
+                disabled={monthMetaTablePageIndex === 0}
+                className="flex-1 px-2 py-1.5 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 text-gray-700 rounded text-xs font-medium transition-colors"
+              >
+                ← Anterior
+              </button>
+              <button
+                onClick={() => setMonthMetaTablePageIndex(Math.min(totalPages - 1, monthMetaTablePageIndex + 1))}
+                disabled={monthMetaTablePageIndex >= totalPages - 1}
+                className="flex-1 px-2 py-1.5 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 text-gray-700 rounded text-xs font-medium transition-colors"
+              >
+                Próximo →
+              </button>
             </div>
           </div>
 
