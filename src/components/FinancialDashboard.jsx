@@ -17,7 +17,9 @@ import {
   loadMetaFromStorage,
   saveMetaToStorage,
   getLastSevenDays,
-  getLastThreeMonths
+  getLastThreeMonths,
+  loadActivationTimeMeta,
+  saveActivationTimeMeta
 } from '../lib/calculationUtils';
 
 const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
