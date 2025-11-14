@@ -17,7 +17,9 @@ import {
   loadMetaFromStorage,
   saveMetaToStorage,
   getLastSevenDays,
-  getLastThreeMonths
+  getLastThreeMonths,
+  loadActivationTimeMeta,
+  saveActivationTimeMeta
 } from '../lib/calculationUtils';
 
 const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -27,6 +29,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [costInputValue, setCostInputValue] = useState('10000');
+  const [editingDeviceTimeId, setEditingDeviceTimeId] = useState(null);
+  const [deviceTimeInputValue, setDeviceTimeInputValue] = useState('');
+  const [monthMetaTablePageIndex, setMonthMetaTablePageIndex] = useState(0);
 
   const currentMonthIndex = new Date().getMonth();
   const currentYear = new Date().getFullYear();
@@ -66,6 +71,26 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       console.log('✅ Meta salva com sucesso');
     } else {
       console.warn('❌ Valor inválido para meta:', costInputValue);
+    }
+  };
+
+  const handleSaveDeviceTimeMeta = (deviceId) => {
+    const newValue = parseFloat(deviceTimeInputValue);
+    console.log('🔧 Tentando salvar meta de tempo:', {
+      newValue,
+      deviceId,
+      periodFilter,
+      periodIndex: selectedPeriodIndex,
+      isValid: !isNaN(newValue) && newValue > 0
+    });
+
+    if (!isNaN(newValue) && newValue > 0) {
+      saveActivationTimeMeta(deviceId, periodFilter, selectedPeriodIndex, newValue);
+      setEditingDeviceTimeId(null);
+      setDeviceTimeInputValue('');
+      console.log('✅ Meta de tempo salva com sucesso');
+    } else {
+      console.warn('❌ Valor inválido para meta de tempo:', deviceTimeInputValue);
     }
   };
 
@@ -306,12 +331,29 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     };
   };
 
-  const updateTable = [
-    { month: 'JAN', value: '50 h', atualização: '46 H' },
-    { month: 'FEV', value: '50 h', atualização: '51 H' },
-    { month: 'MAR', value: '45 h', atualização: '29 H' },
-    { month: 'ABR', value: '49 h', atualização: '32 H' }
-  ];
+  const allMonthsData = useMemo(() => {
+    return monthNames.map((name, monthIndex) => {
+      // Get activation time meta from storage
+      const meta = loadActivationTimeMeta(selectedDeviceId, 'monthly', monthIndex);
+
+      // Get actual activation hours from API data
+      const downtimeMinutes = apiData?.minutos_desligado_mensal?.[monthIndex] || 0;
+      const actualHours = Math.max(0, 720 - downtimeMinutes / 60);
+
+      return {
+        month: name.toUpperCase(),
+        value: `${meta.toFixed(0)} h`,
+        atualização: `${actualHours.toFixed(0)} H`
+      };
+    });
+  }, [apiData, selectedDeviceId]);
+
+  const itemsPerPage = 4;
+  const totalPages = Math.ceil(allMonthsData.length / itemsPerPage);
+  const paginatedMonthsData = allMonthsData.slice(
+    monthMetaTablePageIndex * itemsPerPage,
+    (monthMetaTablePageIndex + 1) * itemsPerPage
+  );
 
   return (
     <div className="space-y-6">
@@ -630,15 +672,34 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
           {/* Update Table */}
           <div className="bg-white rounded-lg p-3 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
-            <p className="text-xs font-bold text-gray-700 uppercase mb-2 text-center">Mês / Metas / Atualiz.</p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-bold text-gray-700 uppercase">Mês / Metas / Atualiz.</p>
+              <span className="text-xs text-gray-500">{monthMetaTablePageIndex + 1} / {totalPages}</span>
+            </div>
             <div className="space-y-1">
-              {updateTable.map((item, index) => (
+              {paginatedMonthsData.map((item, index) => (
                 <div key={index} className="flex justify-between items-center text-xs border-b border-gray-100 pb-1 last:border-b-0 hover:bg-gray-50 px-1 py-0.5 rounded transition-colors">
                   <span className="font-bold text-gray-700 min-w-10">{item.month}</span>
                   <span className="text-teal-600 flex-1 text-center font-medium text-xs">{item.value}</span>
                   <span className="font-bold text-gray-900 text-right w-10 text-xs">{item.atualização}</span>
                 </div>
               ))}
+            </div>
+            <div className="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-gray-200">
+              <button
+                onClick={() => setMonthMetaTablePageIndex(Math.max(0, monthMetaTablePageIndex - 1))}
+                disabled={monthMetaTablePageIndex === 0}
+                className="flex-1 px-2 py-1.5 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 text-gray-700 rounded text-xs font-medium transition-colors"
+              >
+                ← Anterior
+              </button>
+              <button
+                onClick={() => setMonthMetaTablePageIndex(Math.min(totalPages - 1, monthMetaTablePageIndex + 1))}
+                disabled={monthMetaTablePageIndex >= totalPages - 1}
+                className="flex-1 px-2 py-1.5 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 text-gray-700 rounded text-xs font-medium transition-colors"
+              >
+                Próximo →
+              </button>
             </div>
           </div>
 
@@ -659,19 +720,60 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             <div className="space-y-2 border-t border-gray-200 pt-3">
               <p className="text-xs text-gray-600 font-semibold mb-2">Dispositivos Ativos</p>
               <div className="space-y-1 max-h-28 overflow-y-auto">
-                {deviceRankings.slice(0, 3).map((device) => (
-                  <div
-                    key={device.id}
-                    onClick={() => onSelectDevice && onSelectDevice(device.id)}
-                    className="flex items-center gap-2 text-xs bg-gray-50 p-2 rounded hover:bg-teal-50 cursor-pointer transition-colors"
-                  >
-                    <span className="text-base">{device.icon}</span>
-                    <div className="flex-1">
-                      <p className="font-semibold text-gray-700">{device.name}</p>
-                      <p className="text-gray-500">{device.activeTime}h - Score: {device.score}</p>
+                {deviceRankings.slice(0, 3).map((device) => {
+                  const deviceTimeMeta = loadActivationTimeMeta(device.id, periodFilter, selectedPeriodIndex);
+                  const isEditing = editingDeviceTimeId === device.id;
+
+                  return (
+                    <div
+                      key={device.id}
+                      className="flex items-center gap-2 text-xs bg-gray-50 p-2 rounded hover:bg-teal-50 cursor-pointer transition-colors"
+                    >
+                      <span className="text-base">{device.icon}</span>
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-700">{device.name}</p>
+                        {isEditing ? (
+                          <div className="flex gap-1 mt-0.5">
+                            <input
+                              autoFocus
+                              type="number"
+                              value={deviceTimeInputValue}
+                              onChange={(e) => setDeviceTimeInputValue(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleSaveDeviceTimeMeta(device.id);
+                                }
+                              }}
+                              placeholder="0"
+                              className="w-10 px-1 py-0.5 border border-teal-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-teal-500"
+                            />
+                            <button
+                              onClick={() => handleSaveDeviceTimeMeta(device.id)}
+                              className="px-1.5 py-0.5 bg-teal-500 hover:bg-teal-600 text-white rounded text-xs font-medium transition-colors"
+                              title="Salvar"
+                            >
+                              ✓
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1">
+                            <p className="text-gray-500">{deviceTimeMeta.toFixed(1)}h - Score: {device.score}</p>
+                            <button
+                              onClick={() => {
+                                setEditingDeviceTimeId(device.id);
+                                setDeviceTimeInputValue(deviceTimeMeta.toString());
+                              }}
+                              className="px-1 py-0.5 bg-teal-100 hover:bg-teal-200 text-teal-700 rounded text-xs font-medium transition-colors"
+                              title="Editar meta"
+                            >
+                              <Edit2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
