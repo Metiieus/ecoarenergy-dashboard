@@ -222,3 +222,35 @@ export const getLastThreeMonths = (monthlyData) => {
   if (!Array.isArray(monthlyData)) return [];
   return monthlyData.slice(Math.max(0, monthlyData.length - 3));
 };
+
+/**
+ * Load activation time meta from localStorage for a specific device
+ * @param {Number|String} deviceId - Device ID
+ * @param {String} filterType - 'daily' or 'monthly'
+ * @param {Number} periodIndex - Period index (month or day)
+ * @returns {Number} Saved activation time meta in hours or default value
+ */
+export const loadActivationTimeMeta = (deviceId, filterType, periodIndex) => {
+  const key = `activation_meta_device_${deviceId}_${filterType}_${periodIndex}`;
+  const stored = localStorage.getItem(key);
+
+  if (stored) {
+    return parseFloat(stored);
+  }
+
+  // Default values: 24 hours for daily, 720 hours for monthly
+  return filterType === 'daily' ? 24 : 720;
+};
+
+/**
+ * Save activation time meta to localStorage for a specific device
+ * @param {Number|String} deviceId - Device ID
+ * @param {String} filterType - 'daily' or 'monthly'
+ * @param {Number} periodIndex - Period index
+ * @param {Number} value - Activation time meta in hours
+ */
+export const saveActivationTimeMeta = (deviceId, filterType, periodIndex, value) => {
+  const key = `activation_meta_device_${deviceId}_${filterType}_${periodIndex}`;
+  localStorage.setItem(key, String(value));
+  console.log(`⏱️ Meta de tempo de atuação salva para dispositivo ${deviceId}:`, key, '=', value);
+};
