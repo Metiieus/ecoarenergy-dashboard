@@ -681,21 +681,72 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <p className="text-lg font-bold text-teal-600">{activationHours.toFixed(1)}h</p>
             </div>
             <div className="space-y-2 border-t border-gray-200 pt-3">
-              <p className="text-xs text-gray-600 font-semibold mb-2">Dispositivos Ativos</p>
-              <div className="space-y-1 max-h-28 overflow-y-auto">
-                {deviceRankings.slice(0, 3).map((device) => (
-                  <div
-                    key={device.id}
-                    onClick={() => onSelectDevice && onSelectDevice(device.id)}
-                    className="flex items-center gap-2 text-xs bg-gray-50 p-2 rounded hover:bg-teal-50 cursor-pointer transition-colors"
-                  >
-                    <span className="text-base">{device.icon}</span>
-                    <div className="flex-1">
-                      <p className="font-semibold text-gray-700">{device.name}</p>
-                      <p className="text-gray-500">{device.activeTime}h - Score: {device.score}</p>
+              <p className="text-xs text-gray-600 font-semibold mb-2">Metas por Dispositivo</p>
+              <div className="space-y-2 max-h-40 overflow-y-auto">
+                {deviceRankings.slice(0, 4).map((device) => {
+                  const deviceTimeMeta = loadActivationTimeMeta(device.id, periodFilter, selectedPeriodIndex);
+                  const isEditing = editingDeviceTimeId === device.id;
+
+                  return (
+                    <div
+                      key={device.id}
+                      className="flex items-center gap-2 text-xs bg-gray-50 p-2 rounded hover:bg-gray-100 transition-colors"
+                    >
+                      <span className="text-base flex-shrink-0">{device.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-gray-700 truncate">{device.name}</p>
+                        {isEditing ? (
+                          <div className="flex gap-1 mt-1">
+                            <input
+                              autoFocus
+                              type="number"
+                              value={deviceTimeInputValue}
+                              onChange={(e) => setDeviceTimeInputValue(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleSaveDeviceTimeMeta(device.id);
+                                }
+                              }}
+                              placeholder="0"
+                              className="w-12 px-2 py-1 border border-teal-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-teal-500"
+                            />
+                            <button
+                              onClick={() => handleSaveDeviceTimeMeta(device.id)}
+                              className="px-2 py-1 bg-teal-500 hover:bg-teal-600 text-white rounded text-xs font-medium transition-colors"
+                              title="Salvar"
+                            >
+                              ✓
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingDeviceTimeId(null);
+                                setDeviceTimeInputValue('');
+                              }}
+                              className="px-2 py-1 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded text-xs font-medium transition-colors"
+                              title="Cancelar"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between gap-1 mt-1">
+                            <p className="text-gray-500">Meta: {deviceTimeMeta.toFixed(1)}h</p>
+                            <button
+                              onClick={() => {
+                                setEditingDeviceTimeId(device.id);
+                                setDeviceTimeInputValue(deviceTimeMeta.toString());
+                              }}
+                              className="px-2 py-0.5 bg-teal-100 hover:bg-teal-200 text-teal-700 rounded text-xs font-medium transition-colors"
+                              title="Editar meta"
+                            >
+                              <Edit2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
