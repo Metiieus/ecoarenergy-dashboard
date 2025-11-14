@@ -682,25 +682,22 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <p className="text-lg font-bold text-teal-600">{activationHours.toFixed(1)}h</p>
             </div>
             <div className="space-y-2 border-t border-gray-200 pt-3">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-gray-600 font-semibold">Metas por Dispositivo</p>
-                <p className="text-xs text-gray-500">{monthNames[deviceTimeMetaPageIndex]} - {monthNames[(deviceTimeMetaPageIndex + 3) % 12]}</p>
-              </div>
-              <div className="space-y-2 max-h-40 overflow-y-auto">
-                {deviceRankings.slice(0, 4).map((device) => {
-                  const deviceTimeMeta = loadActivationTimeMeta(device.id, periodFilter, deviceTimeMetaPageIndex);
+              <p className="text-xs text-gray-600 font-semibold mb-2">Dispositivos Ativos</p>
+              <div className="space-y-1 max-h-28 overflow-y-auto">
+                {deviceRankings.slice(0, 3).map((device) => {
+                  const deviceTimeMeta = loadActivationTimeMeta(device.id, periodFilter, selectedPeriodIndex);
                   const isEditing = editingDeviceTimeId === device.id;
 
                   return (
                     <div
                       key={device.id}
-                      className="flex items-center gap-2 text-xs bg-gray-50 p-2 rounded hover:bg-gray-100 transition-colors"
+                      className="flex items-center gap-2 text-xs bg-gray-50 p-2 rounded hover:bg-teal-50 cursor-pointer transition-colors"
                     >
-                      <span className="text-base flex-shrink-0">{device.icon}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-gray-700 truncate">{device.name}</p>
+                      <span className="text-base">{device.icon}</span>
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-700">{device.name}</p>
                         {isEditing ? (
-                          <div className="flex gap-1 mt-1">
+                          <div className="flex gap-1 mt-0.5">
                             <input
                               autoFocus
                               type="number"
@@ -712,35 +709,25 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                                 }
                               }}
                               placeholder="0"
-                              className="w-12 px-2 py-1 border border-teal-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-teal-500"
+                              className="w-10 px-1 py-0.5 border border-teal-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-teal-500"
                             />
                             <button
                               onClick={() => handleSaveDeviceTimeMeta(device.id)}
-                              className="px-2 py-1 bg-teal-500 hover:bg-teal-600 text-white rounded text-xs font-medium transition-colors"
+                              className="px-1.5 py-0.5 bg-teal-500 hover:bg-teal-600 text-white rounded text-xs font-medium transition-colors"
                               title="Salvar"
                             >
                               ✓
                             </button>
-                            <button
-                              onClick={() => {
-                                setEditingDeviceTimeId(null);
-                                setDeviceTimeInputValue('');
-                              }}
-                              className="px-2 py-1 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded text-xs font-medium transition-colors"
-                              title="Cancelar"
-                            >
-                              ✕
-                            </button>
                           </div>
                         ) : (
-                          <div className="flex items-center justify-between gap-1 mt-1">
-                            <p className="text-gray-500">Meta: {deviceTimeMeta.toFixed(1)}h</p>
+                          <div className="flex items-center gap-1">
+                            <p className="text-gray-500">{deviceTimeMeta.toFixed(1)}h - Score: {device.score}</p>
                             <button
                               onClick={() => {
                                 setEditingDeviceTimeId(device.id);
                                 setDeviceTimeInputValue(deviceTimeMeta.toString());
                               }}
-                              className="px-2 py-0.5 bg-teal-100 hover:bg-teal-200 text-teal-700 rounded text-xs font-medium transition-colors"
+                              className="px-1 py-0.5 bg-teal-100 hover:bg-teal-200 text-teal-700 rounded text-xs font-medium transition-colors"
                               title="Editar meta"
                             >
                               <Edit2 className="w-3 h-3" />
@@ -751,25 +738,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     </div>
                   );
                 })}
-              </div>
-              <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-200">
-                <button
-                  onClick={() => setDeviceTimeMetaPageIndex(Math.max(0, deviceTimeMetaPageIndex - 1))}
-                  disabled={deviceTimeMetaPageIndex === 0}
-                  className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 text-gray-700 rounded text-xs font-medium transition-colors"
-                >
-                  ← Anterior
-                </button>
-                <span className="text-xs text-gray-600 font-semibold">
-                  {Math.floor(deviceTimeMetaPageIndex / 3) + 1} / 4
-                </span>
-                <button
-                  onClick={() => setDeviceTimeMetaPageIndex(Math.min(9, deviceTimeMetaPageIndex + 3))}
-                  disabled={deviceTimeMetaPageIndex >= 9}
-                  className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 text-gray-700 rounded text-xs font-medium transition-colors"
-                >
-                  Próximo →
-                </button>
               </div>
             </div>
           </div>
