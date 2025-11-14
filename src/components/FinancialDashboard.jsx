@@ -73,6 +73,26 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     }
   };
 
+  const handleSaveDeviceTimeMeta = (deviceId) => {
+    const newValue = parseFloat(deviceTimeInputValue);
+    console.log('🔧 Tentando salvar meta de tempo:', {
+      newValue,
+      deviceId,
+      periodFilter,
+      periodIndex: selectedPeriodIndex,
+      isValid: !isNaN(newValue) && newValue > 0
+    });
+
+    if (!isNaN(newValue) && newValue > 0) {
+      saveActivationTimeMeta(deviceId, periodFilter, selectedPeriodIndex, newValue);
+      setEditingDeviceTimeId(null);
+      setDeviceTimeInputValue('');
+      console.log('✅ Meta de tempo salva com sucesso');
+    } else {
+      console.warn('❌ Valor inválido para meta de tempo:', deviceTimeInputValue);
+    }
+  };
+
   // Get filtered consumption data
   const filteredConsumptionData = useMemo(() => {
     return getFilteredConsumptionData(apiData, periodFilter, selectedPeriodIndex);
