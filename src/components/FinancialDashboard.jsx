@@ -331,20 +331,22 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     };
   };
 
-  const allMonthsData = [
-    { month: 'JAN', value: '50 h', atualização: '46 H' },
-    { month: 'FEV', value: '50 h', atualização: '51 H' },
-    { month: 'MAR', value: '45 h', atualização: '29 H' },
-    { month: 'ABR', value: '49 h', atualização: '32 H' },
-    { month: 'MAI', value: '48 h', atualização: '45 H' },
-    { month: 'JUN', value: '52 h', atualização: '48 H' },
-    { month: 'JUL', value: '46 h', atualização: '44 H' },
-    { month: 'AGO', value: '51 h', atualização: '49 H' },
-    { month: 'SET', value: '47 h', atualização: '43 H' },
-    { month: 'OUT', value: '50 h', atualização: '47 H' },
-    { month: 'NOV', value: '49 h', atualização: '46 H' },
-    { month: 'DEZ', value: '52 h', atualização: '50 H' }
-  ];
+  const allMonthsData = useMemo(() => {
+    return monthNames.map((name, monthIndex) => {
+      // Get activation time meta from storage
+      const meta = loadActivationTimeMeta(selectedDeviceId, 'monthly', monthIndex);
+
+      // Get actual activation hours from API data
+      const downtimeMinutes = apiData?.minutos_desligado_mensal?.[monthIndex] || 0;
+      const actualHours = Math.max(0, 720 - downtimeMinutes / 60);
+
+      return {
+        month: name.toUpperCase(),
+        value: `${meta.toFixed(0)} h`,
+        atualização: `${actualHours.toFixed(0)} H`
+      };
+    });
+  }, [apiData, selectedDeviceId]);
 
   const itemsPerPage = 4;
   const totalPages = Math.ceil(allMonthsData.length / itemsPerPage);
