@@ -331,12 +331,27 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     };
   };
 
-  const updateTable = [
+  const allMonthsData = [
     { month: 'JAN', value: '50 h', atualização: '46 H' },
     { month: 'FEV', value: '50 h', atualização: '51 H' },
     { month: 'MAR', value: '45 h', atualização: '29 H' },
-    { month: 'ABR', value: '49 h', atualização: '32 H' }
+    { month: 'ABR', value: '49 h', atualização: '32 H' },
+    { month: 'MAI', value: '48 h', atualização: '45 H' },
+    { month: 'JUN', value: '52 h', atualização: '48 H' },
+    { month: 'JUL', value: '46 h', atualização: '44 H' },
+    { month: 'AGO', value: '51 h', atualização: '49 H' },
+    { month: 'SET', value: '47 h', atualização: '43 H' },
+    { month: 'OUT', value: '50 h', atualização: '47 H' },
+    { month: 'NOV', value: '49 h', atualização: '46 H' },
+    { month: 'DEZ', value: '52 h', atualização: '50 H' }
   ];
+
+  const itemsPerPage = 4;
+  const totalPages = Math.ceil(allMonthsData.length / itemsPerPage);
+  const paginatedMonthsData = allMonthsData.slice(
+    monthMetaTablePageIndex * itemsPerPage,
+    (monthMetaTablePageIndex + 1) * itemsPerPage
+  );
 
   return (
     <div className="space-y-6">
