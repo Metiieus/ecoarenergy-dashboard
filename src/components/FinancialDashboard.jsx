@@ -682,10 +682,13 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <p className="text-lg font-bold text-teal-600">{activationHours.toFixed(1)}h</p>
             </div>
             <div className="space-y-2 border-t border-gray-200 pt-3">
-              <p className="text-xs text-gray-600 font-semibold mb-2">Metas por Dispositivo</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-gray-600 font-semibold">Metas por Dispositivo</p>
+                <p className="text-xs text-gray-500">{monthNames[deviceTimeMetaPageIndex]} - {monthNames[(deviceTimeMetaPageIndex + 3) % 12]}</p>
+              </div>
               <div className="space-y-2 max-h-40 overflow-y-auto">
                 {deviceRankings.slice(0, 4).map((device) => {
-                  const deviceTimeMeta = loadActivationTimeMeta(device.id, periodFilter, selectedPeriodIndex);
+                  const deviceTimeMeta = loadActivationTimeMeta(device.id, periodFilter, deviceTimeMetaPageIndex);
                   const isEditing = editingDeviceTimeId === device.id;
 
                   return (
@@ -748,6 +751,25 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     </div>
                   );
                 })}
+              </div>
+              <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-200">
+                <button
+                  onClick={() => setDeviceTimeMetaPageIndex(Math.max(0, deviceTimeMetaPageIndex - 1))}
+                  disabled={deviceTimeMetaPageIndex === 0}
+                  className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 text-gray-700 rounded text-xs font-medium transition-colors"
+                >
+                  ← Anterior
+                </button>
+                <span className="text-xs text-gray-600 font-semibold">
+                  {Math.floor(deviceTimeMetaPageIndex / 3) + 1} / 4
+                </span>
+                <button
+                  onClick={() => setDeviceTimeMetaPageIndex(Math.min(9, deviceTimeMetaPageIndex + 3))}
+                  disabled={deviceTimeMetaPageIndex >= 9}
+                  className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 text-gray-700 rounded text-xs font-medium transition-colors"
+                >
+                  Próximo →
+                </button>
               </div>
             </div>
           </div>
