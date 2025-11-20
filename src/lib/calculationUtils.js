@@ -234,13 +234,14 @@ export const saveMetaToStorage = (deviceId, filterType, periodIndex, value) => {
 };
 
 /**
- * Get last 7 days of daily data
+ * Get all daily data for the current month
  * @param {Array} dailyData - Full daily consumption data
- * @returns {Array} Last 7 days
+ * @returns {Array} All daily data (all days of current month)
  */
 export const getLastSevenDays = (dailyData) => {
   if (!Array.isArray(dailyData)) return [];
-  return dailyData.slice(Math.max(0, dailyData.length - 7));
+  // Return all daily data instead of just last 7 days
+  return dailyData;
 };
 
 /**
