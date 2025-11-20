@@ -111,8 +111,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   // Calculate total economy
   const totalEconomy = useMemo(() => {
-    return calculateTotalEconomy(filteredConsumptionData);
-  }, [filteredConsumptionData]);
+    return calculateTotalEconomy(filteredConsumptionData, periodFilter, selectedPeriodIndex);
+  }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
 
   // Calculate economy rate
   const economyRate = useMemo(() => {
@@ -495,7 +495,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 <p className="text-3xl font-bold text-gray-900">R$ {(ensureNonNegative(totalConsumption) / 1000).toFixed(1)}k</p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcançada</p>
+                <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcan��ada</p>
                 <p className="text-3xl font-bold text-green-600">R$ {(ensureNonNegative(totalEconomy) / 1000).toFixed(1)}k</p>
               </div>
               <div>
@@ -569,7 +569,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </p>
         </div>
 
-        {/* Métrica de Outro Período */}
+        {/* M��trica de Outro Período */}
         <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-5 shadow-md border border-teal-700/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
           <p className="text-3xl font-bold mb-1 text-center">{periodFilter === 'daily' ? activationHours.toFixed(1) : totalEconomy.toFixed(0)}</p>
           <p className="text-xs font-semibold text-center leading-tight text-teal-50">
