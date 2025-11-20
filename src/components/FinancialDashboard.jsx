@@ -831,7 +831,45 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <p className="text-xs text-gray-600 font-semibold">
                 {periodFilter === 'daily' ? 'Atuação Hoje (h)' : 'Meta Mensal (h)'}
               </p>
-              <p className="text-lg font-bold text-teal-600">{activationHours.toFixed(1)}h</p>
+              {periodFilter === 'monthly' ? (
+                isEditingTimeMeta ? (
+                  <div className="flex gap-2 items-center">
+                    <input
+                      autoFocus
+                      type="number"
+                      value={timeMetaInputValue}
+                      onChange={handleTimeMetaInputChange}
+                      onKeyPress={handleTimeMetaKeyPress}
+                      placeholder="0"
+                      className="flex-1 px-2 py-1 border-2 border-teal-400 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                    <button
+                      onClick={handleSaveTimeMeta}
+                      className="px-2 py-1 bg-teal-500 hover:bg-teal-600 text-white rounded text-xs font-medium transition-colors"
+                      title="Salvar"
+                    >
+                      ✓
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <p className="text-lg font-bold text-teal-600">{currentTimeMeta.toFixed(1)}h</p>
+                    <button
+                      onClick={() => {
+                        console.log('📝 Iniciando edição de meta de tempo no card, valor atual:', currentTimeMeta);
+                        setTimeMetaInputValue(currentTimeMeta.toString());
+                        setIsEditingTimeMeta(true);
+                      }}
+                      className="px-1.5 py-0.5 bg-teal-100 hover:bg-teal-200 text-teal-700 rounded text-xs font-medium transition-colors"
+                      title="Editar meta"
+                    >
+                      <Edit2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                )
+              ) : (
+                <p className="text-lg font-bold text-teal-600">{activationHours.toFixed(1)}h</p>
+              )}
             </div>
             <div className="space-y-2 border-t border-gray-200 pt-3">
               <p className="text-xs text-gray-600 font-semibold mb-2">Dispositivos Ativos</p>
