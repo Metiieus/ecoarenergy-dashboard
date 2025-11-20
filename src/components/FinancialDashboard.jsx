@@ -483,7 +483,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 <Zap className="w-4 h-4 text-teal-600" />
               </div>
               <p className="text-2xl font-bold text-teal-600 mb-1">
-                R${ensureNonNegative(totalConsumption).toLocaleString('pt-BR')}
+                R${ensureNonNegative(selectedPeriodConsumption).toLocaleString('pt-BR')}
               </p>
               <p className="text-xs text-gray-600">
                 {periodFilter === 'monthly' ? monthNames[selectedPeriodIndex] : `Período: ${monthNames[Math.floor(new Date().getMonth())]}`}
@@ -648,7 +648,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   }`}
                 >
                   <Calendar className="w-3 h-3" />
-                  <span>Diário</span>
+                  <span>Di��rio</span>
                 </button>
               </TooltipTrigger>
               <TooltipContent>Visualizar dados por dia</TooltipContent>
