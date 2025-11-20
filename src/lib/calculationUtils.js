@@ -13,35 +13,66 @@ export const getFilteredConsumptionData = (apiData, filterType, selectedMonthInd
   if (filterType === 'daily') {
     // For daily filter, show current month data
     if (!Array.isArray(apiData.consumo_diario_mes_corrente)) return [];
-    return apiData.consumo_diario_mes_corrente.map((consumo, index) => ({
-      period: `D${index + 1}`,
-      index,
-      consumo: ensureNonNegative(consumo),
-      consumoSemSistema: ensureNonNegative(
-        apiData.consumo_sem_sistema_diario?.[index] || consumo / 0.8
-      )
-    }));
+    return apiData.consumo_diario_mes_corrente.map((consumo, index) => {
+      const consumoVal = ensureNonNegative(consumo);
+      const consumoSemSistemaApi = apiData.consumo_sem_sistema_diario?.[index];
+
+      // If API provides value, use it; if zero or missing, derive from consumo; if consumo is zero, set to zero
+      let consumoSemSistemaVal;
+      if (consumoVal === 0) {
+        consumoSemSistemaVal = 0;
+      } else if (consumoSemSistemaApi !== undefined && consumoSemSistemaApi !== null && consumoSemSistemaApi !== 0) {
+        consumoSemSistemaVal = ensureNonNegative(consumoSemSistemaApi);
+      } else if (consumoSemSistemaApi === 0) {
+        consumoSemSistemaVal = 0;
+      } else {
+        consumoSemSistemaVal = ensureNonNegative(consumoVal / 0.8);
+      }
+
+      return {
+        period: `D${index + 1}`,
+        index,
+        consumo: consumoVal,
+        consumoSemSistema: consumoSemSistemaVal
+      };
+    });
   }
 
   // Monthly filter
   if (!Array.isArray(apiData.consumo_mensal)) return [];
-  return apiData.consumo_mensal.map((consumo, index) => ({
-    period: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'][index],
-    index,
-    consumo: ensureNonNegative(consumo),
-    consumoSemSistema: ensureNonNegative(
-      apiData.consumo_sem_sistema_mensal?.[index] || consumo / 0.8
-    )
-  }));
+  return apiData.consumo_mensal.map((consumo, index) => {
+    const consumoVal = ensureNonNegative(consumo);
+    const consumoSemSistemaApi = apiData.consumo_sem_sistema_mensal?.[index];
+
+    // If API provides value, use it; if zero or missing, derive from consumo; if consumo is zero, set to zero
+    let consumoSemSistemaVal;
+    if (consumoVal === 0) {
+      consumoSemSistemaVal = 0;
+    } else if (consumoSemSistemaApi !== undefined && consumoSemSistemaApi !== null && consumoSemSistemaApi !== 0) {
+      consumoSemSistemaVal = ensureNonNegative(consumoSemSistemaApi);
+    } else if (consumoSemSistemaApi === 0) {
+      consumoSemSistemaVal = 0;
+    } else {
+      consumoSemSistemaVal = ensureNonNegative(consumoVal / 0.8);
+    }
+
+    return {
+      period: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'][index],
+      index,
+      consumo: consumoVal,
+      consumoSemSistema: consumoSemSistemaVal
+    };
+  });
 };
 
 /**
  * Calculate total consumption for filtered period
  * @param {Array} filteredData - Filtered consumption data
  * @param {String} filterType - 'daily' or 'monthly'
- * @returns {Number} Total consumption
+ * @param {Number} selectedPeriodIndex - Selected month/day index
+ * @returns {Number} Total consumption (sum of all months/days)
  */
-export const calculateTotalConsumption = (filteredData, filterType) => {
+export const calculateTotalConsumption = (filteredData, filterType, selectedPeriodIndex = 0) => {
   if (!Array.isArray(filteredData) || filteredData.length === 0) return 0;
 
   if (filterType === 'daily') {
@@ -49,25 +80,53 @@ export const calculateTotalConsumption = (filteredData, filterType) => {
     return filteredData.reduce((sum, item) => sum + item.consumo, 0);
   }
 
-  // For monthly, sum all months (or up to current month)
+  // For monthly, sum ALL months for the device (total consumption)
   return filteredData.reduce((sum, item) => sum + item.consumo, 0);
 };
 
 /**
  * Calculate total economy (consumo_sem_sistema - consumo_com_sistema)
+ * If consumo_sem_sistema is 0, economy is 0
  * @param {Array} filteredData - Filtered consumption data
+ * @param {String} filterType - 'daily' or 'monthly'
+ * @param {Number} selectedPeriodIndex - Selected month/day index
  * @returns {Number} Total economy
  */
-export const calculateTotalEconomy = (filteredData) => {
+export const calculateTotalEconomy = (filteredData, filterType = 'monthly', selectedPeriodIndex = 0) => {
   if (!Array.isArray(filteredData) || filteredData.length === 0) return 0;
 
-  const totalWithoutSystem = filteredData.reduce(
-    (sum, item) => sum + item.consumoSemSistema,
-    0
-  );
-  const totalWithSystem = filteredData.reduce((sum, item) => sum + item.consumo, 0);
+  let totalWithoutSystem = 0;
+  let totalWithSystem = 0;
+
+  if (filterType === 'daily') {
+    // For daily, sum all days in the current month
+    // Only count economy if consumoSemSistema > 0
+    totalWithoutSystem = filteredData.reduce(
+      (sum, item) => (item.consumoSemSistema > 0 ? sum + item.consumoSemSistema : sum),
+      0
+    );
+    totalWithSystem = filteredData.reduce((sum, item) => sum + item.consumo, 0);
+  } else {
+    // For monthly, use only the selected month
+    const periodData = filteredData[selectedPeriodIndex];
+    if (periodData) {
+      totalWithoutSystem = periodData.consumoSemSistema > 0 ? (periodData.consumoSemSistema || 0) : 0;
+      totalWithSystem = periodData.consumo || 0;
+    }
+  }
 
   return Math.max(0, totalWithoutSystem - totalWithSystem);
+};
+
+/**
+ * Get consumption for selected period only
+ * @param {Array} filteredData - Filtered consumption data
+ * @param {Number} selectedPeriodIndex - Selected month/day index
+ * @returns {Number} Consumption for selected period
+ */
+export const getSelectedPeriodConsumption = (filteredData, selectedPeriodIndex = 0) => {
+  if (!Array.isArray(filteredData) || filteredData.length === 0) return 0;
+  return filteredData[selectedPeriodIndex]?.consumo || 0;
 };
 
 /**
@@ -204,13 +263,14 @@ export const saveMetaToStorage = (deviceId, filterType, periodIndex, value) => {
 };
 
 /**
- * Get last 7 days of daily data
+ * Get all daily data for the current month
  * @param {Array} dailyData - Full daily consumption data
- * @returns {Array} Last 7 days
+ * @returns {Array} All daily data (all days of current month)
  */
 export const getLastSevenDays = (dailyData) => {
   if (!Array.isArray(dailyData)) return [];
-  return dailyData.slice(Math.max(0, dailyData.length - 7));
+  // Return all daily data instead of just last 7 days
+  return dailyData;
 };
 
 /**

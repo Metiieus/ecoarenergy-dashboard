@@ -8,7 +8,12 @@ const ApiDataContext = createContext();
 export const ApiDataProvider = ({ children }) => {
   const [selectedDeviceId, setSelectedDeviceId] = useState(33);
   const [periodFilter, setPeriodFilter] = useState('monthly');
-  const [selectedPeriodIndex, setSelectedPeriodIndex] = useState(new Date().getMonth());
+  // Always initialize with current month (November = 10)
+  const [selectedPeriodIndex, setSelectedPeriodIndex] = useState(() => {
+    const now = new Date();
+    // Return current month index (0-11)
+    return now.getMonth();
+  });
 
   // Fetch data for single device
   const { data: singleDeviceData, loading, error } = useApiData(selectedDeviceId, false);
