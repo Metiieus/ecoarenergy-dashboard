@@ -660,9 +660,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         {/* Comparação com Período Anterior */}
         <div className={`bg-gradient-to-br rounded-lg p-5 shadow-md border text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit ${
           previousPeriodComparison.percentChange >= 0
-            ? 'from-green-500 to-green-600 border-green-700/20'
+            ? 'border-[#10b981]/20'
             : 'from-red-500 to-red-600 border-red-700/20'
-        }`}>
+        }`}
+        style={previousPeriodComparison.percentChange >= 0 ? { background: '#10b981' } : undefined}>
           <p className="text-3xl font-bold mb-1 text-center">{Math.abs(previousPeriodComparison.percentChange).toFixed(1)}%</p>
           <p className="text-xs font-semibold text-center leading-tight">
             {previousPeriodComparison.percentChange >= 0 ? '↓ Redução' : '↑ Aumento'} vs {periodFilter === 'daily' ? 'Dia anterior' : 'Mês anterior'}
