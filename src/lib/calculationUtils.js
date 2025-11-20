@@ -117,6 +117,17 @@ export const calculateTotalEconomy = (filteredData, filterType = 'monthly', sele
 };
 
 /**
+ * Get consumption for selected period only
+ * @param {Array} filteredData - Filtered consumption data
+ * @param {Number} selectedPeriodIndex - Selected month/day index
+ * @returns {Number} Consumption for selected period
+ */
+export const getSelectedPeriodConsumption = (filteredData, selectedPeriodIndex = 0) => {
+  if (!Array.isArray(filteredData) || filteredData.length === 0) return 0;
+  return filteredData[selectedPeriodIndex]?.consumo || 0;
+};
+
+/**
  * Calculate red bars (sum of consumo + consumo_sem_sistema)
  * @param {Array} filteredData - Filtered consumption data
  * @returns {Array} Array with red bar values for each period
