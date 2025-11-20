@@ -746,7 +746,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           {/* Update Table */}
           <div className="bg-white rounded-lg p-3 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-gray-700 uppercase">Mês / Metas / Atualiz.</p>
+              <p className="text-xs font-bold text-gray-700 uppercase">{periodFilter === 'daily' ? 'Dia / Metas / Atualiz.' : 'Mês / Metas / Atualiz.'}</p>
               <span className="text-xs text-gray-500">{monthMetaTablePageIndex + 1} / {totalPages}</span>
             </div>
             <div className="space-y-1">
