@@ -178,12 +178,12 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   // Economic pie data
   const economyPieData = useMemo(() => {
-    const totalWithoutSystem = currentPeriodData?.consumoSemSistema || 0;
-    const totalWithSystem = currentPeriodData?.consumo || 0;
+    const consumoWithoutSystem = currentPeriodData?.consumo || 0;
+    const consumoWithSystem = currentPeriodData?.consumoSemSistema || 0;
 
     return [
-      { name: 'Consumo com Sistema', value: Math.max(totalWithSystem, 1), fill: '#10b981' },
-      { name: 'Consumo sem Sistema', value: Math.max(totalWithoutSystem, 1), fill: '#dc2626' }
+      { name: 'Consumo com Sistema', value: Math.max(consumoWithSystem, 1), fill: '#10b981' },
+      { name: 'Consumo sem Sistema', value: Math.max(consumoWithoutSystem, 1), fill: '#dc2626' }
     ];
   }, [currentPeriodData]);
 
