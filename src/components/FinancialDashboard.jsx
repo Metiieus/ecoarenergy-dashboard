@@ -533,68 +533,6 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             )}
           </div>
 
-          {/* Meta Tempo Mensal Card */}
-          {periodFilter === 'monthly' && (
-            <div className={`rounded-lg p-4 shadow-md border transition-all h-fit ${
-              isEditingTimeMeta
-                ? 'bg-teal-50 border-teal-300 border-2'
-                : 'bg-white border-gray-200 hover:shadow-lg'
-            }`}>
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">
-                  Meta Tempo - {monthNames[selectedPeriodIndex]}
-                </p>
-                <Clock className="w-4 h-4 text-blue-600" />
-              </div>
-              {isEditingTimeMeta ? (
-                <div className="space-y-2">
-                  <input
-                    autoFocus
-                    type="number"
-                    value={timeMetaInputValue}
-                    onChange={handleTimeMetaInputChange}
-                    onKeyPress={handleTimeMetaKeyPress}
-                    placeholder="0"
-                    className="w-full px-3 py-2 border-2 border-teal-400 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleSaveTimeMeta}
-                      className="flex-1 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors flex items-center justify-center gap-1"
-                    >
-                      <Check className="w-4 h-4" />
-                      Salvar
-                    </button>
-                    <button
-                      onClick={() => {
-                        setIsEditingTimeMeta(false);
-                        setTimeMetaInputValue(currentTimeMeta.toString());
-                      }}
-                      className="flex-1 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded text-xs font-medium transition-colors"
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <p className="text-3xl font-bold text-gray-900">{ensureNonNegative(currentTimeMeta).toFixed(0)}h</p>
-                  <button
-                    onClick={() => {
-                      console.log('📝 Iniciando edição de meta de tempo, valor atual:', currentTimeMeta);
-                      setTimeMetaInputValue(currentTimeMeta.toString());
-                      setIsEditingTimeMeta(true);
-                    }}
-                    className="w-full px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-xs font-medium transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                    Editar Meta
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Total Consumption and Period Detail Cards */}
           <div className="space-y-3">
             <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
