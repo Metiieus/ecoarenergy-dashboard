@@ -44,9 +44,18 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return loadMetaFromStorage(selectedDeviceId, periodFilter, selectedPeriodIndex);
   }, [selectedDeviceId, periodFilter, selectedPeriodIndex]);
 
+  // Load activation time meta from localStorage
+  const currentTimeMeta = useMemo(() => {
+    return loadActivationTimeMeta(selectedDeviceId, 'monthly', selectedPeriodIndex);
+  }, [selectedDeviceId, selectedPeriodIndex]);
+
   useEffect(() => {
     setCostInputValue(currentMeta.toString());
   }, [currentMeta]);
+
+  useEffect(() => {
+    setTimeMetaInputValue(currentTimeMeta.toString());
+  }, [currentTimeMeta]);
 
   useEffect(() => {
     setMonthMetaTablePageIndex(0);
