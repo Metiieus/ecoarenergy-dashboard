@@ -30,6 +30,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [costInputValue, setCostInputValue] = useState('10000');
+  const [isEditingTimeMeta, setIsEditingTimeMeta] = useState(false);
+  const [timeMetaInputValue, setTimeMetaInputValue] = useState('');
   const [editingDeviceTimeId, setEditingDeviceTimeId] = useState(null);
   const [deviceTimeInputValue, setDeviceTimeInputValue] = useState('');
   const [monthMetaTablePageIndex, setMonthMetaTablePageIndex] = useState(0);
@@ -42,9 +44,22 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return loadMetaFromStorage(selectedDeviceId, periodFilter, selectedPeriodIndex);
   }, [selectedDeviceId, periodFilter, selectedPeriodIndex]);
 
+  // Load activation time meta from localStorage
+  const currentTimeMeta = useMemo(() => {
+    return loadActivationTimeMeta(selectedDeviceId, 'monthly', selectedPeriodIndex);
+  }, [selectedDeviceId, selectedPeriodIndex]);
+
   useEffect(() => {
     setCostInputValue(currentMeta.toString());
   }, [currentMeta]);
+
+  useEffect(() => {
+    setTimeMetaInputValue(currentTimeMeta.toString());
+  }, [currentTimeMeta]);
+
+  useEffect(() => {
+    setMonthMetaTablePageIndex(0);
+  }, [periodFilter]);
 
   const handleCostInputChange = (e) => {
     setCostInputValue(e.target.value);
@@ -92,6 +107,34 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       console.log('✅ Meta de tempo salva com sucesso');
     } else {
       console.warn('❌ Valor inválido para meta de tempo:', deviceTimeInputValue);
+    }
+  };
+
+  const handleTimeMetaInputChange = (e) => {
+    setTimeMetaInputValue(e.target.value);
+  };
+
+  const handleTimeMetaKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSaveTimeMeta();
+    }
+  };
+
+  const handleSaveTimeMeta = () => {
+    const newValue = parseFloat(timeMetaInputValue);
+    console.log('🔧 Tentando salvar meta de tempo mensal:', {
+      newValue,
+      deviceId: selectedDeviceId,
+      periodIndex: selectedPeriodIndex,
+      isValid: !isNaN(newValue) && newValue > 0
+    });
+
+    if (!isNaN(newValue) && newValue > 0) {
+      saveActivationTimeMeta(selectedDeviceId, 'monthly', selectedPeriodIndex, newValue);
+      setIsEditingTimeMeta(false);
+      console.log('✅ Meta mensal de tempo salva com sucesso');
+    } else {
+      console.warn('❌ Valor inválido para meta de tempo mensal:', timeMetaInputValue);
     }
   };
 
@@ -377,21 +420,33 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   };
 
   const allMonthsData = useMemo(() => {
-    return monthNames.map((name, monthIndex) => {
-      // Get activation time meta from storage
-      const meta = loadActivationTimeMeta(selectedDeviceId, 'monthly', monthIndex);
+    if (periodFilter === 'daily') {
+      const dailyData = apiData?.consumo_diario_mes_corrente || [];
+      return dailyData.map((_, dayIndex) => {
+        const meta = loadActivationTimeMeta(selectedDeviceId, 'daily', dayIndex);
+        const downtimeMinutes = apiData?.minutos_desligado_diario?.[dayIndex] || 0;
+        const actualHours = downtimeMinutes / 60;
 
-      // Get actual activation hours from API data
+        return {
+          month: `D${dayIndex + 1}`,
+          value: `${meta.toFixed(0)} h`,
+          atualização: `${actualHours.toFixed(1)} H`
+        };
+      });
+    }
+
+    return monthNames.slice(0, currentMonthIndex + 1).map((name, monthIndex) => {
+      const meta = loadActivationTimeMeta(selectedDeviceId, 'monthly', monthIndex);
       const downtimeMinutes = apiData?.minutos_desligado_mensal?.[monthIndex] || 0;
-      const actualHours = Math.max(0, 720 - downtimeMinutes / 60);
+      const actualHours = downtimeMinutes / 60;
 
       return {
         month: name.toUpperCase(),
         value: `${meta.toFixed(0)} h`,
-        atualização: `${actualHours.toFixed(0)} H`
+        atualização: `${actualHours.toFixed(1)} H`
       };
     });
-  }, [apiData, selectedDeviceId]);
+  }, [apiData, selectedDeviceId, periodFilter, currentMonthIndex]);
 
   const itemsPerPage = 4;
   const totalPages = Math.ceil(allMonthsData.length / itemsPerPage);
@@ -515,7 +570,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">
               Economia {periodFilter === 'daily' ? 'Diária' : 'Total'}
             </p>
-            <p className="text-xs text-gray-500 mt-1">Percentual de Economia Alcançado</p>
+            <p className="text-xs text-gray-500 mt-1">Percentual de Economia Alcançada</p>
           </div>
           <div className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-8 overflow-hidden">
             <div className="flex-shrink-0 w-48 h-48 sm:w-72 sm:h-72 flex items-center justify-center">
@@ -540,7 +595,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 <p className="text-3xl font-bold text-gray-900">R$ {(ensureNonNegative(totalConsumption) / 1000).toFixed(1)}k</p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcan��ada</p>
+                <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcançada</p>
                 <p className="text-3xl font-bold text-green-600">R$ {(ensureNonNegative(totalEconomy) / 1000).toFixed(1)}k</p>
               </div>
               <div>
@@ -734,7 +789,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           {/* Update Table */}
           <div className="bg-white rounded-lg p-3 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-gray-700 uppercase">Mês / Metas / Atualiz.</p>
+              <p className="text-xs font-bold text-gray-700 uppercase">{periodFilter === 'daily' ? 'Dia / Metas / Atualiz.' : 'Mês / Metas / Atualiz.'}</p>
               <span className="text-xs text-gray-500">{monthMetaTablePageIndex + 1} / {totalPages}</span>
             </div>
             <div className="space-y-1">
@@ -776,7 +831,45 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <p className="text-xs text-gray-600 font-semibold">
                 {periodFilter === 'daily' ? 'Atuação Hoje (h)' : 'Meta Mensal (h)'}
               </p>
-              <p className="text-lg font-bold text-teal-600">{activationHours.toFixed(1)}h</p>
+              {periodFilter === 'monthly' ? (
+                isEditingTimeMeta ? (
+                  <div className="flex gap-2 items-center">
+                    <input
+                      autoFocus
+                      type="number"
+                      value={timeMetaInputValue}
+                      onChange={handleTimeMetaInputChange}
+                      onKeyPress={handleTimeMetaKeyPress}
+                      placeholder="0"
+                      className="flex-1 px-2 py-1 border-2 border-teal-400 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                    <button
+                      onClick={handleSaveTimeMeta}
+                      className="px-2 py-1 bg-teal-500 hover:bg-teal-600 text-white rounded text-xs font-medium transition-colors"
+                      title="Salvar"
+                    >
+                      ✓
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <p className="text-lg font-bold text-teal-600">{currentTimeMeta.toFixed(1)}h</p>
+                    <button
+                      onClick={() => {
+                        console.log('📝 Iniciando edição de meta de tempo no card, valor atual:', currentTimeMeta);
+                        setTimeMetaInputValue(currentTimeMeta.toString());
+                        setIsEditingTimeMeta(true);
+                      }}
+                      className="px-1.5 py-0.5 bg-teal-100 hover:bg-teal-200 text-teal-700 rounded text-xs font-medium transition-colors"
+                      title="Editar meta"
+                    >
+                      <Edit2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                )
+              ) : (
+                <p className="text-lg font-bold text-teal-600">{activationHours.toFixed(1)}h</p>
+              )}
             </div>
             <div className="space-y-2 border-t border-gray-200 pt-3">
               <p className="text-xs text-gray-600 font-semibold mb-2">Dispositivos Ativos</p>
