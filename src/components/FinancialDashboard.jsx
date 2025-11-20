@@ -105,9 +105,24 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return calculateRedBars(filteredConsumptionData);
   }, [filteredConsumptionData]);
 
-  // Calculate total consumption
+  // Calculate total consumption (sum of all months for selected device)
   const totalConsumption = useMemo(() => {
-    return calculateTotalConsumption(filteredConsumptionData, periodFilter, selectedPeriodIndex);
+    if (periodFilter === 'daily') {
+      // For daily, sum all days in the current month
+      return filteredConsumptionData.reduce((sum, item) => sum + item.consumo, 0);
+    }
+    // For monthly, sum ALL months
+    return filteredConsumptionData.reduce((sum, item) => sum + item.consumo, 0);
+  }, [filteredConsumptionData, periodFilter]);
+
+  // Calculate selected period consumption (only current selected month/day)
+  const selectedPeriodConsumption = useMemo(() => {
+    if (periodFilter === 'daily') {
+      // For daily, sum all days (same as total)
+      return filteredConsumptionData.reduce((sum, item) => sum + item.consumo, 0);
+    }
+    // For monthly, use only the selected month
+    return filteredConsumptionData[selectedPeriodIndex]?.consumo || 0;
   }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
 
   // Calculate total economy
