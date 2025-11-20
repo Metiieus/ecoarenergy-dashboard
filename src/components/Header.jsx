@@ -32,11 +32,11 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
   };
 
   return (
-    <div className="bg-white border-b border-gray-200 px-8 py-5 sticky top-0 z-10 shadow-sm">
+    <div className="bg-white border-b border-[#E8DCC8] px-8 py-5 sticky top-0 z-10 shadow-sm">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-500">Sistema de Gestão de Energia</p>
-          <h1 className="text-2xl font-bold text-gray-900 mt-1">Ecoar</h1>
+          <p className="text-sm text-[#6B7560]">Sistema de Gestão de Energia</p>
+          <h1 className="text-2xl font-bold text-[#1F4532] mt-1">Ecoar</h1>
         </div>
 
         <div className="flex items-center gap-3">
@@ -46,10 +46,10 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setIsEstablishmentDropdownOpen(!isEstablishmentDropdownOpen)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#E8DCC8] hover:bg-[#D4CFC0] transition-colors"
                 >
-                  <span className="text-sm font-medium text-gray-700">{currentEstablishment.name}</span>
-                  <ChevronDown className="w-4 h-4 text-gray-600" />
+                  <span className="text-sm font-medium text-[#1F4532]">{currentEstablishment.name}</span>
+                  <ChevronDown className="w-4 h-4 text-[#6B7560]" />
                 </button>
               </TooltipTrigger>
               <TooltipContent>
@@ -58,22 +58,22 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
             </Tooltip>
 
             {isEstablishmentDropdownOpen && (
-              <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+              <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-[#E8DCC8] z-50">
                 {establishments.map((est) => (
                   <button
                     key={est.id}
                     onClick={() => handleSelectEstablishment(est.id)}
-                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 ${
-                      selectedEstablishment === est.id ? 'bg-teal-50' : ''
+                    className={`w-full text-left px-4 py-3 hover:bg-[#F0EAD2] transition-colors border-b border-[#E8DCC8] last:border-b-0 ${
+                      selectedEstablishment === est.id ? 'bg-[#A3B18A]/20' : ''
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{est.name}</p>
-                        <p className="text-xs text-gray-500">{est.abbreviation}</p>
+                        <p className="text-sm font-medium text-[#1F4532]">{est.name}</p>
+                        <p className="text-xs text-[#6B7560]">{est.abbreviation}</p>
                       </div>
                       {selectedEstablishment === est.id && (
-                        <div className="w-2 h-2 rounded-full bg-teal-600"></div>
+                        <div className="w-2 h-2 rounded-full bg-[#1F4532]"></div>
                       )}
                     </div>
                   </button>
@@ -88,10 +88,10 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setIsDeviceDropdownOpen(!isDeviceDropdownOpen)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#E8DCC8] hover:bg-[#D4CFC0] transition-colors"
                 >
-                  <span className="text-sm font-medium text-gray-700">{currentDevice.name}</span>
-                  <ChevronDown className="w-4 h-4 text-gray-600" />
+                  <span className="text-sm font-medium text-[#1F4532]">{currentDevice.name}</span>
+                  <ChevronDown className="w-4 h-4 text-[#6B7560]" />
                 </button>
               </TooltipTrigger>
               <TooltipContent>
@@ -100,20 +100,20 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
             </Tooltip>
 
             {isDeviceDropdownOpen && (
-              <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+              <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-[#E8DCC8] z-50">
                 <button
                   onClick={() => handleSelectDevice(DEVICE_ID_ALL)}
-                  className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 ${
-                    selectedDeviceId === DEVICE_ID_ALL ? 'bg-teal-50' : ''
+                  className={`w-full text-left px-4 py-3 hover:bg-[#F0EAD2] transition-colors border-b border-[#E8DCC8] ${
+                    selectedDeviceId === DEVICE_ID_ALL ? 'bg-[#A3B18A]/20' : ''
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">Todos os Equipamentos</p>
-                      <p className="text-xs text-gray-500">Agregado</p>
+                      <p className="text-sm font-medium text-[#1F4532]">Todos os Equipamentos</p>
+                      <p className="text-xs text-[#6B7560]">Agregado</p>
                     </div>
                     {selectedDeviceId === DEVICE_ID_ALL && (
-                      <div className="w-2 h-2 rounded-full bg-teal-600"></div>
+                      <div className="w-2 h-2 rounded-full bg-[#1F4532]"></div>
                     )}
                   </div>
                 </button>
@@ -121,17 +121,17 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
                   <button
                     key={dev.id}
                     onClick={() => handleSelectDevice(dev.id)}
-                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 ${
-                      selectedDeviceId === dev.id ? 'bg-teal-50' : ''
+                    className={`w-full text-left px-4 py-3 hover:bg-[#F0EAD2] transition-colors border-b border-[#E8DCC8] last:border-b-0 ${
+                      selectedDeviceId === dev.id ? 'bg-[#A3B18A]/20' : ''
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{dev.name}</p>
-                        <p className="text-xs text-gray-500">{dev.location}</p>
+                        <p className="text-sm font-medium text-[#1F4532]">{dev.name}</p>
+                        <p className="text-xs text-[#6B7560]">{dev.location}</p>
                       </div>
                       {selectedDeviceId === dev.id && (
-                        <div className="w-2 h-2 rounded-full bg-teal-600"></div>
+                        <div className="w-2 h-2 rounded-full bg-[#1F4532]"></div>
                       )}
                     </div>
                   </button>
@@ -143,8 +143,8 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
           {/* Notification Bell */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <button className="w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors relative">
-                <Bell className="w-5 h-5 text-gray-600" />
+              <button className="w-10 h-10 rounded-lg bg-[#E8DCC8] hover:bg-[#D4CFC0] flex items-center justify-center transition-colors relative">
+                <Bell className="w-5 h-5 text-[#1F4532]" />
                 <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
               </button>
             </TooltipTrigger>
@@ -154,17 +154,17 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
           </Tooltip>
 
           {/* User Profile Dropdown */}
-          <div className="relative ml-4 pl-4 border-l border-gray-200">
+          <div className="relative ml-4 pl-4 border-l border-[#E8DCC8]">
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center gap-3 hover:bg-gray-100 px-2 py-1 rounded-lg transition-colors"
+                  className="flex items-center gap-3 hover:bg-[#F0EAD2] px-2 py-1 rounded-lg transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#A3B18A] to-[#1F4532] flex items-center justify-center flex-shrink-0">
                     <span className="text-white font-bold text-sm">EA</span>
                   </div>
-                  <ChevronDown className="w-4 h-4 text-gray-600" />
+                  <ChevronDown className="w-4 h-4 text-[#6B7560]" />
                 </button>
               </TooltipTrigger>
               <TooltipContent>
@@ -173,20 +173,20 @@ const Header = ({ selectedEstablishment, onEstablishmentChange, selectedDeviceId
             </Tooltip>
 
             {isUserMenuOpen && (
-              <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900">Minha Conta</p>
-                  <p className="text-xs text-gray-500 truncate">{userEmail}</p>
+              <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-[#E8DCC8] z-50">
+                <div className="px-4 py-3 border-b border-[#E8DCC8]">
+                  <p className="text-sm font-medium text-[#1F4532]">Minha Conta</p>
+                  <p className="text-xs text-[#6B7560] truncate">{userEmail}</p>
                 </div>
                 <button
-                  className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-2 text-gray-700"
+                  className="w-full text-left px-4 py-3 hover:bg-[#F0EAD2] transition-colors flex items-center gap-2 text-[#1F4532]"
                 >
                   <User className="w-4 h-4" />
                   <span className="text-sm font-medium">Perfil</span>
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-3 hover:bg-red-50 transition-colors flex items-center gap-2 text-red-600 border-t border-gray-100"
+                  className="w-full text-left px-4 py-3 hover:bg-red-50 transition-colors flex items-center gap-2 text-red-600 border-t border-[#E8DCC8]"
                 >
                   <LogOut className="w-4 h-4" />
                   <span className="text-sm font-medium">Sair</span>
