@@ -221,7 +221,13 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         },
         {
           name: 'Mensal + sem Sistema',
-          data: chartData.map(d => ensureNonNegative(d.consumo + d.consumoSemSistema)),
+          data: chartData.map(d => {
+            // If consumoSemSistema is 0, show 0; otherwise show sum
+            if (d.consumoSemSistema === 0) {
+              return 0;
+            }
+            return ensureNonNegative(d.consumo + d.consumoSemSistema);
+          }),
           type: 'bar',
           itemStyle: { color: '#ef4444', borderRadius: [8, 8, 0, 0], shadowColor: 'rgba(239, 68, 68, 0.3)', shadowBlur: 4, shadowOffsetY: 2 },
           emphasis: { itemStyle: { color: '#dc2626', shadowBlur: 8 } }
