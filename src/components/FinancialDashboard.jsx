@@ -125,9 +125,28 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return filteredConsumptionData[selectedPeriodIndex]?.consumo || 0;
   }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
 
-  // Calculate total economy
+  // Calculate total economy (for selected period)
   const totalEconomy = useMemo(() => {
-    return calculateTotalEconomy(filteredConsumptionData, periodFilter, selectedPeriodIndex);
+    if (!Array.isArray(filteredConsumptionData) || filteredConsumptionData.length === 0) return 0;
+
+    if (periodFilter === 'daily') {
+      // For daily, sum all days in the current month
+      const totalWithoutSystem = filteredConsumptionData.reduce(
+        (sum, item) => (item.consumoSemSistema > 0 ? sum + item.consumoSemSistema : sum),
+        0
+      );
+      const totalWithSystem = filteredConsumptionData.reduce((sum, item) => sum + item.consumo, 0);
+      return Math.max(0, totalWithoutSystem - totalWithSystem);
+    }
+
+    // For monthly, use only the selected month
+    const periodData = filteredConsumptionData[selectedPeriodIndex];
+    if (periodData) {
+      const totalWithoutSystem = periodData.consumoSemSistema > 0 ? (periodData.consumoSemSistema || 0) : 0;
+      const totalWithSystem = periodData.consumo || 0;
+      return Math.max(0, totalWithoutSystem - totalWithSystem);
+    }
+    return 0;
   }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
 
   // Calculate economy rate
@@ -648,7 +667,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   }`}
                 >
                   <Calendar className="w-3 h-3" />
-                  <span>Di��rio</span>
+                  <span>Diário</span>
                 </button>
               </TooltipTrigger>
               <TooltipContent>Visualizar dados por dia</TooltipContent>
