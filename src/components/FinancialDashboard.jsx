@@ -670,9 +670,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         </div>
 
         {/* M��trica de Outro Período */}
-        <div className="bg-gradient-to-br from-[#F0EAD2]0 to-teal-600 rounded-lg p-5 shadow-md border border-teal-700/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
+        <div className="bg-gradient-to-br from-[#A3B18A] to-[#1F4532] rounded-lg p-5 shadow-md border border-[#1F4532]/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
           <p className="text-3xl font-bold mb-1 text-center">{periodFilter === 'daily' ? activationHours.toFixed(1) : totalEconomy.toFixed(0)}</p>
-          <p className="text-xs font-semibold text-center leading-tight text-teal-50">
+          <p className="text-xs font-semibold text-center leading-tight text-[#F0EAD2]">
             {periodFilter === 'daily' ? 'Horas de Atuação' : 'Economia Total (R$)'}
           </p>
         </div>
