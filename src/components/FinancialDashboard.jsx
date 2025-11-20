@@ -46,6 +46,10 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     setCostInputValue(currentMeta.toString());
   }, [currentMeta]);
 
+  useEffect(() => {
+    setMonthMetaTablePageIndex(0);
+  }, [periodFilter]);
+
   const handleCostInputChange = (e) => {
     setCostInputValue(e.target.value);
   };
