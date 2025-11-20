@@ -476,14 +476,14 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         <div className="space-y-3">
           <div className={`rounded-lg p-4 shadow-md border transition-all h-fit ${
             isEditingMeta
-              ? 'bg-teal-50 border-teal-300 border-2'
-              : 'bg-white border-gray-200 hover:shadow-lg'
+              ? 'bg-[#F0EAD2] border-[#D4CFC0] border-2'
+              : 'bg-white border-[#E8DCC8] hover:shadow-lg'
           }`}>
             <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">
+              <p className="text-xs font-bold text-[#6B7560] uppercase tracking-wide">
                 Meta - {periodFilter === 'daily' ? `D${selectedPeriodIndex + 1}` : monthNames[selectedPeriodIndex]}
               </p>
-              <TrendingDown className="w-4 h-4 text-green-600" />
+              <TrendingDown className="w-4 h-4 text-[#1F4532]" />
             </div>
             {isEditingMeta ? (
               <div className="space-y-2">
@@ -494,12 +494,12 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   onChange={handleCostInputChange}
                   onKeyPress={handleCostKeyPress}
                   placeholder="0"
-                  className="w-full px-3 py-2 border-2 border-teal-400 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full px-3 py-2 border-2 border-[#A3B18A] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#1F4532]"
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={handleSaveCostMeta}
-                    className="flex-1 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-medium transition-colors flex items-center justify-center gap-1"
+                    className="flex-1 px-3 py-2 bg-[#1F4532] hover:bg-[#2D5740] text-white rounded text-xs font-medium transition-colors flex items-center justify-center gap-1"
                   >
                     <Check className="w-4 h-4" />
                     Salvar
@@ -509,7 +509,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                       setIsEditingMeta(false);
                       setCostInputValue(currentMeta.toString());
                     }}
-                    className="flex-1 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded text-xs font-medium transition-colors"
+                    className="flex-1 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-[#1F4532] rounded text-xs font-medium transition-colors"
                   >
                     Cancelar
                   </button>
@@ -524,7 +524,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                     setCostInputValue(currentMeta.toString());
                     setIsEditingMeta(true);
                   }}
-                  className="w-full px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded text-xs font-medium transition-colors flex items-center justify-center gap-2"
+                  className="w-full px-3 py-2 bg-[#E8DCC8] hover:bg-[#E8DCC8] text-[#1F4532] rounded text-xs font-medium transition-colors flex items-center justify-center gap-2"
                 >
                   <Edit2 className="w-4 h-4" />
                   Editar Meta
@@ -535,9 +535,9 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
           {/* Total Consumption and Period Detail Cards */}
           <div className="space-y-3">
-            <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+            <div className="bg-white rounded-lg p-4 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Consumo Total</p>
+                <p className="text-xs font-bold text-[#6B7560] uppercase tracking-wide">Consumo Total</p>
                 <Zap className="w-4 h-4 text-blue-600" />
               </div>
               <p className="text-2xl font-bold text-gray-900 mb-2">
@@ -549,15 +549,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
 
             {/* Current Month Consumption Card */}
-            <div className="bg-gradient-to-br from-teal-50 to-white rounded-lg p-4 shadow-md border border-teal-200 hover:shadow-lg transition-shadow">
+            <div className="bg-gradient-to-br from-[#F0EAD2] to-white rounded-lg p-4 shadow-md border border-[#D4CFC0] hover:shadow-lg transition-shadow">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-bold text-teal-700 uppercase tracking-wide">Consumo Total do Mês</p>
-                <Zap className="w-4 h-4 text-teal-600" />
+                <p className="text-xs font-bold text-[#1F4532] uppercase tracking-wide">Consumo Total do Mês</p>
+                <Zap className="w-4 h-4 text-[#A3B18A]" />
               </div>
-              <p className="text-2xl font-bold text-teal-600 mb-1">
+              <p className="text-2xl font-bold text-[#A3B18A] mb-1">
                 R${ensureNonNegative(selectedPeriodConsumption).toLocaleString('pt-BR')}
               </p>
-              <p className="text-xs text-gray-600">
+              <p className="text-xs text-[#6B7560]">
                 {periodFilter === 'monthly' ? monthNames[selectedPeriodIndex] : `Período: ${monthNames[Math.floor(new Date().getMonth())]}`}
               </p>
             </div>
@@ -565,7 +565,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         </div>
 
         {/* Economia Total - Gauge Chart */}
-        <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 hover:shadow-lg transition-shadow col-span-1 sm:col-span-2 flex flex-col h-auto sm:h-96">
+        <div className="bg-white rounded-lg p-6 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow col-span-1 sm:col-span-2 flex flex-col h-auto sm:h-96">
           <div className="mb-4">
             <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">
               Economia {periodFilter === 'daily' ? 'Diária' : 'Total'}
@@ -591,16 +591,16 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             </div>
             <div className="space-y-6 flex-shrink-0">
               <div>
-                <p className="text-xs text-gray-600 font-semibold mb-2">Consumo Total</p>
+                <p className="text-xs text-[#6B7560] font-semibold mb-2">Consumo Total</p>
                 <p className="text-3xl font-bold text-gray-900">R$ {(ensureNonNegative(totalConsumption) / 1000).toFixed(1)}k</p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcançada</p>
-                <p className="text-3xl font-bold text-green-600">R$ {(ensureNonNegative(totalEconomy) / 1000).toFixed(1)}k</p>
+                <p className="text-xs text-[#6B7560] font-semibold mb-2">Economia Alcançada</p>
+                <p className="text-3xl font-bold text-[#1F4532]">R$ {(ensureNonNegative(totalEconomy) / 1000).toFixed(1)}k</p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 font-semibold mb-2">Taxa de Economia</p>
-                <p className="text-2xl font-bold text-teal-600">{economyRate.toFixed(1)}%</p>
+                <p className="text-xs text-[#6B7560] font-semibold mb-2">Taxa de Economia</p>
+                <p className="text-2xl font-bold text-[#A3B18A]">{economyRate.toFixed(1)}%</p>
               </div>
             </div>
           </div>
@@ -625,7 +625,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               <select
                 value={selectedPeriodIndex}
                 onChange={(e) => handlePeriodIndexChange(parseInt(e.target.value))}
-                className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-gray-700 hover:border-blue-500 transition-colors appearance-none cursor-pointer"
+                className="text-xs px-2 py-1 border border-blue-300 rounded bg-white text-[#1F4532] hover:border-blue-500 transition-colors appearance-none cursor-pointer"
               >
                 {monthNames.map((name, index) => (
                   <option key={index} value={String(index)}>{name}</option>
@@ -635,22 +635,22 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
           <div className="mb-3 space-y-2">
             <div>
-              <p className="text-xs text-gray-600 mb-1">Consumo sem Sistema</p>
+              <p className="text-xs text-[#6B7560] mb-1">Consumo sem Sistema</p>
               <p className="text-2xl font-bold text-gray-900">
                 R${ensureNonNegative(currentPeriodData?.consumo || 0).toLocaleString('pt-BR')}
               </p>
             </div>
             <div className="border-t border-blue-200 pt-2">
-              <p className="text-xs text-gray-600 mb-1">Consumo com Sistema</p>
+              <p className="text-xs text-[#6B7560] mb-1">Consumo com Sistema</p>
               <p className="text-lg font-bold text-blue-600">
                 R${ensureNonNegative(currentPeriodData?.consumoSemSistema || 0).toLocaleString('pt-BR')}
               </p>
             </div>
           </div>
           <div className="bg-blue-50/50 rounded p-2 space-y-1">
-            <p className="text-xs text-gray-600">Meta: <span className="font-semibold text-gray-900">R${ensureNonNegative(currentMeta).toLocaleString('pt-BR')}</span></p>
-            <p className="text-xs text-gray-600">
-              Economia: <span className="font-semibold text-green-600">
+            <p className="text-xs text-[#6B7560]">Meta: <span className="font-semibold text-gray-900">R${ensureNonNegative(currentMeta).toLocaleString('pt-BR')}</span></p>
+            <p className="text-xs text-[#6B7560]">
+              Economia: <span className="font-semibold text-[#1F4532]">
                 R${ensureNonNegative((currentPeriodData?.consumo || 0) - (currentPeriodData?.consumoSemSistema || 0)).toLocaleString('pt-BR')}
               </span>
             </p>
@@ -670,7 +670,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         </div>
 
         {/* M��trica de Outro Período */}
-        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-5 shadow-md border border-teal-700/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
+        <div className="bg-gradient-to-br from-[#F0EAD2]0 to-teal-600 rounded-lg p-5 shadow-md border border-teal-700/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
           <p className="text-3xl font-bold mb-1 text-center">{periodFilter === 'daily' ? activationHours.toFixed(1) : totalEconomy.toFixed(0)}</p>
           <p className="text-xs font-semibold text-center leading-tight text-teal-50">
             {periodFilter === 'daily' ? 'Horas de Atuação' : 'Economia Total (R$)'}
@@ -679,13 +679,13 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       </div>
 
       {/* Info and Filter Bar */}
-      <div className="flex items-center justify-between bg-white rounded-lg p-3 shadow-md border border-gray-200">
+      <div className="flex items-center justify-between bg-white rounded-lg p-3 shadow-md border border-[#E8DCC8]">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center">
-            <span className="text-sm font-bold text-gray-600">E</span>
+            <span className="text-sm font-bold text-[#6B7560]">E</span>
           </div>
           <div>
-            <p className="text-xs font-semibold text-gray-700">Unidade {selectedEstablishment}</p>
+            <p className="text-xs font-semibold text-[#1F4532]">Unidade {selectedEstablishment}</p>
             <p className="text-xs text-gray-500">Reais (R$)</p>
           </div>
         </div>
@@ -699,8 +699,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   onClick={() => handlePeriodChange('monthly')}
                   className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium text-xs transition-all ${
                     periodFilter === 'monthly'
-                      ? 'bg-teal-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-[#1F4532] text-white'
+                      : 'bg-[#E8DCC8] text-[#1F4532] hover:bg-[#E8DCC8]'
                   }`}
                 >
                   <Calendar className="w-3 h-3" />
@@ -715,8 +715,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   onClick={() => handlePeriodChange('daily')}
                   className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium text-xs transition-all ${
                     periodFilter === 'daily'
-                      ? 'bg-teal-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-[#1F4532] text-white'
+                      : 'bg-[#E8DCC8] text-[#1F4532] hover:bg-[#E8DCC8]'
                   }`}
                 >
                   <Calendar className="w-3 h-3" />
@@ -732,7 +732,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
       {/* Main Content - Graph and Right Panel */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Large Graph Section */}
-        <div className="col-span-1 lg:col-span-2 bg-white rounded-lg p-6 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+        <div className="col-span-1 lg:col-span-2 bg-white rounded-lg p-6 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow">
           <h3 className="text-sm font-bold text-gray-900 mb-1">
             Gráfico {periodFilter === 'monthly' ? 'Mensal' : 'Diário'}
           </h3>
@@ -744,7 +744,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             <div className="h-96 flex items-center justify-center">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600 mx-auto mb-3"></div>
-                <p className="text-xs text-gray-600">Carregando dados da API...</p>
+                <p className="text-xs text-[#6B7560]">Carregando dados da API...</p>
               </div>
             </div>
           ) : error ? (
@@ -771,15 +771,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         {/* Right Panel */}
         <div className="space-y-3">
           {/* Status Card */}
-          <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+          <div className="bg-white rounded-lg p-4 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-bold text-gray-700 uppercase">Status</p>
-              <Leaf className="w-4 h-4 text-green-600" />
+              <p className="text-xs font-bold text-[#1F4532] uppercase">Status</p>
+              <Leaf className="w-4 h-4 text-[#1F4532]" />
             </div>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full ${totalConsumption <= currentMeta ? 'bg-green-600' : 'bg-red-600'}`}></div>
-                <p className={`text-xs font-semibold ${totalConsumption <= currentMeta ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-xs font-semibold ${totalConsumption <= currentMeta ? 'text-[#1F4532]' : 'text-red-600'}`}>
                   {totalConsumption <= currentMeta ? '✓ Dentro da meta' : '✗ Acima da meta'}
                 </p>
               </div>
@@ -787,32 +787,32 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
 
           {/* Update Table */}
-          <div className="bg-white rounded-lg p-3 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+          <div className="bg-white rounded-lg p-3 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-gray-700 uppercase">{periodFilter === 'daily' ? 'Dia / Metas / Atualiz.' : 'Mês / Metas / Atualiz.'}</p>
+              <p className="text-xs font-bold text-[#1F4532] uppercase">{periodFilter === 'daily' ? 'Dia / Metas / Atualiz.' : 'Mês / Metas / Atualiz.'}</p>
               <span className="text-xs text-gray-500">{monthMetaTablePageIndex + 1} / {totalPages}</span>
             </div>
             <div className="space-y-1">
               {paginatedMonthsData.map((item, index) => (
-                <div key={index} className="flex justify-between items-center text-xs border-b border-gray-100 pb-1 last:border-b-0 hover:bg-gray-50 px-1 py-0.5 rounded transition-colors">
-                  <span className="font-bold text-gray-700 min-w-10">{item.month}</span>
-                  <span className="text-teal-600 flex-1 text-center font-medium text-xs">{item.value}</span>
+                <div key={index} className="flex justify-between items-center text-xs border-b border-[#D4CFC0] pb-1 last:border-b-0 hover:bg-[#F0EAD2] px-1 py-0.5 rounded transition-colors">
+                  <span className="font-bold text-[#1F4532] min-w-10">{item.month}</span>
+                  <span className="text-[#A3B18A] flex-1 text-center font-medium text-xs">{item.value}</span>
                   <span className="font-bold text-gray-900 text-right w-10 text-xs">{item.atualização}</span>
                 </div>
               ))}
             </div>
-            <div className="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-gray-200">
+            <div className="flex items-center justify-between gap-2 mt-2 pt-2 border-t border-[#E8DCC8]">
               <button
                 onClick={() => setMonthMetaTablePageIndex(Math.max(0, monthMetaTablePageIndex - 1))}
                 disabled={monthMetaTablePageIndex === 0}
-                className="flex-1 px-2 py-1.5 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 text-gray-700 rounded text-xs font-medium transition-colors"
+                className="flex-1 px-2 py-1.5 bg-[#E8DCC8] hover:bg-[#E8DCC8] disabled:bg-[#F0EAD2] disabled:text-gray-400 text-[#1F4532] rounded text-xs font-medium transition-colors"
               >
                 ← Anterior
               </button>
               <button
                 onClick={() => setMonthMetaTablePageIndex(Math.min(totalPages - 1, monthMetaTablePageIndex + 1))}
                 disabled={monthMetaTablePageIndex >= totalPages - 1}
-                className="flex-1 px-2 py-1.5 bg-gray-100 hover:bg-gray-200 disabled:bg-gray-50 disabled:text-gray-400 text-gray-700 rounded text-xs font-medium transition-colors"
+                className="flex-1 px-2 py-1.5 bg-[#E8DCC8] hover:bg-[#E8DCC8] disabled:bg-[#F0EAD2] disabled:text-gray-400 text-[#1F4532] rounded text-xs font-medium transition-colors"
               >
                 Próximo →
               </button>
@@ -820,15 +820,15 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
 
           {/* Activation Time */}
-          <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow space-y-4">
+          <div className="bg-white rounded-lg p-4 shadow-md border border-[#E8DCC8] hover:shadow-lg transition-shadow space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-teal-600" />
-                <p className="text-xs font-bold text-gray-700 uppercase">Tempo de Atuação</p>
+                <Clock className="w-5 h-5 text-[#A3B18A]" />
+                <p className="text-xs font-bold text-[#1F4532] uppercase">Tempo de Atuação</p>
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-xs text-gray-600 font-semibold">
+              <p className="text-xs text-[#6B7560] font-semibold">
                 {periodFilter === 'daily' ? 'Atuação Hoje (h)' : 'Meta Mensal (h)'}
               </p>
               {periodFilter === 'monthly' ? (
@@ -841,11 +841,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                       onChange={handleTimeMetaInputChange}
                       onKeyPress={handleTimeMetaKeyPress}
                       placeholder="0"
-                      className="flex-1 px-2 py-1 border-2 border-teal-400 rounded text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      className="flex-1 px-2 py-1 border-2 border-[#A3B18A] rounded text-sm focus:outline-none focus:ring-2 focus:ring-[#1F4532]"
                     />
                     <button
                       onClick={handleSaveTimeMeta}
-                      className="px-2 py-1 bg-teal-500 hover:bg-teal-600 text-white rounded text-xs font-medium transition-colors"
+                      className="px-2 py-1 bg-[#F0EAD2]0 hover:bg-[#1F4532] text-white rounded text-xs font-medium transition-colors"
                       title="Salvar"
                     >
                       ✓
@@ -853,14 +853,14 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   </div>
                 ) : (
                   <div className="flex items-center justify-between">
-                    <p className="text-lg font-bold text-teal-600">{currentTimeMeta.toFixed(1)}h</p>
+                    <p className="text-lg font-bold text-[#A3B18A]">{currentTimeMeta.toFixed(1)}h</p>
                     <button
                       onClick={() => {
                         console.log('📝 Iniciando edição de meta de tempo no card, valor atual:', currentTimeMeta);
                         setTimeMetaInputValue(currentTimeMeta.toString());
                         setIsEditingTimeMeta(true);
                       }}
-                      className="px-1.5 py-0.5 bg-teal-100 hover:bg-teal-200 text-teal-700 rounded text-xs font-medium transition-colors"
+                      className="px-1.5 py-0.5 bg-[#E8DCC8] hover:bg-[#D4CFC0] text-[#1F4532] rounded text-xs font-medium transition-colors"
                       title="Editar meta"
                     >
                       <Edit2 className="w-3 h-3" />
@@ -868,11 +868,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   </div>
                 )
               ) : (
-                <p className="text-lg font-bold text-teal-600">{activationHours.toFixed(1)}h</p>
+                <p className="text-lg font-bold text-[#A3B18A]">{activationHours.toFixed(1)}h</p>
               )}
             </div>
-            <div className="space-y-2 border-t border-gray-200 pt-3">
-              <p className="text-xs text-gray-600 font-semibold mb-2">Dispositivos Ativos</p>
+            <div className="space-y-2 border-t border-[#E8DCC8] pt-3">
+              <p className="text-xs text-[#6B7560] font-semibold mb-2">Dispositivos Ativos</p>
               <div className="space-y-1 max-h-28 overflow-y-auto">
                 {deviceRankings.slice(0, 3).map((device) => {
                   const deviceTimeMeta = loadActivationTimeMeta(device.id, periodFilter, selectedPeriodIndex);
@@ -881,11 +881,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                   return (
                     <div
                       key={device.id}
-                      className="flex items-center gap-2 text-xs bg-gray-50 p-2 rounded hover:bg-teal-50 cursor-pointer transition-colors"
+                      className="flex items-center gap-2 text-xs bg-[#F0EAD2] p-2 rounded hover:bg-[#F0EAD2] cursor-pointer transition-colors"
                     >
                       <span className="text-base">{device.icon}</span>
                       <div className="flex-1">
-                        <p className="font-semibold text-gray-700">{device.name}</p>
+                        <p className="font-semibold text-[#1F4532]">{device.name}</p>
                         {isEditing ? (
                           <div className="flex gap-1 mt-0.5">
                             <input
@@ -899,11 +899,11 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                                 }
                               }}
                               placeholder="0"
-                              className="w-10 px-1 py-0.5 border border-teal-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-teal-500"
+                              className="w-10 px-1 py-0.5 border border-[#D4CFC0] rounded text-xs focus:outline-none focus:ring-1 focus:ring-[#1F4532]"
                             />
                             <button
                               onClick={() => handleSaveDeviceTimeMeta(device.id)}
-                              className="px-1.5 py-0.5 bg-teal-500 hover:bg-teal-600 text-white rounded text-xs font-medium transition-colors"
+                              className="px-1.5 py-0.5 bg-[#F0EAD2]0 hover:bg-[#1F4532] text-white rounded text-xs font-medium transition-colors"
                               title="Salvar"
                             >
                               ✓
@@ -917,7 +917,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                                 setEditingDeviceTimeId(device.id);
                                 setDeviceTimeInputValue(deviceTimeMeta.toString());
                               }}
-                              className="px-1 py-0.5 bg-teal-100 hover:bg-teal-200 text-teal-700 rounded text-xs font-medium transition-colors"
+                              className="px-1 py-0.5 bg-[#E8DCC8] hover:bg-[#D4CFC0] text-[#1F4532] rounded text-xs font-medium transition-colors"
                               title="Editar meta"
                             >
                               <Edit2 className="w-3 h-3" />
