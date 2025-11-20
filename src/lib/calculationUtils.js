@@ -13,26 +13,56 @@ export const getFilteredConsumptionData = (apiData, filterType, selectedMonthInd
   if (filterType === 'daily') {
     // For daily filter, show current month data
     if (!Array.isArray(apiData.consumo_diario_mes_corrente)) return [];
-    return apiData.consumo_diario_mes_corrente.map((consumo, index) => ({
-      period: `D${index + 1}`,
-      index,
-      consumo: ensureNonNegative(consumo),
-      consumoSemSistema: ensureNonNegative(
-        apiData.consumo_sem_sistema_diario?.[index] || consumo / 0.8
-      )
-    }));
+    return apiData.consumo_diario_mes_corrente.map((consumo, index) => {
+      const consumoVal = ensureNonNegative(consumo);
+      const consumoSemSistemaApi = apiData.consumo_sem_sistema_diario?.[index];
+
+      // If API provides value, use it; if zero or missing, derive from consumo; if consumo is zero, set to zero
+      let consumoSemSistemaVal;
+      if (consumoVal === 0) {
+        consumoSemSistemaVal = 0;
+      } else if (consumoSemSistemaApi !== undefined && consumoSemSistemaApi !== null && consumoSemSistemaApi !== 0) {
+        consumoSemSistemaVal = ensureNonNegative(consumoSemSistemaApi);
+      } else if (consumoSemSistemaApi === 0) {
+        consumoSemSistemaVal = 0;
+      } else {
+        consumoSemSistemaVal = ensureNonNegative(consumoVal / 0.8);
+      }
+
+      return {
+        period: `D${index + 1}`,
+        index,
+        consumo: consumoVal,
+        consumoSemSistema: consumoSemSistemaVal
+      };
+    });
   }
 
   // Monthly filter
   if (!Array.isArray(apiData.consumo_mensal)) return [];
-  return apiData.consumo_mensal.map((consumo, index) => ({
-    period: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'][index],
-    index,
-    consumo: ensureNonNegative(consumo),
-    consumoSemSistema: ensureNonNegative(
-      apiData.consumo_sem_sistema_mensal?.[index] || consumo / 0.8
-    )
-  }));
+  return apiData.consumo_mensal.map((consumo, index) => {
+    const consumoVal = ensureNonNegative(consumo);
+    const consumoSemSistemaApi = apiData.consumo_sem_sistema_mensal?.[index];
+
+    // If API provides value, use it; if zero or missing, derive from consumo; if consumo is zero, set to zero
+    let consumoSemSistemaVal;
+    if (consumoVal === 0) {
+      consumoSemSistemaVal = 0;
+    } else if (consumoSemSistemaApi !== undefined && consumoSemSistemaApi !== null && consumoSemSistemaApi !== 0) {
+      consumoSemSistemaVal = ensureNonNegative(consumoSemSistemaApi);
+    } else if (consumoSemSistemaApi === 0) {
+      consumoSemSistemaVal = 0;
+    } else {
+      consumoSemSistemaVal = ensureNonNegative(consumoVal / 0.8);
+    }
+
+    return {
+      period: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'][index],
+      index,
+      consumo: consumoVal,
+      consumoSemSistema: consumoSemSistemaVal
+    };
+  });
 };
 
 /**
