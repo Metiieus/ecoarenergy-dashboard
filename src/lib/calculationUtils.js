@@ -79,8 +79,12 @@ export const calculateTotalConsumption = (filteredData, filterType) => {
     return filteredData.reduce((sum, item) => sum + item.consumo, 0);
   }
 
-  // For monthly, sum all months (or up to current month)
-  return filteredData.reduce((sum, item) => sum + item.consumo, 0);
+  // For monthly, return only the selected month's consumption
+  // filteredData should already be month data with selected index from parent
+  if (filteredData.length > 0) {
+    return filteredData[0]?.consumo || 0;
+  }
+  return 0;
 };
 
 /**
