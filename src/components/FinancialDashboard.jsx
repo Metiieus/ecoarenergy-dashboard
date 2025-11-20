@@ -106,8 +106,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   // Calculate total consumption
   const totalConsumption = useMemo(() => {
-    return calculateTotalConsumption(filteredConsumptionData, periodFilter);
-  }, [filteredConsumptionData, periodFilter]);
+    return calculateTotalConsumption(filteredConsumptionData, periodFilter, selectedPeriodIndex);
+  }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
 
   // Calculate total economy
   const totalEconomy = useMemo(() => {
