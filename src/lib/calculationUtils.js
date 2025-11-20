@@ -90,16 +90,31 @@ export const calculateTotalConsumption = (filteredData, filterType, selectedPeri
 /**
  * Calculate total economy (consumo_sem_sistema - consumo_com_sistema)
  * @param {Array} filteredData - Filtered consumption data
+ * @param {String} filterType - 'daily' or 'monthly'
+ * @param {Number} selectedPeriodIndex - Selected month/day index
  * @returns {Number} Total economy
  */
-export const calculateTotalEconomy = (filteredData) => {
+export const calculateTotalEconomy = (filteredData, filterType = 'monthly', selectedPeriodIndex = 0) => {
   if (!Array.isArray(filteredData) || filteredData.length === 0) return 0;
 
-  const totalWithoutSystem = filteredData.reduce(
-    (sum, item) => sum + item.consumoSemSistema,
-    0
-  );
-  const totalWithSystem = filteredData.reduce((sum, item) => sum + item.consumo, 0);
+  let totalWithoutSystem = 0;
+  let totalWithSystem = 0;
+
+  if (filterType === 'daily') {
+    // For daily, sum all days in the current month
+    totalWithoutSystem = filteredData.reduce(
+      (sum, item) => sum + item.consumoSemSistema,
+      0
+    );
+    totalWithSystem = filteredData.reduce((sum, item) => sum + item.consumo, 0);
+  } else {
+    // For monthly, use only the selected month
+    const periodData = filteredData[selectedPeriodIndex];
+    if (periodData) {
+      totalWithoutSystem = periodData.consumoSemSistema || 0;
+      totalWithSystem = periodData.consumo || 0;
+    }
+  }
 
   return Math.max(0, totalWithoutSystem - totalWithSystem);
 };
