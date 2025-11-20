@@ -70,7 +70,7 @@ export const getFilteredConsumptionData = (apiData, filterType, selectedMonthInd
  * @param {Array} filteredData - Filtered consumption data
  * @param {String} filterType - 'daily' or 'monthly'
  * @param {Number} selectedPeriodIndex - Selected month/day index
- * @returns {Number} Total consumption
+ * @returns {Number} Total consumption (sum of all months/days)
  */
 export const calculateTotalConsumption = (filteredData, filterType, selectedPeriodIndex = 0) => {
   if (!Array.isArray(filteredData) || filteredData.length === 0) return 0;
@@ -80,11 +80,8 @@ export const calculateTotalConsumption = (filteredData, filterType, selectedPeri
     return filteredData.reduce((sum, item) => sum + item.consumo, 0);
   }
 
-  // For monthly, return only the selected month's consumption
-  if (filteredData[selectedPeriodIndex]) {
-    return filteredData[selectedPeriodIndex].consumo || 0;
-  }
-  return 0;
+  // For monthly, sum ALL months for the device (total consumption)
+  return filteredData.reduce((sum, item) => sum + item.consumo, 0);
 };
 
 /**
