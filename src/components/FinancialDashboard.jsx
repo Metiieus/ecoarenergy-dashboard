@@ -598,7 +598,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             <p className="text-xs text-gray-600">Meta: <span className="font-semibold text-gray-900">R${ensureNonNegative(currentMeta).toLocaleString('pt-BR')}</span></p>
             <p className="text-xs text-gray-600">
               Economia: <span className="font-semibold text-green-600">
-                R${ensureNonNegative((currentPeriodData?.consumoSemSistema || 0) - (currentPeriodData?.consumo || 0)).toLocaleString('pt-BR')}
+                R${ensureNonNegative((currentPeriodData?.consumo || 0) - (currentPeriodData?.consumoSemSistema || 0)).toLocaleString('pt-BR')}
               </span>
             </p>
           </div>
