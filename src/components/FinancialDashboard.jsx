@@ -366,7 +366,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
           <div>
             <p className="text-sm font-semibold text-amber-900">Aviso: Dados Mock</p>
-            <p className="text-xs text-amber-700 mt-1">Não foi possível conectar à API. Exibindo dados de demonstração. {error}</p>
+            <p className="text-xs text-amber-700 mt-1">Não foi possível conectar à API. Exibindo dados de demonstra��ão. {error}</p>
           </div>
         </div>
       )}
@@ -448,28 +448,18 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
               </p>
             </div>
 
-            {/* Period Consumption Details Card */}
+            {/* Current Month Consumption Card */}
             <div className="bg-gradient-to-br from-teal-50 to-white rounded-lg p-4 shadow-md border border-teal-200 hover:shadow-lg transition-shadow">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-bold text-teal-700 uppercase tracking-wide">Consumo do Período</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-bold text-teal-700 uppercase tracking-wide">Consumo Total do Mês</p>
                 <Zap className="w-4 h-4 text-teal-600" />
               </div>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <p className="text-xs text-gray-600">Com Sistema</p>
-                  <p className="text-sm font-semibold text-gray-900">R${ensureNonNegative(currentPeriodData?.consumo || 0).toLocaleString('pt-BR')}</p>
-                </div>
-                {currentPeriodData?.consumoSemSistema > 0 && (
-                  <div className="flex justify-between items-center">
-                    <p className="text-xs text-gray-600">Sem Sistema</p>
-                    <p className="text-sm font-semibold text-red-600">R${ensureNonNegative(currentPeriodData?.consumoSemSistema || 0).toLocaleString('pt-BR')}</p>
-                  </div>
-                )}
-                <div className="border-t border-teal-200 pt-2 flex justify-between items-center">
-                  <p className="text-xs font-semibold text-gray-700">Economia</p>
-                  <p className="text-sm font-bold text-green-600">R${ensureNonNegative((currentPeriodData?.consumoSemSistema || 0) - (currentPeriodData?.consumo || 0)).toLocaleString('pt-BR')}</p>
-                </div>
-              </div>
+              <p className="text-2xl font-bold text-teal-600 mb-1">
+                R${ensureNonNegative(totalConsumption).toLocaleString('pt-BR')}
+              </p>
+              <p className="text-xs text-gray-600">
+                {periodFilter === 'monthly' ? monthNames[selectedPeriodIndex] : `Período: ${monthNames[Math.floor(new Date().getMonth())]}`}
+              </p>
             </div>
           </div>
         </div>
