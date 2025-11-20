@@ -19,7 +19,8 @@ import {
   getLastSevenDays,
   getLastThreeMonths,
   loadActivationTimeMeta,
-  saveActivationTimeMeta
+  saveActivationTimeMeta,
+  getSelectedPeriodConsumption
 } from '../lib/calculationUtils';
 
 const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -104,15 +105,47 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
     return calculateRedBars(filteredConsumptionData);
   }, [filteredConsumptionData]);
 
-  // Calculate total consumption
+  // Calculate total consumption (sum of all months for selected device)
   const totalConsumption = useMemo(() => {
-    return calculateTotalConsumption(filteredConsumptionData, periodFilter);
+    if (periodFilter === 'daily') {
+      // For daily, sum all days in the current month
+      return filteredConsumptionData.reduce((sum, item) => sum + item.consumo, 0);
+    }
+    // For monthly, sum ALL months
+    return filteredConsumptionData.reduce((sum, item) => sum + item.consumo, 0);
   }, [filteredConsumptionData, periodFilter]);
 
-  // Calculate total economy
+  // Calculate selected period consumption (only current selected month/day)
+  const selectedPeriodConsumption = useMemo(() => {
+    if (periodFilter === 'daily') {
+      // For daily, sum all days (same as total)
+      return filteredConsumptionData.reduce((sum, item) => sum + item.consumo, 0);
+    }
+    // For monthly, use only the selected month
+    return filteredConsumptionData[selectedPeriodIndex]?.consumo || 0;
+  }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
+
+  // Calculate total economy (for selected period)
+  // Economy = consumo_without_system - consumo_with_system
   const totalEconomy = useMemo(() => {
-    return calculateTotalEconomy(filteredConsumptionData);
-  }, [filteredConsumptionData]);
+    if (!Array.isArray(filteredConsumptionData) || filteredConsumptionData.length === 0) return 0;
+
+    if (periodFilter === 'daily') {
+      // For daily, sum all days in the current month
+      const consumoWithoutSystem = filteredConsumptionData.reduce((sum, item) => sum + item.consumo, 0);
+      const consumoWithSystem = filteredConsumptionData.reduce((sum, item) => sum + item.consumoSemSistema, 0);
+      return Math.max(0, consumoWithoutSystem - consumoWithSystem);
+    }
+
+    // For monthly, use only the selected month
+    const periodData = filteredConsumptionData[selectedPeriodIndex];
+    if (periodData) {
+      const consumoWithoutSystem = periodData.consumo || 0;
+      const consumoWithSystem = periodData.consumoSemSistema > 0 ? (periodData.consumoSemSistema || 0) : 0;
+      return Math.max(0, consumoWithoutSystem - consumoWithSystem);
+    }
+    return 0;
+  }, [filteredConsumptionData, periodFilter, selectedPeriodIndex]);
 
   // Calculate economy rate
   const economyRate = useMemo(() => {
@@ -145,12 +178,12 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   // Economic pie data
   const economyPieData = useMemo(() => {
-    const totalWithoutSystem = currentPeriodData?.consumoSemSistema || 0;
-    const totalWithSystem = currentPeriodData?.consumo || 0;
+    const consumoWithoutSystem = currentPeriodData?.consumo || 0;
+    const consumoWithSystem = currentPeriodData?.consumoSemSistema || 0;
 
     return [
-      { name: 'Consumo com Sistema', value: Math.max(totalWithSystem, 1), fill: '#10b981' },
-      { name: 'Consumo sem Sistema', value: Math.max(totalWithoutSystem, 1), fill: '#dc2626' }
+      { name: 'Consumo com Sistema', value: Math.max(consumoWithSystem, 1), fill: '#10b981' },
+      { name: 'Consumo sem Sistema', value: Math.max(consumoWithoutSystem, 1), fill: '#dc2626' }
     ];
   }, [currentPeriodData]);
 
@@ -220,7 +253,13 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         },
         {
           name: 'Mensal + sem Sistema',
-          data: chartData.map(d => ensureNonNegative(d.consumo + d.consumoSemSistema)),
+          data: chartData.map(d => {
+            // If consumoSemSistema is 0, show 0; otherwise show sum
+            if (d.consumoSemSistema === 0) {
+              return 0;
+            }
+            return ensureNonNegative(d.consumo + d.consumoSemSistema);
+          }),
           type: 'bar',
           itemStyle: { color: '#ef4444', borderRadius: [8, 8, 0, 0], shadowColor: 'rgba(239, 68, 68, 0.3)', shadowBlur: 4, shadowOffsetY: 2 },
           emphasis: { itemStyle: { color: '#dc2626', shadowBlur: 8 } }
@@ -283,7 +322,13 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         },
         {
           name: 'Diário + sem Sistema',
-          data: chartData.map(d => ensureNonNegative(d.consumo + d.consumoSemSistema)),
+          data: chartData.map(d => {
+            // If consumoSemSistema is 0, show 0; otherwise show sum
+            if (d.consumoSemSistema === 0) {
+              return 0;
+            }
+            return ensureNonNegative(d.consumo + d.consumoSemSistema);
+          }),
           type: 'bar',
           itemStyle: { color: '#ef4444' },
           emphasis: { itemStyle: { borderWidth: 2 } }
@@ -366,7 +411,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </div>
           <div>
             <p className="text-sm font-semibold text-amber-900">Aviso: Dados Mock</p>
-            <p className="text-xs text-amber-700 mt-1">Não foi possível conectar à API. Exibindo dados de demonstração. {error}</p>
+            <p className="text-xs text-amber-700 mt-1">Não foi possível conectar à API. Exibindo dados de demonstra��ão. {error}</p>
           </div>
         </div>
       )}
@@ -433,18 +478,34 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             )}
           </div>
 
-          {/* Valor Acumulado Card */}
-          <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Consumo Total</p>
-              <Zap className="w-4 h-4 text-blue-600" />
+          {/* Total Consumption and Period Detail Cards */}
+          <div className="space-y-3">
+            <div className="bg-white rounded-lg p-4 shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-bold text-gray-600 uppercase tracking-wide">Consumo Total</p>
+                <Zap className="w-4 h-4 text-blue-600" />
+              </div>
+              <p className="text-2xl font-bold text-gray-900 mb-2">
+                R${ensureNonNegative(totalConsumption).toLocaleString('pt-BR')}
+              </p>
+              <p className="text-xs text-gray-500">
+                {periodFilter === 'daily' ? `Dia ${selectedPeriodIndex + 1}` : `Mês - ${monthNames[selectedPeriodIndex]}`}
+              </p>
             </div>
-            <p className="text-2xl font-bold text-gray-900 mb-2">
-              R${ensureNonNegative(totalConsumption).toLocaleString('pt-BR')}
-            </p>
-            <p className="text-xs text-gray-500">
-              {periodFilter === 'daily' ? `Dia ${selectedPeriodIndex + 1}` : `Mês - ${monthNames[selectedPeriodIndex]}`}
-            </p>
+
+            {/* Current Month Consumption Card */}
+            <div className="bg-gradient-to-br from-teal-50 to-white rounded-lg p-4 shadow-md border border-teal-200 hover:shadow-lg transition-shadow">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-bold text-teal-700 uppercase tracking-wide">Consumo Total do Mês</p>
+                <Zap className="w-4 h-4 text-teal-600" />
+              </div>
+              <p className="text-2xl font-bold text-teal-600 mb-1">
+                R${ensureNonNegative(selectedPeriodConsumption).toLocaleString('pt-BR')}
+              </p>
+              <p className="text-xs text-gray-600">
+                {periodFilter === 'monthly' ? monthNames[selectedPeriodIndex] : `Período: ${monthNames[Math.floor(new Date().getMonth())]}`}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -479,7 +540,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 <p className="text-3xl font-bold text-gray-900">R$ {(ensureNonNegative(totalConsumption) / 1000).toFixed(1)}k</p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcançada</p>
+                <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcan��ada</p>
                 <p className="text-3xl font-bold text-green-600">R$ {(ensureNonNegative(totalEconomy) / 1000).toFixed(1)}k</p>
               </div>
               <div>
@@ -521,13 +582,13 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             <div>
               <p className="text-xs text-gray-600 mb-1">Consumo sem Sistema</p>
               <p className="text-2xl font-bold text-gray-900">
-                R${ensureNonNegative(currentPeriodData?.consumoSemSistema || 0).toLocaleString('pt-BR')}
+                R${ensureNonNegative(currentPeriodData?.consumo || 0).toLocaleString('pt-BR')}
               </p>
             </div>
             <div className="border-t border-blue-200 pt-2">
               <p className="text-xs text-gray-600 mb-1">Consumo com Sistema</p>
               <p className="text-lg font-bold text-blue-600">
-                R${ensureNonNegative(currentPeriodData?.consumo || 0).toLocaleString('pt-BR')}
+                R${ensureNonNegative(currentPeriodData?.consumoSemSistema || 0).toLocaleString('pt-BR')}
               </p>
             </div>
           </div>
@@ -535,7 +596,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             <p className="text-xs text-gray-600">Meta: <span className="font-semibold text-gray-900">R${ensureNonNegative(currentMeta).toLocaleString('pt-BR')}</span></p>
             <p className="text-xs text-gray-600">
               Economia: <span className="font-semibold text-green-600">
-                R${ensureNonNegative((currentPeriodData?.consumoSemSistema || 0) - (currentPeriodData?.consumo || 0)).toLocaleString('pt-BR')}
+                R${ensureNonNegative((currentPeriodData?.consumo || 0) - (currentPeriodData?.consumoSemSistema || 0)).toLocaleString('pt-BR')}
               </span>
             </p>
           </div>
@@ -553,7 +614,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
           </p>
         </div>
 
-        {/* Métrica de Outro Período */}
+        {/* M��trica de Outro Período */}
         <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg p-5 shadow-md border border-teal-700/20 text-white flex flex-col justify-center hover:shadow-lg transition-shadow h-fit">
           <p className="text-3xl font-bold mb-1 text-center">{periodFilter === 'daily' ? activationHours.toFixed(1) : totalEconomy.toFixed(0)}</p>
           <p className="text-xs font-semibold text-center leading-tight text-teal-50">
