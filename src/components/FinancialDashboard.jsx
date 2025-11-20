@@ -377,11 +377,23 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
   };
 
   const allMonthsData = useMemo(() => {
-    return monthNames.map((name, monthIndex) => {
-      // Get activation time meta from storage
-      const meta = loadActivationTimeMeta(selectedDeviceId, 'monthly', monthIndex);
+    if (periodFilter === 'daily') {
+      const dailyData = apiData?.consumo_diario_mes_corrente || [];
+      return dailyData.map((_, dayIndex) => {
+        const meta = loadActivationTimeMeta(selectedDeviceId, 'daily', dayIndex);
+        const downtimeMinutes = apiData?.minutos_desligado_diario?.[dayIndex] || 0;
+        const actualHours = Math.max(0, 24 - downtimeMinutes / 60);
 
-      // Get actual activation hours from API data
+        return {
+          month: `D${dayIndex + 1}`,
+          value: `${meta.toFixed(0)} h`,
+          atualização: `${actualHours.toFixed(0)} H`
+        };
+      });
+    }
+
+    return monthNames.map((name, monthIndex) => {
+      const meta = loadActivationTimeMeta(selectedDeviceId, 'monthly', monthIndex);
       const downtimeMinutes = apiData?.minutos_desligado_mensal?.[monthIndex] || 0;
       const actualHours = Math.max(0, 720 - downtimeMinutes / 60);
 
@@ -391,7 +403,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
         atualização: `${actualHours.toFixed(0)} H`
       };
     });
-  }, [apiData, selectedDeviceId]);
+  }, [apiData, selectedDeviceId, periodFilter]);
 
   const itemsPerPage = 4;
   const totalPages = Math.ceil(allMonthsData.length / itemsPerPage);
