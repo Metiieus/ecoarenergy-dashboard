@@ -30,6 +30,8 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
 
   const [isEditingMeta, setIsEditingMeta] = useState(false);
   const [costInputValue, setCostInputValue] = useState('10000');
+  const [isEditingTimeMeta, setIsEditingTimeMeta] = useState(false);
+  const [timeMetaInputValue, setTimeMetaInputValue] = useState('');
   const [editingDeviceTimeId, setEditingDeviceTimeId] = useState(null);
   const [deviceTimeInputValue, setDeviceTimeInputValue] = useState('');
   const [monthMetaTablePageIndex, setMonthMetaTablePageIndex] = useState(0);
