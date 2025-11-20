@@ -19,7 +19,8 @@ import {
   getLastSevenDays,
   getLastThreeMonths,
   loadActivationTimeMeta,
-  saveActivationTimeMeta
+  saveActivationTimeMeta,
+  getSelectedPeriodConsumption
 } from '../lib/calculationUtils';
 
 const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
