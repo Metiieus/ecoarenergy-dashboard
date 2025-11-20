@@ -584,13 +584,13 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             <div>
               <p className="text-xs text-gray-600 mb-1">Consumo sem Sistema</p>
               <p className="text-2xl font-bold text-gray-900">
-                R${ensureNonNegative(currentPeriodData?.consumoSemSistema || 0).toLocaleString('pt-BR')}
+                R${ensureNonNegative(currentPeriodData?.consumo || 0).toLocaleString('pt-BR')}
               </p>
             </div>
             <div className="border-t border-blue-200 pt-2">
               <p className="text-xs text-gray-600 mb-1">Consumo com Sistema</p>
               <p className="text-lg font-bold text-blue-600">
-                R${ensureNonNegative(currentPeriodData?.consumo || 0).toLocaleString('pt-BR')}
+                R${ensureNonNegative(currentPeriodData?.consumoSemSistema || 0).toLocaleString('pt-BR')}
               </p>
             </div>
           </div>
