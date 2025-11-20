@@ -570,7 +570,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
             <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">
               Economia {periodFilter === 'daily' ? 'Diária' : 'Total'}
             </p>
-            <p className="text-xs text-gray-500 mt-1">Percentual de Economia Alcançado</p>
+            <p className="text-xs text-gray-500 mt-1">Percentual de Economia Alcançada
           </div>
           <div className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-8 overflow-hidden">
             <div className="flex-shrink-0 w-48 h-48 sm:w-72 sm:h-72 flex items-center justify-center">
@@ -595,7 +595,7 @@ const FinancialDashboard = ({ selectedEstablishment, onSelectDevice }) => {
                 <p className="text-3xl font-bold text-gray-900">R$ {(ensureNonNegative(totalConsumption) / 1000).toFixed(1)}k</p>
               </div>
               <div>
-                <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcan��ada</p>
+                <p className="text-xs text-gray-600 font-semibold mb-2">Economia Alcançada
                 <p className="text-3xl font-bold text-green-600">R$ {(ensureNonNegative(totalEconomy) / 1000).toFixed(1)}k</p>
               </div>
               <div>
